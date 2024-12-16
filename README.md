@@ -1,8 +1,6 @@
-    gitGraph
-       commit
-       commit
-       commit
-
+```mermaid
+     gitGraph
+```
       
 
 # Web crontrol panel
