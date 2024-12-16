@@ -1,4 +1,8 @@
-gitGraph
+    gitGraph
+       commit
+       commit
+       commit
+
       
 
 # Web crontrol panel
