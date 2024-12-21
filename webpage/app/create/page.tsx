@@ -9,7 +9,7 @@ const Create = () => {
       if (e.target.value === "nodejs") {
         checkboxDiv.innerHTML = `
           <label>
-            <input type="checkbox" name="express" /> Express
+            <input type="checkbox" name="express" required/> Express
           </label>
         `;
       } else {
