@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Pagename}}</title>
+</head>
+<body>
+    <h1>{{.Pagename}}</h1>
+    <form action="" method="post">
+        <label for="nameserver">Nameserver:</label>
+        <input type="text" id="nameserver" name="nameserver" required>
+
+        <label for="programming_language">Programming Language:</label>
+        <select name="programming_language" id="programming_language" required>
+            <option value="golang">Golang</option>
+            <option value="php">PHP</option>
+            <option value="nodejs">Node.js</option>
+            <option value="htmlstatic">HTML Static</option>
+        </select>
+
+        <label for="framework">Framework:</label>
+        <select name="framework" id="framework" required>
+            <option value="none">None</option>
+            <option value="gin">Gin (Go)</option>
+            <option value="fiber">Fiber (Go)</option>
+            <option value="laravel">Laravel (PHP)</option>
+            <option value="express">Express (Node.js)</option>
+            <option value="nextjs">Next.js (React)</option>
+            <option value="react">React (Frontend)</option>
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
