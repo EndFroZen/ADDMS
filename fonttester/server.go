@@ -9,13 +9,18 @@ func main() {
 	engine := html.New("./views", ".html")
 	app := fiber.New(fiber.Config{
 		Views: engine})
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Render("bfhome",fiber.Map{
+			"Pagename":"Home",
+		})
+	})
 	app.Get("/home", func(c *fiber.Ctx) error {
 		return c.Render("home",fiber.Map{
 			"Pagename":"Home",
 		})
 	})
-	app.Get("/crateserver", func(c *fiber.Ctx) error {
-		return c.Render("create",fiber.Map{
+	app.Get("/createserver", func(c *fiber.Ctx) error {
+		return c.Render("creatpage",fiber.Map{
 			"Pagename":"Create",
 		})
 	})
