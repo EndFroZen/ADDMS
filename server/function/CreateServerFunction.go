@@ -1,12 +1,16 @@
 package function
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"os/exec"
+)
 
-func CreateServerFunction (nameServer string ,programinglangue string ,framwork string)error{
+func CreateServerFunction(nameServer string, programinglangue string, framwork string) error {
 	fmt.Println(nameServer)
 	switch programinglangue {
 	case "nodejs":
-		nodejs()
+		nodejs(nameServer)
 	case "golang":
 		gofiber()
 	case "php":
@@ -18,15 +22,27 @@ func CreateServerFunction (nameServer string ,programinglangue string ,framwork 
 	}
 	return nil
 }
-func nodejs(){
-	fmt.Println("Nodejs")
+func nodejs(nameserver string) {
+	cmd := exec.Command("mkdir", nameserver)
+	cmd.Dir = "../create/user1"
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd = exec.Command("npm", "i", "-y")
+	pathdir := fmt.Sprintf("../create/user1/%s", nameserver)
+	cmd.Dir = pathdir
+	output,err := cmd.CombinedOutput()
+	if err != nil{
+		fmt.Println(string(output))
+	}
 }
-func gofiber(){
+func gofiber() {
 	fmt.Println("Go fiber")
 }
-func php(){
+func php() {
 	fmt.Println("PHP")
 }
-func htmlStatic(){
+func htmlStatic() {
 	fmt.Println("html Static")
 }
