@@ -24,5 +24,10 @@ func main() {
 			"Pagename":"Create",
 		})
 	})
+	app.Get("/welcomepage", func(c *fiber.Ctx) error {
+		return c.Render("welcompage",fiber.Map{
+			"Pagename":"Create",
+		})
+	})
 	app.Listen("127.0.0.1:3002")
 }

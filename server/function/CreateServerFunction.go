@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"server/function/clonecode"
 )
 
 func CreateServerFunction(nameServer string, programinglangue string, framwork string) error {
@@ -32,10 +33,12 @@ func nodejs(nameserver string) {
 	cmd = exec.Command("npm", "i", "-y")
 	pathdir := fmt.Sprintf("../create/user1/%s", nameserver)
 	cmd.Dir = pathdir
-	output,err := cmd.CombinedOutput()
-	if err != nil{
+	output, err := cmd.CombinedOutput()
+	if err != nil {
 		fmt.Println(string(output))
 	}
+	clonecodepath := fmt.Sprintf("../create/user1/%s/welcomepage.html", nameserver)
+	clonecode.WelcomepageHTML(nameserver,clonecodepath)
 }
 func gofiber() {
 	fmt.Println("Go fiber")
