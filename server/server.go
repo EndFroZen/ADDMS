@@ -15,7 +15,10 @@ func main() {
 		programmingLanguage := c.FormValue("programming_language")
 		framework := c.FormValue("framework")
 		showdata := fmt.Sprintf("%s %s %s %s", userID, nameServer, programmingLanguage, framework)
-		function.CreateServerFunction(nameServer,programmingLanguage,framework)
+		err := function.CreateServerFunction(nameServer,programmingLanguage,framework)
+		if err != nil{
+			return c.SendString(err.Error())
+		}
 		return c.SendString(showdata)
 	})
 	app.Listen("127.0.0.1:3001")
