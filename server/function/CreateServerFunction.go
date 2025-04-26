@@ -45,7 +45,7 @@ func nodejs(nameserver string, framwork string) error {
 	}
 	clonecodepath := fmt.Sprintf("../create/user1/%s", nameserver)
 	if framwork == "express" {
-		clonecode.NodejsExpress(nameserver ,clonecodepath)
+		clonecode.NodejsExpress(nameserver, clonecodepath)
 	} else if framwork == "nestjs" {
 		return fmt.Errorf("plase choss framwork")
 	} else if framwork == "nextjs" {
