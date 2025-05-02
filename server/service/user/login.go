@@ -1,4 +1,4 @@
-package usermanage
+package service_user
 
 import (
 	"fmt"
@@ -6,25 +6,10 @@ import (
 	"server/models"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
-
-
-func Register(db *gorm.DB, registerUser *models.User) error {
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerUser.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	registerUser.Password = string(hashedPassword)
-
-	// Create new user in DB
-	result := db.Create(registerUser)
-	return result.Error
-}
 
 func Login(db *gorm.DB, loginUser *models.User) (string, error) {
 	jwtSecret := os.Getenv("JWT_SEC")
@@ -48,8 +33,12 @@ func Login(db *gorm.DB, loginUser *models.User) (string, error) {
 	// Create JWT token
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
+
 	claims["user_id"] = firstUser.ID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["username"] = firstUser.Username
+	claims["email"] = firstUser.Email
+	claims["iat"] = time.Now().Unix()
+
 	t, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err

@@ -1,4 +1,4 @@
-package function
+package service
 
 func Statustoken(status int, message string,token string) map[string]interface{} {
 	return map[string]interface{}{
