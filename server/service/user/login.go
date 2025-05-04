@@ -3,7 +3,9 @@ package service_user
 import (
 	"fmt"
 	"os"
+	"server/config"
 	"server/models"
+	"server/service"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -43,6 +45,6 @@ func Login(db *gorm.DB, loginUser *models.User) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
+	service.AutoCreateFolderWeb(config.DB)
 	return t, nil
 }

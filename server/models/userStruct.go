@@ -7,4 +7,6 @@ type User struct {
 	Username string `gorm:"unique"`
 	Email    string `gorm:"unique"`
 	Password string
+	Folder   string `gorm:"unique"`
+	Website []Website
 }
