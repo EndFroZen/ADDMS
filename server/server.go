@@ -6,10 +6,12 @@ import (
 	"server/service"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
 	app := fiber.New()
+	app.Use(logger.New())
 	config.ConnectDatabase()
 	service.AutoCreateFolderWeb(config.DB)
 	routes.SetupRoutes(app)

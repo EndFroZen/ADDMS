@@ -9,5 +9,5 @@ import (
 
 func methotGet(routes fiber.Router) {
 	routes.Get("/hello", middleware.JWTProtected(), controllerGet.ShowHello)
-	// routes.Get("/dashboard",middleware.JWTProtected(),controllerGet)
+	routes.Get("/dashboard",middleware.JWTProtected(),controllerGet.Showdashboard)
 }
