@@ -10,12 +10,21 @@ import (
 )
 
 func Login(c *fiber.Ctx) error {
-
-	loginUserNew := new(models.User)
-	if err := c.BodyParser(loginUserNew); err != nil {
+	type loginRequest struct {
+		Usernoun string `json:"usernoun"`
+		Password string `json:"password"`
+	}
+	req := new(loginRequest)
+	if err := c.BodyParser(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(service.Statustoken(400, "Missing body client", "null"))
 	}
-	token, err := service_user.Login(config.DB, loginUserNew)
+	loginUserNew := models.User{
+		Email: req.Usernoun,
+		Username: req.Usernoun,
+		Password: req.Password,
+	}
+	
+	token, err := service_user.Login(config.DB, &loginUserNew)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(service.Statustoken(404, "Not found user!", "nul"))
 	}
