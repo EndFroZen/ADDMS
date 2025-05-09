@@ -59,5 +59,5 @@ func ConnectDatabase() {
 }
 
 func autoMigrateLoad() error {
-	return DB.AutoMigrate(&models.User{},&models.Website{})
+	return DB.AutoMigrate(&models.User{},&models.Website{},&models.Activity_logs{},&models.Domain{},&models.Files{},&models.Notifications{},&models.Plugins{},&models.Server_status{},)
 }

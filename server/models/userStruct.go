@@ -6,7 +6,8 @@ type User struct {
 	gorm.Model
 	Username string `gorm:"unique"`
 	Email    string `gorm:"unique"`
-	Password string
+	Password string	`json:"-"`
 	Folder   string `gorm:"unique"`
-	Website []Website
+	Role     string
+	Website  []Website
 }

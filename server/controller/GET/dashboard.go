@@ -1,7 +1,6 @@
 package controllerGet
 
 import (
-	"fmt"
 	"server/config"
 	"server/service"
 
@@ -9,13 +8,18 @@ import (
 )
 
 func Showdashboard(c *fiber.Ctx) error {
+	// load website
 	userID := c.Locals("user_id").(float64)
 	newUserID := int(userID)
-	fmt.Println(userID)
 	dataUser := service.LoadUserDataByID(newUserID, config.DB)
 	dataWebsite, err := service.LoadUserWebsiteByID(newUserID, config.DB)
 	if err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "load data website err"))
+	}
+	//check storage folder
+	storage, err := service.CheckStoragefolder(dataUser.Folder)
+	if err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "load data storage website "))
 	}
 	var websites []fiber.Map
 	for _, site := range dataWebsite {
@@ -28,9 +32,10 @@ func Showdashboard(c *fiber.Ctx) error {
 		})
 	}
 	return c.JSON(fiber.Map{
-		"name":   dataUser.Username,
-		"folder": dataUser.Folder,
-		"email":  dataUser.Email,
-		"website":websites,
+		"name":    dataUser.Username,
+		"folder":  dataUser.Folder,
+		"email":   dataUser.Email,
+		"storage": storage,
+		"website": websites,
 	})
 }

@@ -1,0 +1,32 @@
+{
+    "/api/login(POST)": {
+        "input": {
+            "username": "string",
+            "password": "string"
+        },
+        "output": {
+            "status": "success",
+            "token": "string"
+        }
+    },
+    "/api/register(POST)": {
+        "input": {
+            "username": "string",
+            "password": "string",
+            "email": "string"
+        },
+        "output": {
+            "status": "success",
+            "message": "Registration successful"
+        }
+    },
+    "/api/logout(POST)": {
+        "input": {
+            "token": "string"
+        },
+        "output": {
+            "status": "success",
+            "message": "Logged out successfully"
+        }
+    }
+}

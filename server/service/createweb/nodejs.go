@@ -15,15 +15,6 @@ func NodejsCreateWeb(userData *models.User ,websiteData *models.ModelWeb,db *gor
 		fmt.Println("Error at NodejsCreateWeb func by create folder by name")
 		return err
 	}
-	dataWebsite := &models.Website{
-		UserID: userData.ID,
-		Domain: websiteData.Name,
-		Status: "offline",
-		StorageLimit: 10,
-	}
-	result :=  db.Create(dataWebsite)
-	if result.Error != nil{
-		return result.Error
-	}
+	
 	return nil
 }

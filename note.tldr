@@ -34,11 +34,33 @@
 	},
 	"records": [
 		{
-			"gridSize": 10,
-			"name": "",
+			"id": "pointer:pointer",
+			"typeName": "pointer",
+			"x": 1144.5578223676152,
+			"y": 530.5792132909831,
+			"lastActivityTimestamp": 1746806839832,
+			"meta": {}
+		},
+		{
+			"x": -492.1255788154191,
+			"y": 25.938112388434618,
+			"z": 0.9487575240454504,
 			"meta": {},
-			"id": "document:document",
-			"typeName": "document"
+			"id": "camera:page:page",
+			"typeName": "camera"
+		},
+		{
+			"editingShapeId": null,
+			"croppingShapeId": null,
+			"selectedShapeIds": [],
+			"hoveredShapeId": null,
+			"erasingShapeIds": [],
+			"hintingShapeIds": [],
+			"focusedGroupId": null,
+			"meta": {},
+			"id": "instance_page_state:page:page",
+			"pageId": "page:page",
+			"typeName": "instance_page_state"
 		},
 		{
 			"meta": {},
@@ -48,12 +70,11 @@
 			"typeName": "page"
 		},
 		{
-			"id": "pointer:pointer",
-			"typeName": "pointer",
-			"x": -556.0983380824753,
-			"y": 701.242800444661,
-			"lastActivityTimestamp": 1746146365392,
-			"meta": {}
+			"gridSize": 10,
+			"name": "",
+			"meta": {},
+			"id": "document:document",
+			"typeName": "document"
 		},
 		{
 			"followingUserId": null,
@@ -72,8 +93,8 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 1176,
-				"h": 752
+				"w": 1550,
+				"h": 934
 			},
 			"insets": [
 				false,
@@ -90,7 +111,7 @@
 			"isFocused": true,
 			"devicePixelRatio": 1,
 			"isCoarsePointer": false,
-			"isHoveringCanvas": false,
+			"isHoveringCanvas": true,
 			"openMenus": [],
 			"isChangingStyle": false,
 			"isReadonly": false,
@@ -99,212 +120,6 @@
 			"id": "instance:instance",
 			"currentPageId": "page:page",
 			"typeName": "instance"
-		},
-		{
-			"editingShapeId": "shape:gmMB4YPj2bjX6r5bQDFEw",
-			"croppingShapeId": null,
-			"selectedShapeIds": [
-				"shape:gmMB4YPj2bjX6r5bQDFEw"
-			],
-			"hoveredShapeId": null,
-			"erasingShapeIds": [],
-			"hintingShapeIds": [],
-			"focusedGroupId": null,
-			"meta": {},
-			"id": "instance_page_state:page:page",
-			"pageId": "page:page",
-			"typeName": "instance_page_state"
-		},
-		{
-			"x": 602.0948728708045,
-			"y": 80.69829095693493,
-			"z": 0.4782969,
-			"meta": {},
-			"id": "camera:page:page",
-			"typeName": "camera"
-		},
-		{
-			"x": 58.8046875,
-			"y": 53,
-			"rotation": 0,
-			"isLocked": false,
-			"opacity": 1,
-			"meta": {},
-			"id": "shape:gmMB4YPj2bjX6r5bQDFEw",
-			"type": "text",
-			"props": {
-				"color": "black",
-				"size": "m",
-				"w": 1058.390625,
-				"font": "draw",
-				"textAlign": "start",
-				"autoSize": false,
-				"scale": 1,
-				"richText": {
-					"type": "doc",
-					"content": [
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "app.Post(\"/createnewserver\", func(c *fiber.Ctx) error {"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "userID := c.Query(\"user\")"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "nameServer := c.FormValue(\"nameserver\")"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "programmingLanguage := c.FormValue(\"programming_language\")"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "framework := c.FormValue(\"framework\")"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "showdata := fmt.Sprintf(\"%s %s %s %s\", userID, nameServer, programmingLanguage, framework)"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "err := function.CreateServerFunction(nameServer,programmingLanguage,framework)"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "if err != nil{"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "return c.SendString(err.Error())"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "        }"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "return c.SendString(showdata)"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							},
-							"content": [
-								{
-									"type": "text",
-									"text": "    })"
-								}
-							]
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							}
-						},
-						{
-							"type": "paragraph",
-							"attrs": {
-								"dir": "auto"
-							}
-						}
-					]
-				}
-			},
-			"parentId": "page:page",
-			"index": "a1",
-			"typeName": "shape"
 		}
 	]
 }

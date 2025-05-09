@@ -6,6 +6,7 @@ import (
 
 func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
+
 	methotPost(api)
 	methotGet(api)
 }
