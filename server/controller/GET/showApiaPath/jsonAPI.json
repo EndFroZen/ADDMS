@@ -1,32 +1,42 @@
 {
-    "/api/login(POST)": {
-        "input": {
-            "username": "string",
-            "password": "string"
-        },
-        "output": {
-            "status": "success",
-            "token": "string"
-        }
+    "/api/login(POST)":{
+       "input":[
+          {
+             "usernoun":"bob",
+             "password":"1234"
+          },
+          {
+             "usernoun":"bob@gmail.com",
+             "password":"1234"
+          }
+       ],
+       "output":[
+          {
+             "message":"Login successful",
+             "status":200,
+             "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJvYiIsImlhdCI6MTc0NjkyNTAyNCwidXNlcl9pZCI6MTIsInVzZXJuYW1lIjoiYm9iIn0.5PgcfdGAtV4xnn3q0Ejq0zjzYNlAO8VIMh1V4TVhkv8"
+          },
+          {
+             "message":"Not found user!",
+             "status":404,
+             "token":"nul"
+          }
+       ]
     },
-    "/api/register(POST)": {
-        "input": {
-            "username": "string",
-            "password": "string",
-            "email": "string"
-        },
-        "output": {
-            "status": "success",
-            "message": "Registration successful"
-        }
+    "/api/register(POST)":{
+       "input":{
+          "username":"bob",
+          "email":"bob@gmil.com",
+          "password":"1324"
+       },
+       "output":[
+        {"message":"Register successful","status":200},
+        {"message":"Registration failed or User already exists","status":400}
+       ]
     },
-    "/api/logout(POST)": {
-        "input": {
-            "token": "string"
-        },
-        "output": {
-            "status": "success",
-            "message": "Logged out successfully"
-        }
+    "api/dashboard(GET)":{
+        "input":"-H 'Authorization: Bearer <token>",
+        "output":{"message":"Login successful",
+             "status":200}
     }
-}
+ }

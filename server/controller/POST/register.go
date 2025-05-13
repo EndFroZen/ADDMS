@@ -18,6 +18,7 @@ func Register(c *fiber.Ctx) error {
 	}
 	folderName := fmt.Sprintf("folder_%s",registerUser.Username)
 	registerUser.Folder = folderName
+	registerUser.Role = "user"
 	if err := service_user.Register(config.DB, registerUser); err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "Registration failed or User already exists"))
 	}

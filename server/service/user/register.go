@@ -10,6 +10,7 @@ import (
 )
 
 func Register(db *gorm.DB, registerUser *models.User) error {
+
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerUser.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -20,9 +21,9 @@ func Register(db *gorm.DB, registerUser *models.User) error {
 
 	// Create new user in DB
 	result := db.Create(registerUser)
-	if result.Error != nil{
+	if result.Error != nil {
 		return result.Error
 	}
 	service.AutoCreateFolderWeb(config.DB)
-	return nil	
+	return nil
 }
