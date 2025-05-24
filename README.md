@@ -3,7 +3,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 First, run the development server:
-
+## before start
+```bash
+git pull
+```
+## dowload
+```bash
+https://github.com/EndFroZen/-ADDMS.git frontend
+```
 ```bash
 npm run dev
 # or
