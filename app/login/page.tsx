@@ -1,8 +1,8 @@
 'use client';
 import { BASE_URL } from '../../config/plublicpara';
 import { useRouter } from 'next/navigation';
-const router = useRouter();
 export default function Login() {
+  const router = useRouter();
   
   async function Nlogin() {
     const userNoun = (document.getElementById("userNoun") as HTMLInputElement).value
@@ -23,7 +23,7 @@ export default function Login() {
         alert(result.message || 'Login failed');
       }
     } catch (err) {
-      alert('Login error: ' + err);
+      router.push('/errorpage/servererror')
     }
   }
   function loginWithGithub() {
