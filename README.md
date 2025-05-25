@@ -9,7 +9,7 @@ git pull
 ```
 ## dowload
 ```bash
-https://github.com/EndFroZen/-ADDMS.git frontend
+git clone -b frontend https://github.com/EndFroZen/-ADDMS.git ADDMS_Frontend
 ```
 ```bash
 npm run dev
