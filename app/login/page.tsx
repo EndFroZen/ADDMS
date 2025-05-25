@@ -1,8 +1,9 @@
 'use client';
 import { BASE_URL } from '../../config/plublicpara';
 import { useRouter } from 'next/navigation';
+const router = useRouter();
 export default function Login() {
-  const router = useRouter();
+  
   async function Nlogin() {
     const userNoun = (document.getElementById("userNoun") as HTMLInputElement).value
     const password = (document.getElementById("password") as HTMLInputElement).value
