@@ -12,7 +12,6 @@ func CreateWebFile(webSiteData *models.ModelWeb, db *gorm.DB, userData *models.U
 	if err!= nil{
 		return err
 	}
-	fmt.Printf("zjkooo")
 	dataDomain := models.Domain{
 		Domain_name: webSiteData.Name,
 		Is_verified: "false", 

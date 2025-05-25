@@ -14,4 +14,5 @@ func methotGet(routes fiber.Router) {
 	routes.Get("/file/*",middleware.JWTProtected(),controllerGet.FolderReadTest)
 	routes.Get("/showapipath",showapiapath.ShowApiPath)
 	routes.Get("/showapipathjson",showapiapath.ShowApiPathJson)
+	routes.Get("/datauser",middleware.JWTProtected(),controllerGet.DataUserByJWT)
 } 
