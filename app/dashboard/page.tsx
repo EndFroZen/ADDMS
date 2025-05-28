@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { BASE_URL } from "../../config/plublicpara";
 import './style.css'; // We'll create this CSS file
 import { useRouter } from 'next/navigation';
-
+import { NToken } from '../../config/plublicpara';
 interface Domain {
   ID: number;
   Domain_name: string;
@@ -35,9 +35,10 @@ export default function Dashboard() {
   const router = useRouter();
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
   async function getDashboard() {
-    const yourToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    
+    
     
     try {
       setLoading(true);
@@ -60,6 +61,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     getDashboard();
+    if (!yourToken) {
+      router.push("/"); 
+      return;
+    }
   }, []);
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -87,6 +92,7 @@ export default function Dashboard() {
             <input type="text" placeholder="Search..." />
           </div>
           <div className="user">
+            <button onClick={()=>router.push("/create")}>New Deploy</button>
             <div className="avatar">{dashboardData.name.charAt(0)}</div>
             <span>{dashboardData.name}</span>
           </div>

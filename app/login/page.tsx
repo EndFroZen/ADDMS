@@ -1,23 +1,26 @@
 'use client';
+import { useEffect } from 'react';
 import { BASE_URL } from '../../config/plublicpara';
 import { useRouter } from 'next/navigation';
+import { NToken } from '../../config/plublicpara';
 export default function Login() {
   const router = useRouter();
-  
+  const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
   async function Nlogin() {
     const userNoun = (document.getElementById("userNoun") as HTMLInputElement).value
     const password = (document.getElementById("password") as HTMLInputElement).value
-    console.log(userNoun,password)
+
+    console.log(userNoun, password)
     try {
       const res = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernoun: userNoun, password}),
+        body: JSON.stringify({ usernoun: userNoun, password }),
       });
 
       const result = await res.json();
       if (res.status === 200) {
-        localStorage.setItem('token', result.token);
+        localStorage.setItem(NToken, result.token);
         router.push('/dashboard');
       } else {
         alert(result.message || 'Login failed');
@@ -30,8 +33,14 @@ export default function Login() {
     // ตัวอย่าง redirect ไป GitHub OAuth
     window.location.href = 'https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID';
   }
+  useEffect(() => {
+    if (yourToken != null) {
+      router.push("/dashboard")
+      return
+    }
+  }, [])
   return (
-    
+
 
     <div className="loginbox">
       <h2>Login to ADDMS</h2>

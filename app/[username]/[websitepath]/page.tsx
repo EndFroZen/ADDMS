@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { BASE_URL } from "../../../config/plublicpara";
 import { useRouter } from 'next/navigation';
-
+import { NToken } from '../../../config/plublicpara';
 
 interface UserData {
   status: number;
@@ -26,7 +26,7 @@ export default function WebsitePage({ params }: Props) {
   const [loading, setLoading] = useState(true);
   const { username, domain } = params;
 
-  const yourToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
 
   async function checkUser() {
     try {
