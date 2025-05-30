@@ -17,6 +17,7 @@ func CreateNewWebsite(c *fiber.Ctx) error {
 	if err := c.BodyParser(&jsonReqStuct); err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "Failed to parse request body"))
 	}
+	
 	if err := service.MakeWebsite(&jsonReqStuct, &dataUser); err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "Create website false"))
 	}

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"server/models"
 
 	"gorm.io/gorm"
@@ -49,18 +48,4 @@ func getDomainByName(name string, db *gorm.DB) (models.Domain, error) {
 		return models.Domain{}, result.Error
 	}
 	return domain, nil
-}
-func checkDomainName(name string, db *gorm.DB) error {
-	var domain models.Domain
-	result := db.Where("domain_name = ?", name).First(&domain)
-	if result.Error == nil {
-		
-		return fmt.Errorf("domain name '%s' already exists", name)
-	}
-	if result.Error != gorm.ErrRecordNotFound {
-		
-		return result.Error
-	}
-	// ไม่พบ domain → ผ่าน
-	return nil
 }
