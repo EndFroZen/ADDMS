@@ -1,29 +1,25 @@
 'use client';
+import { useState, useEffect } from "react";
+import TopNavigation from "../components/topnavbar/page";
+import { NToken } from "@/config/plublicpara";
 
-import { useEffect, useState } from 'react';
-import { BASE_URL } from "../../config/plublicpara";
-import './style.css'; // We'll create this CSS file
-import { useRouter } from 'next/navigation';
-import { NToken } from '../../config/plublicpara';
+// Interfaces
 interface Domain {
   ID: number;
   Domain_name: string;
   Is_verified: string;
   Ssl_enabled: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string | null;
 }
 
 interface Website {
   id: number;
+  created_at: string;
   status: string;
   storage_limit: number;
-  created_at: string;
   domain: Domain;
 }
 
-interface DashboardResponse {
+interface UserModel {
   email: string;
   folder: string;
   name: string;
@@ -32,108 +28,70 @@ interface DashboardResponse {
 }
 
 export default function Dashboard() {
-  const router = useRouter();
-  const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserModel | null>(null);
   const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
-  async function getDashboard() {
-    
-    
-    
+  const page = "dashboard";
+
+  async function loadUser() {
     try {
-      setLoading(true);
-      const res = await fetch(`${BASE_URL}/api/dashboard`, {
+      const res = await fetch("https://addms.endfrozen.site/api/dashboard", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${yourToken}`
-        }
+          "Authorization": `Bearer ${yourToken}`,
+        },
       });
 
-      const data = await res.json();
-      setDashboardData(data);
+      const result = await res.json();
+      console.log("API result:", result);
+
+      if (res.status === 200) {
+        setUser(result);
+      }
     } catch (err) {
-      console.error("Error in dashboard:", err);
-    } finally {
-      setLoading(false);
+      console.log("Failed to fetch user:", err);
     }
   }
 
   useEffect(() => {
-    getDashboard();
-    if (!yourToken) {
-      router.push("/"); 
-      return;
-    }
+    loadUser();
   }, []);
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (!dashboardData) return <div className="error">Failed to load data</div>;
-
   return (
-    <div className="dashboard">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <div className="logo">A</div>
-        <nav>
-          <a href="#" className="active">Dashboard</a>
-          <a href="#">Websites</a>
-          <a href="#">Servers</a>
-          <a href="#">Team</a>
-          <a href="#">Settings</a>
-        </nav>
-      </div>
+    <div className="bg-blue-900 min-h-screen text-white">
+      <TopNavigation page={page} />
 
-      {/* Main Content */}
-      <div className="main">
-        {/* Header */}
-        <header>
-          <div className="search">
-            <input type="text" placeholder="Search..." />
-          </div>
-          <div className="user">
-            <button onClick={()=>router.push("/create")}>New Deploy</button>
-            <div className="avatar">{dashboardData.name.charAt(0)}</div>
-            <span>{dashboardData.name}</span>
-          </div>
-        </header>
+      <div className="p-6 max-w-6xl mx-auto">
+        {user ? (
+          <>
+            <h1 className="text-3xl font-bold mb-4">Welcome, {user.name}</h1>
+            <div className="mb-6 text-lg">
+              <p>Email: {user.email}</p>
+              <p>Folder: {user.folder}</p>
+              <p>Storage Used: {user.storage.toFixed(2)} MB</p>
+            </div>
 
-        {/* Dashboard Content */}
-        <div className="content">
-          <h1>Dashboard</h1>
-          
-          {/* Stats */}
-          <div className="stats">
-            <div className="stat-card">
-              <h3>Total Websites</h3>
-              <p>{dashboardData.website.length}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Active Servers</h3>
-              <p>{dashboardData.website.filter(w => w.status === 'online').length}</p>
-            </div>
-            <div className="stat-card">
-              <h3>Storage Used</h3>
-              <p>{dashboardData.storage} MB</p>
-            </div>
-          </div>
-
-          {/* Websites List */}
-          <h2>Your Websites</h2>
-          <div className="websites">
-            {dashboardData.website.map(site => (
-              <div key={site.id} className="website-card">
-                <div className="website-header">
-                  <span className={`status ${site.status}`}></span>
-                  <h3>{site.domain.Domain_name}</h3>
-                </div>
-                <p>Status: {site.status}</p>
-                <p>Storage: {site.storage_limit} MB</p>
-                <p>Created: {new Date(site.created_at).toLocaleDateString()}</p>
+            <h2 className="text-2xl font-semibold mb-4">Your Websites</h2>
+            {user.website.length === 0 ? (
+              <p>No websites found.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {user.website.map((site) => (
+                  <div key={site.id} className="bg-blue-800 rounded-xl p-4 shadow-lg">
+                    <h3 className="text-xl font-semibold mb-2">{site.domain.Domain_name}</h3>
+                    <p>Status: <span className={site.status === "offline" ? "text-red-400" : "text-green-400"}>{site.status}</span></p>
+                    <p>Storage Limit: {site.storage_limit} MB</p>
+                    <p>Verified: {site.domain.Is_verified === "true" ? "Yes" : "No"}</p>
+                    <p>SSL Enabled: {site.domain.Ssl_enabled === "true" ? "Yes" : "No"}</p>
+                    <p className="text-sm text-gray-300 mt-2">Created: {new Date(site.created_at).toLocaleString()}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            )}
+          </>
+        ) : (
+          <p>Loading user data...</p>
+        )}
       </div>
     </div>
   );

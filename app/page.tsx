@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { initParticles, initGlowEffects, initTerminalAnimation } from './backgound';
-import {NToken} from '../config/plublicpara'
+
 
 export default function ADDMSLanding() {
   const router = useRouter();
