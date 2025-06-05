@@ -15,10 +15,11 @@ type FileInfo struct {
 	Type     string    `json:"type"` // "file" or "folder"
 	Size     int64     `json:"size"`
 	Modified time.Time `json:"modified"`
+
 }
 
-func SearchFileInFo(path string, folder string) (interface{}, error) {
-	newPath := fmt.Sprintf("../corefolder/%s/%s", folder, path)
+func SearchFileInFo(path string, folder string ) (interface{}, error) {
+	newPath := fmt.Sprintf("../corefolder/%s%s", folder, path)
 	fmt.Println("Accessing:", newPath)
 
 	info, err := os.Stat(newPath)
@@ -45,7 +46,9 @@ func SearchFileInFo(path string, folder string) (interface{}, error) {
 			if entryInfo.IsDir() {
 				fileType = "folder"
 			}
-
+			
+			
+		
 			results = append(results, FileInfo{
 				Name:     entry.Name(),
 				Path:     filepath.Join(path, entry.Name()),
@@ -57,7 +60,7 @@ func SearchFileInFo(path string, folder string) (interface{}, error) {
 
 		return results, nil
 	}
-
+	
 	// ถ้าเป็นไฟล์ → อ่านเนื้อหา
 	content, err := os.ReadFile(newPath)
 	if err != nil {
@@ -70,6 +73,6 @@ func SearchFileInFo(path string, folder string) (interface{}, error) {
 		"type":     "file",
 		"size":     info.Size(),
 		"modified": info.ModTime(),
-		"content":  string(content), // คืนเนื้อหาไฟล์แบบ string
+		"content":  string(content),
 	}, nil
 }

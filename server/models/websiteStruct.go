@@ -11,6 +11,8 @@ type Website struct {
 	UserID       uint
 	StorageLimit int
 	Status       string
+	ProgrammingLanguage string `json:"programminglanguage"`
+	Framework           string `json:"framework"`
 	User         User `gorm:"foreignKey:UserID"`
 	Domain_id    uint
 	Domain       Domain `gorm:"foreignKey:Domain_id"`

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"server/models"
 
 	"gorm.io/gorm"
@@ -22,9 +23,18 @@ func LoadUserWebsiteByID(id int, db *gorm.DB) ([]models.Website, error) {
 	}
 	return data, nil
 }
+func LoadUserSomeWebsiteByid(id int, db *gorm.DB) (*models.Website, error) {
+	var data *models.Website
+	result := db.Where("id = ",id).First(&data)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return data, nil
+}
 
 func LoadSingleDomain(domain string, db *gorm.DB) (*models.Domain, error) {
 	data := &models.Domain{}
+	fmt.Println(domain)
 	result := db.Where("domain_name = ?", domain).First(data)
 	if result.Error != nil {
 		return nil, result.Error

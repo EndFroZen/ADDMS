@@ -37,7 +37,7 @@ func ConnectDatabase() {
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		gormLogger.Config{
 			SlowThreshold: time.Second,
-			LogLevel:      gormLogger.Info,
+			LogLevel:      gormLogger.Silent,
 			Colorful:      true,
 		},
 	)

@@ -29,6 +29,8 @@ func Showdashboard(c *fiber.Ctx) error {
 			"status":        site.Status,
 			"storage_limit": site.StorageLimit,
 			"created_at":    site.CreatedAt,
+			"programinglangue": site.ProgrammingLanguage,
+			"framwork":site.Framework,
 		})
 	}
 	return c.JSON(fiber.Map{
