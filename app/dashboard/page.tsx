@@ -1,63 +1,123 @@
-'use client';
-import { useState, useEffect } from "react";
+'use client'
+
+import { BASE_URL, NToken } from "@/config/plublicpara";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+interface UserInfo {
+  email: string;
+  folder: string;
+  memory: number;
+  role: string;
+  status: number;
+  username: string;
+}
+interface ApiResponse {
+  status: number;
+  website: Website[];
+}
+
+interface Website {
+  id: number;
+  created_at: string; // ISO date string
+  framwork: string;
+  programinglangue: string;
+  status: string;
+  storage_limit: number;
+  domain: Domain;
+}
+
+interface Domain {
+  ID: number;
+  CreatedAt: string; // ISO date string
+  UpdatedAt: string; // ISO date string
+  DeletedAt: string | null;
+  Domain_name: string;
+  Is_verified: string;  // "false" or "true" as string
+  Ssl_enabled: string;  // "false" or "true" as string
+}
 
 export default function Dashboard() {
+  const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
+  const route = useRouter()
   
-  
-
-  return (
-    <div className="flex h-screen bg-slate-900 text-white">
-      {/* ช่องที่ 1 - SideNav */}
-      <nav className="w-[10%] bg-red-900 p-4">
-        <h2 className="text-lg font-bold mb-4">Menu</h2>
-        {/* ตัวอย่างเมนู */}
-        <ul>
-          <li className="mb-2 cursor-pointer hover:text-yellow-400">Dashboard</li>
-          <li className="mb-2 cursor-pointer hover:text-yellow-400">Settings</li>
-          <li className="mb-2 cursor-pointer hover:text-yellow-400">Profile</li>
-        </ul>
-      </nav>
-
-      {/* ช่องที่ 2 - รายการเว็บไซต์ */}
-      <section className="w-[30%] bg-fuchsia-900 p-4 overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Your Websites</h2>
-        {user && user.website.length > 0 ? (
-          <ul>
-            {user.website.map((site) => (
-              <li
-                key={site.id}
-                onClick={() => setSelectedWebsite(site)}
-                className={`p-3 mb-3 rounded cursor-pointer ${
-                  selectedWebsite?.id === site.id ? "bg-yellow-600" : "bg-fuchsia-700"
-                } hover:bg-yellow-500`}
-              >
-                <div className="font-semibold">{site.domain.Domain_name}</div>
-                <div className="text-sm">Status: {site.status}</div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No websites found.</p>
-        )}
-      </section>
-
-      {/* ช่องที่ 3 - รายละเอียดเว็บไซต์ที่เลือก */}
-      <section className="w-[60%] bg-yellow-500 p-4 overflow-y-auto">
-        {selectedWebsite ? (
-          <>
-            <h2 className="text-2xl font-bold mb-4">{selectedWebsite.domain.Domain_name}</h2>
-            <p><strong>Status:</strong> {selectedWebsite.status}</p>
-            <p><strong>Storage Limit:</strong> {selectedWebsite.storage_limit} MB</p>
-            <p><strong>Framework:</strong> {selectedWebsite.framwork}</p>
-            <p><strong>Programming Language:</strong> {selectedWebsite.programinglangue}</p>
-            <p><strong>Created At:</strong> {new Date(selectedWebsite.created_at).toLocaleString()}</p>
-            <p><strong>SSL Enabled:</strong> {selectedWebsite.domain.Ssl_enabled}</p>
-            <p><strong>Verified:</strong> {selectedWebsite.domain.Is_verified}</p>
-          </>
-        ) : (
-          <p>Please select a website to see details.</p>
-        )}
-      </section>
+  const [user ,setUser] = useState<UserInfo | null>(null)
+  const [allWebsite ,setAllWebsite] = useState<ApiResponse | null>(null)
+  async function loadUser() {
+    try {
+      const res = await fetch(`${BASE_URL}/api/datauser`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${yourToken}`,
+        },
+      })
+      const result = await res.json()
+      if (result["status"] === 200) {
+        setUser(result)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  async function loadAllWebsite() {
+    try {
+      const res = await fetch(`${BASE_URL}/api/allwebsite`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${yourToken}`,
+        },
+      })
+      const result = await res.json()
+      if (result["status"] === 200) {
+        setAllWebsite(result)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  useEffect(() => { 
+    loadUser(),
+    loadAllWebsite()
+   }, [])
+  return(
+    <div className="">
+      {allWebsite ?(
+        allWebsite.website.length === 0 ?(
+          <div className="">no web</div>
+        ):(
+          allWebsite.website.map((site)=>(
+            <div className="hover:bg-yellow-100" onClick={()=>route.push(`/${user?.username}/${site.domain.Domain_name}`)}>{site.domain.Domain_name}</div>
+          ))
+        )
+      ):(
+        <div className=""> LOAD </div>
+      )}
     </div>
-  );
+  )
 }
+// 'use client';
+// import { useState, useEffect } from "react";
+// import Mywebsite from "../components/mywebsite";
+// import Navbar from "../components/navbar";
+// import Overview from "../components/overview";
+// export default function Dashboard() {
+//   const [activePage,setActivePage] = useState("")
+//   console.log(activePage)
+//   return (
+//     <div className="h-screen flex">
+//       <div className="bg-gray-100" style={{ width: '3%' }}>
+//         <Navbar/>
+//       </div>
+//       <div className="bg-gray-200" style={{ width: '20%' }}>
+//         <Mywebsite setActivePage={setActivePage}/>
+//       </div>
+//       <div className="bg-white flex-1 overflow-auto">
+//         <Overview web={activePage}/>
+//       </div>
+//     </div>
+
+
+
+//   )
+// }
