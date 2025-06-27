@@ -59,17 +59,17 @@ export default function Login() {
             <path d="M189.779 118.976H160.086V149.209H189.779V118.976Z" fill="#D9D9D9"/>
           </svg>
         </div>
-        <h1 className="text-center text-2xl font-semibold mb-1">ADDMS</h1>
-        <p className="text-center text-gray-400 text-sm mb-4">Autonomous Deployment & Management System</p>
-        <p className="text-center text-gray text-xl font-semibold mb-8">Log in</p>
+        <h1 className="text-center text-white text-2xl font-semibold mb-1">ADDMS</h1>
+        <p className="text-center text-gray-400 text-sm mb-8">Autonomous Deployment & Management System</p>
+        <p className="text-center text-white text-xl font-semibold mb-8">Log in</p>
 
         <form action="" className="space-y-4">
           <div>
-            <label htmlFor="username" className="text-sm">Username or Email</label>
+            <label htmlFor="username" className="text-white text-sm">Username or Email</label>
             <input type="text" id="userNoun" name="username" required className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
           <div>
-            <label htmlFor="password" className="text-sm">Password</label>
+            <label htmlFor="password" className="text-white text-sm">Password</label>
             <input type="password" id="password" name="password" required className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
           <button type="button" onClick={Nlogin} className="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-md font-medium hover:opacity-90 transition">Login</button>
@@ -81,7 +81,7 @@ export default function Login() {
           <div className="flex-grow h-px bg-gray-600"></div>
         </div>
 
-        <button type="button" onClick={loginWithGithub} className="w-full flex items-center justify-center gap-2 bg-[#334155] hover:bg-[#3b475e] py-2 rounded-md transition duration-200">
+        <button type="button" onClick={loginWithGithub} className="w-full text-white flex items-center justify-center gap-2 bg-[#334155] hover:bg-[#3b475e] py-2 rounded-md transition duration-200">
           <img
             src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
             alt="GitHub"
@@ -91,7 +91,7 @@ export default function Login() {
         </button>
 
         <div className="mt-8 space-y-2">
-          <p className="text-center">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
+          <p className="text-center text-gray-400 text-sm">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
         </div>
 
       </div>

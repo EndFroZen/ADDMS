@@ -61,28 +61,28 @@ export default function Register() {
             <path d="M189.779 118.976H160.086V149.209H189.779V118.976Z" fill="#D9D9D9"/>
           </svg>
         </div>
-        <h1 className="text-center text-2xl font-semibold mb-1">ADDMS</h1>
+        <h1 className="text-center text-white text-2xl font-semibold mb-1">ADDMS</h1>
         <p className="text-center text-gray-400 text-sm mb-4">Autonomous Deployment & Management System</p>
-        <p className="text-center text-gray text-xl font-semibold mb-8">Create your account</p>
+        <p className="text-center text-white text-xl font-semibold mb-8">Create your account</p>
 
         <form action="" className="space-y-4">
           <div>
-            <label htmlFor="username" className="text-sm">Username</label>
+            <label htmlFor="username" className="text-white text-sm">Username</label>
             <input type="text" id="username" name="username" required className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
           <div>
-            <label htmlFor="email" className="text-sm">Email</label>
+            <label htmlFor="email" className="text-white text-sm">Email</label>
             <input type="email" id="email" name="email" required  className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
           <div>
-            <label htmlFor="password" className="text-sm">Password</label>
+            <label htmlFor="password" className="text-white text-sm">Password</label>
             <input type="password" id="password" name="password" required  className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
           <div>
-            <label htmlFor="confirm" className="text-sm">Confirm Password</label>
+            <label htmlFor="confirm" className="text-white text-sm">Confirm Password</label>
             <input type="password" id="confirm" name="confirm" required  className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500"/>
           </div>
-          <button type="button" onClick={NRegister}  className="w-full font-semibold bg-gradient-to-r from-orange-400 to-orange-500 py-2 rounded-md hover:opacity-90 transition duration-200">Create Account</button>
+          <button type="button" onClick={NRegister}  className="w-full bg-gradient-to-r from-orange-400 to-orange-500 py-2 rounded-md hover:opacity-90 transition duration-200">Create Account</button>
         </form>
 
         <div className="flex items-center my-6">
@@ -91,19 +91,19 @@ export default function Register() {
           <div className="flex-grow h-px bg-gray-600"></div>
         </div>
 
-      <button type="button" onClick={registerWithGithub} className="w-full flex items-center justify-center gap-2 bg-[#334155] hover:bg-[#3b475e] py-2 rounded-md transition duration-200">
-        <img
-          src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          alt="GitHub"
-          className="w-5 h-5 rounded-full"
-        />
-        Continue with GitHub
-      </button>
+        <button type="button" onClick={registerWithGithub} className="w-full text-white flex items-center justify-center gap-2 bg-[#334155] hover:bg-[#3b475e] py-2 rounded-md transition duration-200">
+          <img
+            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+            alt="GitHub"
+            className="w-5 h-5 rounded-full"
+          />
+          Continue with GitHub
+        </button>
 
-      <div className="mt-8 space-y-2">
-        <p className="text-center">Already have an account? <a href="../login" className="text-orange-500">Sign in here</a></p>
-        <p className="text-center text-gray-400 text-sm">By creating an account, you agree to our <br /><a href="" className="text-orange-500">Terms of Service</a> and <a href="" className="text-orange-500">Privacy Policy</a></p>
-      </div>
+        <div className="mt-8 space-y-2">
+          <p className="text-center text-gray-400 text-sm">Already have an account? <a href="../login" className="text-orange-500">Sign in here</a></p>
+          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="" className="text-orange-500">Terms of Service</a> and <a href="" className="text-orange-500">Privacy Policy</a></p>
+        </div>
 
       </div>
     </div>
