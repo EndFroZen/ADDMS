@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"os"
 	"server/config"
+	noti "server/log"
 	"server/models"
 	service_create "server/service/createweb"
 
 	"gorm.io/gorm"
 )
+
+var notiFileMakeWebsite string = "service@makeWebsite"
 
 func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	userData := user
@@ -17,66 +20,82 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 		Ssl_enabled: websiteData.Ssl_enabled,
 		Domain_name: websiteData.Domain_name,
 	}
-	
+
 	//1.check domain name already exit
-	if err := checkDomainName(websiteData.Domain_name,config.DB);err!=nil{
+	if err := checkDomainName(websiteData.Domain_name, config.DB); err != nil {
 		return err
 	}
 	//2.create folder
-	if err := createFolder(websiteData,userData);err!=nil{
+	if err := createFolder(websiteData, userData); err != nil {
 		return err
 	}
-	
 
 	//3.select programming langue
-	if (websiteData.ProgrammingLanguage == "htmlstatic"){
-		service_create.HtmlStatic(websiteData,userData)
-	}else if(websiteData.ProgrammingLanguage == "nodejs"){
-
-	}else if(websiteData.ProgrammingLanguage == "go"){
-
-	}else if(websiteData.ProgrammingLanguage == "php"){
-
-	}else{
-		
+	switch websiteData.ProgrammingLanguage {
+	case "htmlstatic":
+		{
+			err := service_create.HtmlStatic(websiteData, userData)
+			if err != nil {
+				deleteIfErr(websiteData, userData)
+				return err
+			}
+		}
+	case "nodejs":
+		{
+			err := service_create.CreateNodeJS(websiteData, userData)
+			if err != nil {
+				deleteIfErr(websiteData, userData)
+				return err
+			}
+		}
+	default:
+		{
+			noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", "can't create server")
+			return fmt.Errorf("can't create server")
+		}
 	}
+
 	//4.save website and domain
-	if err := saveWebDoamin(domainModel,userData,config.DB); err != nil{
+	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB); err != nil {
 		return err
 	}
 	return nil
 }
 
-func saveWebDoamin(domain models.Domain,user *models.User,db *gorm.DB)error{
+func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB) error {
 	//1.save domain name
 
 	result := db.Create(&domain)
-	if result.Error != nil{
+	if result.Error != nil {
+		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.58", "can't create recod")
 		return result.Error
 	}
 	//2.save website
-	dataDoamin,err := LoadSingleDomain(domain.Domain_name,db)
+	dataDoamin, err := LoadSingleDomain(domain.Domain_name, db)
 	if err != nil {
-		return fmt.Errorf("not have dataDoamin")
+		return err
 	}
 	dbSaveWebsite := models.Website{
-		UserID: user.ID,
-		StorageLimit: 5,
-		Status: "offline",
-		Domain_id: dataDoamin.ID,
-		
+		UserID:              user.ID,
+		StorageLimit:        5,
+		Status:              "offline",
+		Domain_id:           dataDoamin.ID,
+		ProgrammingLanguage: website.ProgrammingLanguage,
+		Framework:           website.Framework,
 	}
 	result = db.Create(&dbSaveWebsite)
-	if result.Error != nil{
+	if result.Error != nil {
+		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.76", "can't create recod")
 		return result.Error
 	}
 	return nil
 }
-func createFolder(websiteData *models.SaveStruct ,userData *models.User)error{
-	pathFolder := fmt.Sprintf("../corefolder/%s/%s",userData.Folder,websiteData.Domain_name)
-	err := os.MkdirAll(pathFolder,0755)
+func createFolder(websiteData *models.SaveStruct, userData *models.User) error {
+	pathFolder := fmt.Sprintf("../corefolder/%s/%s", userData.Folder, websiteData.Domain_name)
+	err := os.MkdirAll(pathFolder, 0755)
 	fmt.Println(pathFolder)
-	if err != nil{
+	if err != nil {
+		noti.LogNotic(2, notiFileMakeWebsite, "createFolder.58", "can't create recod")
 		return err
 	}
 	return nil
@@ -85,11 +104,11 @@ func checkDomainName(name string, db *gorm.DB) error {
 	var domain models.Domain
 	result := db.Where("domain_name = ?", name).First(&domain)
 	if result.Error == nil {
-		
+
 		return fmt.Errorf("domain name '%s' already exists", name)
 	}
 	if result.Error != gorm.ErrRecordNotFound {
-		
+
 		return result.Error
 	}
 	// ไม่พบ domain → ผ่าน
@@ -99,6 +118,7 @@ func deleteIfErr(websiteData *models.SaveStruct, userData *models.User) {
 	pathFolder := fmt.Sprintf("../corefolder/%s/%s", userData.Folder, websiteData.Domain_name)
 	err := os.RemoveAll(pathFolder)
 	if err != nil {
-		fmt.Printf("Failed to delete folder: %v\n", err)
+		noti.LogNotic(1, notiFileMakeWebsite, "deleteIfErr.111", "can't delete file")
 	}
+	noti.LogNotic(3, notiFileMakeWebsite, "deleteIfErr.111", "Delete file sucsefull")
 }

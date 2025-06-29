@@ -9,4 +9,5 @@ func SetupRoutes(app *fiber.App) {
 
 	methotPost(api)
 	methotGet(api)
+	methotDelete(api)
 }

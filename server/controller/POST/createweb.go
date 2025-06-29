@@ -19,6 +19,7 @@ func CreateNewWebsite(c *fiber.Ctx) error {
 	}
 	
 	if err := service.MakeWebsite(&jsonReqStuct, &dataUser); err != nil {
+		
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "Create website false"))
 	}
 

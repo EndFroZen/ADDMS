@@ -19,7 +19,7 @@ type FileInfo struct {
 }
 
 func SearchFileInFo(path string, folder string ) (interface{}, error) {
-	newPath := fmt.Sprintf("../corefolder/%s%s", folder, path)
+	newPath := fmt.Sprintf("../corefolder/%s/%s", folder, path)
 	fmt.Println("Accessing:", newPath)
 
 	info, err := os.Stat(newPath)
