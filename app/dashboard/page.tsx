@@ -17,27 +17,31 @@ export default function Dashboard() {
     });
 
     const result = await res.json();
-    setUser(result);
+
+    // กำหนด default website เป็น array เปล่า เพื่อป้องกัน null error
+    setUser({
+      ...result,
+      website: result.website || [],
+    });
   }
 
-  async function deleteWebsite(id: number) {
+  async function deleteWebsite(website: string) {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
-    const res = await fetch(`${BASE_URL}/api/website/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/delete/website/`, {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${yourToken}`,
       },
+      body: JSON.stringify({ website }),
     });
 
-    if (res.ok) {
-      setUser((prev: any) => ({
-        ...prev,
-        website: prev.website.filter((site: any) => site.id !== id),
-      }));
-    } else {
-      alert("Failed to delete website.");
-    }
+    const result = await res.json();
+    console.log(result);
+
+    // รีโหลดข้อมูลหลังลบ
+    load();
   }
 
   useEffect(() => {
@@ -56,43 +60,48 @@ export default function Dashboard() {
 
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-3">Your Websites</h2>
-        <div className="space-y-4">
-          {user.website.map((site: any) => (
-            <div
-              key={site.id}
-              className="bg-[#1e293b] rounded-lg p-4 shadow-md border border-gray-700"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold text-orange-400">
-                  {site.domain.Domain_name}
-                </span>
-                <span
-                  className={`text-sm px-2 py-0.5 rounded ${
-                    site.status === "offline"
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-green-500/20 text-green-400"
-                  }`}
-                >
-                  {site.status}
-                </span>
-              </div>
 
-              <div className="text-sm text-gray-400 space-y-1 mb-3">
-                <p>Created: {new Date(site.created_at).toLocaleString()}</p>
-                <p>SSL Enabled: {site.domain.Ssl_enabled}</p>
-                <p>Verified: {site.domain.Is_verified}</p>
-                <p>Storage Limit: {site.storage_limit} MB</p>
-              </div>
-
-              <button
-                onClick={() => deleteWebsite(site.id)}
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm rounded transition"
+        {!user.website || user.website.length === 0 ? (
+          <div className="text-gray-400">You don't have any websites yet.</div>
+        ) : (
+          <div className="space-y-4">
+            {user.website.map((site: any) => (
+              <div
+                key={site.id}
+                className="bg-[#1e293b] rounded-lg p-4 shadow-md border border-gray-700"
               >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-orange-400">
+                    {site.domain.Domain_name}
+                  </span>
+                  <span
+                    className={`text-sm px-2 py-0.5 rounded ${
+                      site.status === "offline"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-green-500/20 text-green-400"
+                    }`}
+                  >
+                    {site.status}
+                  </span>
+                </div>
+
+                <div className="text-sm text-gray-400 space-y-1 mb-3">
+                  <p>Created: {new Date(site.created_at).toLocaleString()}</p>
+                  <p>SSL Enabled: {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
+                  <p>Verified: {site.domain.Is_verified ? "Yes" : "No"}</p>
+                  <p>Storage Limit: {site.storage_limit} MB</p>
+                </div>
+
+                <button
+                  onClick={() => deleteWebsite(site.domain.Domain_name)}
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm rounded transition"
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <a
