@@ -1,6 +1,7 @@
 "use client";
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
+import Link from 'next/link';
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -17,8 +18,6 @@ export default function Dashboard() {
     });
 
     const result = await res.json();
-
-    // กำหนด default website เป็น array เปล่า เพื่อป้องกัน null error
     setUser({
       ...result,
       website: result.website || [],
@@ -28,7 +27,7 @@ export default function Dashboard() {
   async function deleteWebsite(website: string) {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
-    const res = await fetch(`${BASE_URL}/api/delete/website/`, {
+    await fetch(`${BASE_URL}/api/delete/website/`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -37,10 +36,6 @@ export default function Dashboard() {
       body: JSON.stringify({ website }),
     });
 
-    const result = await res.json();
-    console.log(result);
-
-    // รีโหลดข้อมูลหลังลบ
     load();
   }
 
@@ -50,66 +45,140 @@ export default function Dashboard() {
 
   if (!user) return <p className="text-white p-4">Loading...</p>;
 
+  const activeWebsites = user.website.length;
+  const runningServers = user.website.filter((site: any) => site.status === "online").length;
+
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white p-8">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {user.name}</h1>
-      <p className="text-gray-400 mb-1">Email: {user.email}</p>
-      <p className="text-gray-400 mb-6">
-        Storage used: {user.storage.toFixed(2)} MB
-      </p>
+    <div className="min-h-screen bg-[#0f172a] text-white p-6 sm:p-10">
+      <h1 className="text-3xl font-bold mb-2 text-orange-400">Welcome : {user.name}</h1>
+      <p className="text-gray-400 mb-6">Email : {user.email}</p>
 
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-3">Your Websites</h2>
+      <div className="mb-10">
+        <h2 className="text-xl font-semibold mb-4">System Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        {!user.website || user.website.length === 0 ? (
-          <div className="text-gray-400">You don't have any websites yet.</div>
-        ) : (
-          <div className="space-y-4">
-            {user.website.map((site: any) => (
-              <div
-                key={site.id}
-                className="bg-[#1e293b] rounded-lg p-4 shadow-md border border-gray-700"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-orange-400">
-                    {site.domain.Domain_name}
-                  </span>
-                  <span
-                    className={`text-sm px-2 py-0.5 rounded ${
-                      site.status === "offline"
-                        ? "bg-red-500/20 text-red-400"
-                        : "bg-green-500/20 text-green-400"
-                    }`}
-                  >
-                    {site.status}
-                  </span>
-                </div>
-
-                <div className="text-sm text-gray-400 space-y-1 mb-3">
-                  <p>Created: {new Date(site.created_at).toLocaleString()}</p>
-                  <p>SSL Enabled: {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
-                  <p>Verified: {site.domain.Is_verified ? "Yes" : "No"}</p>
-                  <p>Storage Limit: {site.storage_limit} MB</p>
-                </div>
-
-                <button
-                  onClick={() => deleteWebsite(site.domain.Domain_name)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm rounded transition"
-                >
-                  Delete
-                </button>
+          <div className="bg-[#1e293b] rounded-xl p-6 shadow-md border border-gray-700">
+            <h3 className="text-lg font-medium text-orange-400 mb-4">Website Overview</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Active Websites</p>
+                <p className="text-2xl font-bold text-orange-400">{activeWebsites}</p>
               </div>
-            ))}
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Running Servers</p>
+                <p className="text-2xl font-bold text-green-400">{runningServers}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Storage Used</p>
+                <p className="text-2xl font-bold text-blue-400">{user.storage.toFixed(2)} MB</p>
+              </div>
+            </div>
           </div>
-        )}
+
+          <div className="bg-[#1e293b] rounded-xl p-6 shadow-md border border-gray-700">
+            <h3 className="text-lg font-medium text-orange-400 mb-4">Resource Usage</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-gray-400">CPU Usage</p>
+                <p className="text-2xl font-bold text-green-400">30%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Memory Usage</p>
+                <p className="text-2xl font-bold text-blue-400">1.8 GB</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-400">Disk Usage</p>
+                <p className="text-2xl font-bold text-purple-400">12 GB</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <a
-        href="../create"
-        className="inline-block bg-gradient-to-r from-orange-400 to-orange-500 px-4 py-2 rounded-md text-white font-medium hover:opacity-90 transition"
-      >
-        + New Deploy
-      </a>
+
+      {/* Websites + System Alerts */}
+      <div className="mb-12">
+        <h2 className="text-xl font-semibold mb-4">Your Websites & System Alerts</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          {/* กล่องแสดงเว็บไซต์ */}
+          <div className="md:col-span-2 bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-orange-400">Your Websites</h3>
+              <Link
+                href="../create"
+                className="bg-gradient-to-r from-orange-400 to-orange-500 hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg shadow transition text-sm"
+              >
+                + New Deploy
+              </Link>
+            </div>
+
+            {activeWebsites === 0 ? (
+              <div className="text-gray-400">You don't have any websites yet.</div>
+            ) : (
+              <div className="space-y-4">
+                {user.website.map((site: any) => (
+                  <div
+                    key={site.id}
+                    className="bg-[#0f172a] rounded-lg p-5 border border-gray-600 hover:border-orange-400 transition"
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                      <Link
+                        href={`../websites/${user.name}/${site.domain.Domain_name}`}
+                        className="font-semibold text-orange-400 hover:underline text-lg"
+                      >
+                        {site.domain.Domain_name}
+                      </Link>
+                      <span
+                        className={`text-xs px-3 py-1 mt-2 sm:mt-0 rounded-full ${site.status === 'offline'
+                          ? 'bg-red-500/20 text-red-400'
+                          : 'bg-green-500/20 text-green-400'
+                          }`}
+                      >
+                        {site.status}
+                      </span>
+                    </div>
+
+                    <div className="text-sm text-gray-400 space-y-1 mb-4">
+                      <p>Created: {new Date(site.created_at).toLocaleString()}</p>
+                      <p>SSL Enabled: {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
+                      <p>Verified: {site.domain.Is_verified ? "Yes" : "No"}</p>
+                      <p>Storage Limit: {site.storage_limit} MB</p>
+                    </div>
+
+                    <button
+                      onClick={() => deleteWebsite(site.domain.Domain_name)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-sm transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* กล่องแจ้งเตือนระบบ */}
+          <div className="bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow">
+            <h3 className="text-lg font-medium text-orange-400 mb-4">System Alerts</h3>
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li className="bg-[#0f172a] p-3 rounded-md border-l-4 border-yellow-400">
+                ⚠️ Backup for <strong>project-x</strong> failed yesterday.
+              </li>
+              <li className="bg-[#0f172a] p-3 rounded-md border-l-4 border-red-400">
+                🚫 Website <strong>example.com</strong> is offline.
+              </li>
+              <li className="bg-[#0f172a] p-3 rounded-md border-l-4 border-green-400">
+                ✅ Deployment <strong>portfolio</strong> succeeded!
+              </li>
+              <li className="bg-[#0f172a] p-3 rounded-md border-l-4 border-blue-400">
+                ℹ️ Update available for <strong>server-core</strong>.
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
