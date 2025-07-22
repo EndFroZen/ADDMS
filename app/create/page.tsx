@@ -15,7 +15,7 @@ export default function Create() {
     }
 
     const frameworkOptions: { [key: string]: string[] } = {
-        nodejs: ['Express', 'Fastify', 'NestJS', 'Koa'],
+        nodejs: ['Express', 'Fastify', 'NextJS', 'Koa'],
         go: ['Gin', 'Fiber', 'Echo', 'Chi'],
         php: ['Laravel', 'Symfony', 'CodeIgniter', 'Slim'],
     };
@@ -68,6 +68,21 @@ export default function Create() {
             : "bg-[#0f172a] border-[#334155] text-white hover:border-orange-500"
         }`;
 
+    const [domain, setDomain] = useState("");
+    const [error, setError] = useState("");
+
+    const validateDomain = (value: string) => {
+        const regex = /^[a-zA-Z0-9-]+$/; // ไม่อนุญาตให้มีจุด, เว้นวรรค หรืออักขระพิเศษอื่น
+        if (!value) {
+            setError("Domain is required.");
+        } else if (!regex.test(value)) {
+            setError("Only letters, numbers, and hyphens (-) are allowed.");
+        } else {
+            setError("");
+        }
+        setDomain(value);
+    };
+
     useEffect(() => {
         reFramework;
     }, []);
@@ -82,9 +97,12 @@ export default function Create() {
                     <input
                         type="text"
                         name="Domain"
-                        placeholder="domain.addms.click"
-                        className="w-full px-4 py-3 mb-4 rounded-lg border border-gray-700 bg-[#0f172a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter domain name (no dot or special chars)"
+                        value={domain}
+                        onChange={(e) => validateDomain(e.target.value)}
+                        className={`w-full px-4 py-3 mb-2 rounded-lg border ${error ? "border-red-500" : "border-gray-700"} bg-[#0f172a] text-white placeholder-gray-400 focus:outline-none focus:ring-2 ${error ? "focus:ring-red-500" : "focus:ring-orange-500"}`}
                     />
+                    {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
 
                     <select
                         name="ProgramLangue"
@@ -234,11 +252,23 @@ export default function Create() {
             {/* Deploy Button */}
             <div className="max-w-7xl mx-auto mt-6">
                 <button
-                    onClick={deploy}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition duration-200 text-lg"
-                >
-                    🚀 Deploy
-                </button>
+    onClick={() => {
+        if (error || !domain) {
+            alert("Please fix domain input before deploying.");
+            return;
+        }
+        deploy();
+    }}
+    disabled={!!error || !domain}
+    className={`w-full font-semibold py-3 px-6 rounded-xl transition duration-200 text-lg ${
+        !!error || !domain
+            ? "bg-gray-600 cursor-not-allowed"
+            : "bg-orange-500 hover:bg-orange-600 text-white"
+    }`}
+>
+    🚀 Deploy
+</button>
+
             </div>
         </div>
     );

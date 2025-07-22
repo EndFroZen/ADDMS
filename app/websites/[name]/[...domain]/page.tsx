@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -19,6 +20,8 @@ export default function UserWeb({
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [isEditable, setIsEditable] = useState(false);
+    const router = useRouter()
 
     const fileExtensionsToEdit = [".js", ".ts", ".html", ".css", ".json"];
     const isEditableFile = fileExtensionsToEdit.some((ext) =>
@@ -43,9 +46,14 @@ export default function UserWeb({
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                if (!res.ok) throw new Error("Failed to fetch");
+                if (!res.ok) {
+                    router.push("/dashboard");
+                    throw new Error("Failed to fetch");
+                }
+
                 const result = await res.json();
                 setData(result);
+                console.log(result)
                 setContent(result?.data?.content || "");
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -70,14 +78,28 @@ export default function UserWeb({
                 body: JSON.stringify({ content }),
             });
             if (!res.ok) throw new Error("Failed to save");
-            alert("File saved successfully!");
+
+            // ✅ แก้ไขตรงนี้: เก็บข้อมูลไว้ใน state ไม่ต้องโหลดใหม่
+            setData((prev: any) => ({
+                ...prev,
+                data: {
+                    ...prev.data,
+                    content: content,
+                    modified: new Date().toISOString(),
+                    size: new Blob([content]).size,
+                },
+            }));
+
+            alert("✅ File saved successfully!");
+            setIsEditable(false);
         } catch (err) {
             console.error("Save error:", err);
-            alert("Error saving file.");
+            alert("❌ Error saving file.");
         } finally {
             setSaving(false);
         }
     };
+
 
     return (
         <div className="min-h-screen bg-[#0f172a] text-white p-8">
@@ -96,25 +118,45 @@ export default function UserWeb({
                             {new Date(data?.data?.modified).toLocaleString()}
                         </div>
 
+                        {/* ปุ่มเปิด/ปิดแก้ไข */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setIsEditable(!isEditable)}
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition ${isEditable
+                                    ? "bg-green-600 hover:bg-green-700"
+                                    : "bg-blue-600 hover:bg-blue-700"
+                                    }`}
+                            >
+                                {isEditable ? "✅ Done" : "🔧 Edit"}
+                            </button>
+                        </div>
+
                         <div className="h-[500px] border rounded-md overflow-hidden">
                             <MonacoEditor
                                 height="100%"
                                 defaultLanguage="javascript"
                                 value={content}
                                 theme="vs-dark"
-                                onChange={(val) => setContent(val || "")}
+                                onChange={(val) => isEditable && setContent(val || "")}
+                                options={{
+                                    readOnly: !isEditable, // ห้ามแก้ไขถ้า isEditable = false
+                                }}
                             />
                         </div>
 
-                        <button
-                            onClick={handleSave}
-                            disabled={saving}
-                            className="bg-green-600 px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 transition"
-                        >
-                            {saving ? "Saving..." : "💾 Save Changes"}
-                        </button>
+                        {/* ปุ่ม Save จะขึ้นเฉพาะตอนแก้ไข */}
+                        {isEditable && (
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="bg-green-600 px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 transition"
+                            >
+                                {saving ? "Saving..." : "💾 Save Changes"}
+                            </button>
+                        )}
                     </div>
                 ) : data?.data?.length > 0 ? (
+                    // ... (โค้ดแสดงรายการโฟลเดอร์/ไฟล์เดิม)
                     <ul className="divide-y divide-gray-700 border border-gray-700 rounded-lg overflow-hidden">
                         {[...data.data]
                             .sort((a, b) => {

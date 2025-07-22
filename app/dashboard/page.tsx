@@ -2,6 +2,7 @@
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
 import Link from 'next/link';
+import { Globe, Server, Code2 } from "lucide-react";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -18,6 +19,7 @@ export default function Dashboard() {
     });
 
     const result = await res.json();
+    console.log(result)
     setUser({
       ...result,
       website: result.website || [],
@@ -103,8 +105,9 @@ export default function Dashboard() {
 
           {/* กล่องแสดงเว็บไซต์ */}
           <div className="md:col-span-2 bg-[#1e293b] p-6 rounded-xl border border-gray-700 shadow">
+            {/* Header */}
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-orange-400">Your Websites</h3>
+              <h3 className="text-lg font-semibold text-orange-400">Your Websites</h3>
               <Link
                 href="../create"
                 className="bg-gradient-to-r from-orange-400 to-orange-500 hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg shadow transition text-sm"
@@ -113,6 +116,7 @@ export default function Dashboard() {
               </Link>
             </div>
 
+            {/* Website List */}
             {activeWebsites === 0 ? (
               <div className="text-gray-400">You don't have any websites yet.</div>
             ) : (
@@ -120,38 +124,58 @@ export default function Dashboard() {
                 {user.website.map((site: any) => (
                   <div
                     key={site.id}
-                    className="bg-[#0f172a] rounded-lg p-5 border border-gray-600 hover:border-orange-400 transition"
+                    className="bg-[#0f172a] rounded-xl p-5 border border-gray-600 hover:border-orange-400 transition shadow-sm"
                   >
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                    {/* Title + Status */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                       <Link
                         href={`../websites/${user.name}/${site.domain.Domain_name}`}
-                        className="font-semibold text-orange-400 hover:underline text-lg"
+                        className="text-orange-400 text-lg font-semibold hover:underline flex items-center gap-2"
                       >
-                        {site.domain.Domain_name}
+                        <Globe size={18} /> {site.domain.Domain_name}
                       </Link>
                       <span
-                        className={`text-xs px-3 py-1 mt-2 sm:mt-0 rounded-full ${site.status === 'offline'
-                          ? 'bg-red-500/20 text-red-400'
-                          : 'bg-green-500/20 text-green-400'
+                        className={`text-xs px-3 py-1 rounded-full font-medium ${site.status === "offline"
+                            ? "bg-red-500/20 text-red-400"
+                            : "bg-green-500/20 text-green-400"
                           }`}
                       >
                         {site.status}
                       </span>
                     </div>
 
-                    <div className="text-sm text-gray-400 space-y-1 mb-4">
-                      <p>Created: {new Date(site.created_at).toLocaleString()}</p>
-                      <p>SSL Enabled: {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
-                      <p>Verified: {site.domain.Is_verified ? "Yes" : "No"}</p>
-                      <p>Storage Limit: {site.storage_limit} MB</p>
+                    <div className="flex justify-between">
+                      {/* Metadata */}
+                      <div className="grid text-sm text-gray-400 gap-3 mb-4">
+                        <p><strong>Created:</strong> {new Date(site.created_at).toLocaleString()}</p>
+                        <p><strong>SSL Enabled:</strong> {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
+                        <p><strong>Verified:</strong> {site.domain.Is_verified ? "Yes" : "No"}</p>
+                        <p><strong>Storage Limit:</strong> {site.storage_limit} MB</p>
+                      </div>
+
+                      {/* Tech Info */}
+                      <div className="grid gap-4 text-sm text-gray-300 mb-4">
+                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
+                          <Server size={14} /> Port : {site.port}
+                        </span>
+                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
+                          <Code2 size={14} /> Framework : {site.framwork}
+                        </span>
+                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
+                          <Code2 size={14} /> Language : {site.programinglangue}
+                        </span>
+                      </div>
                     </div>
 
-                    <button
-                      onClick={() => deleteWebsite(site.domain.Domain_name)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-sm transition"
-                    >
-                      Delete
-                    </button>
+                    {/* Delete Button */}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => deleteWebsite(site.domain.Domain_name)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded text-sm font-medium transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
