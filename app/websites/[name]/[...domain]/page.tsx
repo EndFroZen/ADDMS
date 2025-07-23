@@ -23,7 +23,31 @@ export default function UserWeb({
     const [isEditable, setIsEditable] = useState(false);
     const router = useRouter()
 
-    const fileExtensionsToEdit = [".js", ".ts", ".html", ".css", ".json"];
+    const fileExtensionsToEdit = [
+        // Web Technologies
+        ".js", ".jsx", ".ts", ".tsx", ".html", ".htm", ".css", ".scss", ".less", ".json", ".jsonc",
+        ".yml", ".yaml", ".xml", ".svg", ".vue", ".svelte", ".astro", ".liquid",
+
+        // Programming Languages
+        ".py", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".go", ".php", ".rb", ".swift", ".rs",
+        ".dart", ".kt", ".kts", ".sh", ".ps1", ".sql", ".r", ".jl", ".erl", ".pl", ".f", ".for",
+        ".cob", ".asm", ".pas", ".lisp", ".clj", ".ex", ".hrl", ".fs", ".fsi", ".fsscript", ".d",
+        ".groovy", ".hs", ".lhs", ".m", ".nim", ".rkt", ".scala", ".tcl", ".vb",
+
+        // Markup & Documentation
+        ".md", ".markdown", ".txt", ".rtf", ".csv", ".tsv", ".log", ".wiki", ".rst", ".adoc", ".nfo",
+
+        // Configuration & Build Files
+        ".env", ".gitignore", ".gitattributes", ".editorconfig", ".npmrc", ".yarnrc", ".bowerrc",
+        ".dockerfile", ".make", ".mk", ".pom", ".gradle", ".props", ".targets", ".sln", ".csproj",
+        ".vite", ".webpack", ".babelrc", ".eslintrc", ".prettierrc", ".browserslistrc",
+
+        // LaTeX
+        ".tex", ".sty", ".cls", ".bib",
+
+        // Other Common Files
+        ".lock", ".example", ".test", ".spec", ".map", ".cert", ".pem", ".key", ".crt"
+    ];
     const isEditableFile = fileExtensionsToEdit.some((ext) =>
         fullPath.endsWith(ext)
     );
