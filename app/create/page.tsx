@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { BASE_URL, NToken } from '@/config/plublicpara';
 import { ShieldCheck, Settings } from 'lucide-react';
+import Loading from '../components/loading';
 
 export default function Create() {
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const [lang, setLang] = useState('nodejs');
     const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
@@ -20,12 +22,25 @@ export default function Create() {
         php: ['Laravel', 'Symfony', 'CodeIgniter', 'Slim'],
     };
 
+    async function reloadNginx() {
+        const res = await fetch(`${BASE_URL}/api/reloadnginx`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${yourToken}`,
+            },
+        });
+        if(!res.ok){
+            alert("Deploy failed: ");
+        }
+    }
     async function deploy() {
         const Domain = (document.getElementsByName("Domain")[0] as HTMLInputElement).value;
         const ProgramLangue = (document.getElementsByName("ProgramLangue")[0] as HTMLSelectElement).value;
         const Framework = (document.getElementsByName("Framework")[0] as HTMLSelectElement).value;
 
         try {
+            setLoading(true); // เริ่ม loading
             const res = await fetch(`${BASE_URL}/api/create`, {
                 method: 'POST',
                 headers: {
@@ -40,18 +55,21 @@ export default function Create() {
                     ssl_enabled: "false"
                 })
             });
-
+            
             const result = await res.json();
             console.log(result);
 
             if (res.ok) {
+                reloadNginx()
                 router.push("/dashboard");
             } else {
-                alert("Deploy failed: " + result.message || "Unknown error");
+                alert("Deploy failed: " + (result.message || "Unknown error"));
             }
         } catch (error) {
             console.error("Error during deploy:", error);
             alert("An error occurred while deploying.");
+        } finally {
+            setLoading(false); // จบ loading
         }
     }
 
@@ -71,17 +89,19 @@ export default function Create() {
     const [domain, setDomain] = useState("");
     const [error, setError] = useState("");
 
-    const validateDomain = (value: string) => {
-        const regex = /^[a-zA-Z0-9-]+$/; // ไม่อนุญาตให้มีจุด, เว้นวรรค หรืออักขระพิเศษอื่น
-        if (!value) {
-            setError("Domain is required.");
-        } else if (!regex.test(value)) {
-            setError("Only letters, numbers, and hyphens (-) are allowed.");
-        } else {
-            setError("");
-        }
-        setDomain(value);
-    };
+   const validateDomain = (value: string) => {
+    // อนุญาตตัวอักษร, ตัวเลข, ขีดกลาง (-) และ จุด (.)
+    const regex = /^[a-zA-Z0-9.-]+$/;
+    if (!value) {
+        setError("Domain is required.");
+    } else if (!regex.test(value)) {
+        setError("Only letters, numbers, hyphens (-), and dots (.) are allowed.");
+    } else {
+        setError("");
+    }
+    setDomain(value);
+};
+
 
     useEffect(() => {
         reFramework;
@@ -250,26 +270,29 @@ export default function Create() {
             </div>
 
             {/* Deploy Button */}
-            <div className="max-w-7xl mx-auto mt-6">
+            <div className="max-w-7xl mx-auto mt-6 relative">
                 <button
-    onClick={() => {
-        if (error || !domain) {
-            alert("Please fix domain input before deploying.");
-            return;
-        }
-        deploy();
-    }}
-    disabled={!!error || !domain}
-    className={`w-full font-semibold py-3 px-6 rounded-xl transition duration-200 text-lg ${
-        !!error || !domain
-            ? "bg-gray-600 cursor-not-allowed"
-            : "bg-orange-500 hover:bg-orange-600 text-white"
-    }`}
->
-    🚀 Deploy
-</button>
+                    onClick={() => {
+                        if (error || !domain) {
+                            alert("Please fix domain input before deploying.");
+                            return;
+                        }
+                        deploy();
+                    }}
+                    disabled={!!error || !domain || loading}
+                    className={`w-full font-semibold py-3 px-6 rounded-xl transition duration-200 text-lg ${!!error || !domain || loading
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "bg-orange-500 hover:bg-orange-600 text-white"
+                        }`}
+                >
+                    {loading ? "Deploying..." : "🚀 Deploy"}
+                </button>
+
 
             </div>
+            {loading && (
+                <Loading text="Deploying your application..." />
+            )}
         </div>
     );
 }

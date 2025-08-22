@@ -3,10 +3,30 @@ import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { Globe, Server, Code2 } from "lucide-react";
+import { s } from "framer-motion/client";
+import Loading from "../components/loading";
+
+interface command {
+  
+}
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
-
+  const [loading, setLoading] = useState(false);
+  const [commnadSave ,setCommandSave] = useState<string>("");
+  const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+  async function reloadNginx() {
+        const res = await fetch(`${BASE_URL}/api/reloadnginx`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${yourToken}`,
+            },
+        });
+        if(!res.ok){
+            alert("Deploy failed: ");
+        }
+    }
   async function load() {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
@@ -25,10 +45,24 @@ export default function Dashboard() {
       website: result.website || [],
     });
   }
-
-  async function deleteWebsite(website: string) {
+  async function runWebsite(path: string, command: string) {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
+    await fetch(`${BASE_URL}/api/run/website/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${yourToken}`,
+      },
+      body: JSON.stringify({ path, command }),
+    });
+
+    load();
+  }
+  
+  async function deleteWebsite(website: string) {
+    const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+    setLoading(true);
     await fetch(`${BASE_URL}/api/delete/website/`, {
       method: "DELETE",
       headers: {
@@ -37,15 +71,16 @@ export default function Dashboard() {
       },
       body: JSON.stringify({ website }),
     });
-
+    reloadNginx()
     load();
+    setLoading(false);
   }
 
   useEffect(() => {
     load();
   }, []);
 
-  if (!user) return <p className="text-white p-4">Loading...</p>;
+  if (!user) return <Loading />;
 
   const activeWebsites = user.website.length;
   const runningServers = user.website.filter((site: any) => site.status === "online").length;
@@ -118,60 +153,76 @@ export default function Dashboard() {
 
             {/* Website List */}
             {activeWebsites === 0 ? (
-              <div className="text-gray-400">You don't have any websites yet.</div>
+              <div className="text-gray-400 text-center py-20 text-lg">
+                You don't have any websites yet.
+              </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {user.website.map((site: any) => (
                   <div
                     key={site.id}
-                    className="bg-[#0f172a] rounded-xl p-5 border border-gray-600 hover:border-orange-400 transition shadow-sm"
+                    className="
+  bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 
+  p-6 rounded-xl shadow-lg 
+  transition-transform transform 
+  hover:-translate-y-1 hover:shadow-2xl 
+  border-2 border-transparent hover:border-amber-500
+"
+
                   >
-                    {/* Title + Status */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-4">
                       <Link
                         href={`../websites/${user.name}/${site.domain.Domain_name}`}
-                        className="text-orange-400 text-lg font-semibold hover:underline flex items-center gap-2"
+                        className="text-orange-400 text-lg font-bold hover:underline flex items-center gap-2"
                       >
                         <Globe size={18} /> {site.domain.Domain_name}
                       </Link>
                       <span
-                        className={`text-xs px-3 py-1 rounded-full font-medium ${site.status === "offline"
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-green-500/20 text-green-400"
+                        className={`text-xs px-3 py-1 rounded-full font-semibold ${site.status === "offline"
+                          ? "bg-red-500/30 text-red-400"
+                          : "bg-green-500/30 text-green-400"
                           }`}
                       >
-                        {site.status}
+                        {site.status.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="flex justify-between">
+                    {/* Info Sections */}
+                    <div className="space-y-3">
                       {/* Metadata */}
-                      <div className="grid text-sm text-gray-400 gap-3 mb-4">
-                        <p><strong>Created:</strong> {new Date(site.created_at).toLocaleString()}</p>
-                        <p><strong>SSL Enabled:</strong> {site.domain.Ssl_enabled ? "Yes" : "No"}</p>
-                        <p><strong>Verified:</strong> {site.domain.Is_verified ? "Yes" : "No"}</p>
-                        <p><strong>Storage Limit:</strong> {site.storage_limit} MB</p>
+                      <div className="flex flex-col gap-2 text-gray-300 text-sm">
+                        <div><strong>Created:</strong> {new Date(site.created_at).toLocaleString()}</div>
+                        <div><strong>SSL Enabled:</strong> {site.domain.Ssl_enabled ? "Yes" : "No"}</div>
+                        <div><strong>Verified:</strong> {site.domain.Is_verified ? "Yes" : "No"}</div>
+                        <div><strong>Storage Limit:</strong> {site.storage_limit} MB</div>
                       </div>
 
                       {/* Tech Info */}
-                      <div className="grid gap-4 text-sm text-gray-300 mb-4">
-                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
-                          <Server size={14} /> Port : {site.port}
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="flex items-center gap-1 bg-gray-700/50 px-3 py-1 rounded-full text-gray-200 text-sm">
+                          <Server size={14} /> Port: {site.port}
                         </span>
-                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
-                          <Code2 size={14} /> Framework : {site.framwork}
+                        <span className="flex items-center gap-1 bg-gray-700/50 px-3 py-1 rounded-full text-gray-200 text-sm">
+                          <Code2 size={14} /> Framework: {site.framwork}
                         </span>
-                        <span className="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full">
-                          <Code2 size={14} /> Language : {site.programinglangue}
+                        <span className="flex items-center gap-1 bg-gray-700/50 px-3 py-1 rounded-full text-gray-200 text-sm">
+                          <Code2 size={14} /> Language: {site.programinglangue}
                         </span>
                       </div>
                     </div>
 
                     {/* Delete Button */}
-                    <div className="flex justify-end">
+                    <div className="flex justify-between mt-4">
+                      <button
+                        onClick={() => runWebsite()}
+                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-medium transition"
+                      >
+                        Run Website
+                      </button>
                       <button
                         onClick={() => deleteWebsite(site.domain.Domain_name)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded text-sm font-medium transition"
+                        className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm font-medium transition"
                       >
                         Delete
                       </button>
@@ -180,6 +231,7 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
+
           </div>
 
           {/* กล่องแจ้งเตือนระบบ */}
@@ -203,6 +255,7 @@ export default function Dashboard() {
 
         </div>
       </div>
+      {loading && <Loading text="Loading..." />}
     </div>
   );
 }

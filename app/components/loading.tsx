@@ -1,21 +1,17 @@
-'use client';
-import { LayoutDashboard, Settings, } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { NToken } from "@/config/plublicpara";
+interface LoadingProps {
+    text?: string;
+}
 
-export default function Sidebar() {
-    
-    const page = "setting"
-    const route = useRouter()
-    async function logout() {
-        localStorage.removeItem(NToken)
-        route.push('/')
-    }
-
+export default function Loading({ text }: LoadingProps) {
     return (
-        <div className="h-screen w-60 bg-[#0f172a] text-white flex flex-col px-4 py-6">
-            <div className="flex justify-center mb-3">
+        <div className="fixed inset-0 bg-gray-900/90 flex flex-col items-center justify-center z-50">
+            {/* โลโก้หมุน */}
+            <svg
+                className="w-24 h-24 animate-spin-slow"
+                viewBox="0 0 543 527"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
                 <svg className="w-12 h-12" viewBox="0 0 543 527" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M229.239 6.18066C230.965 5.23071 233.081 5.27371 234.776 6.31836L417.794 119.152L418.056 119.325C419.339 120.221 420.185 121.625 420.37 123.189L450.063 374.772C450.306 376.83 449.372 378.85 447.647 379.997L236.554 520.365C234.729 521.579 232.358 521.592 230.518 520.4L8.08838 376.254C6.5239 375.24 5.57959 373.502 5.57959 371.638V154.067C5.57963 152.203 6.52465 150.466 8.08936 149.452L228.899 6.38379L229.239 6.18066Z" fill="#F7931E" stroke="white" strokeWidth="11" strokeLinejoin="round" />
                     <path d="M414.908 123.834L231.89 11L233.509 515.785L444.601 375.417L414.908 123.834Z" fill="#FF6B35" />
@@ -29,26 +25,12 @@ export default function Sidebar() {
                     <path d="M146.589 143.81H116.896V174.043H146.589V143.81Z" fill="#D9D9D9" />
                     <path d="M189.779 118.976H160.086V149.209H189.779V118.976Z" fill="#D9D9D9" />
                 </svg>
-            </div>
+            </svg>
 
-            <nav className="flex flex-col space-y-2">
-                <Link href="../dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#1e293b] transition">
-                    <LayoutDashboard className="w-5 h-5" />
-                    <span>Dashboard</span>
-                </Link>
-
-                <Link href="../setting" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#1e293b] transition">
-                    <Settings className="w-5 h-5" />
-                    <span>Settings</span>
-                </Link>
-
-                <button
-                    onClick={logout}
-                    className="mt-auto flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200"
-                >
-                    <span className="font-medium">Logout</span>
-                </button>
-            </nav>
+            {/* ข้อความ Loading */}
+            <p className="mt-4 text-white text-xl font-medium animate-pulse">
+                {text || "Loading..."}
+            </p>
         </div>
     );
 }

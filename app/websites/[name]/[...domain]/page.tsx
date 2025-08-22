@@ -5,6 +5,9 @@ import { BASE_URL, NToken } from "@/config/plublicpara";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
+import Loading from "@/app/components/loading";
+import NewFileCompo from "@/app/components/์newfile";
+import DeleteFileAndFolder from "@/app/components/deletefile";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -15,48 +18,35 @@ export default function UserWeb({
 }) {
     const { name, domain } = params;
     const fullPath = domain.join("/");
-
     const [data, setData] = useState<any>(null);
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
-    const router = useRouter()
+    const router = useRouter();
+    const [showNewFile, setShowNewFile] = useState(false);
+    const [showDeleteFile, setShowDeleteFile] = useState(false);
 
     const fileExtensionsToEdit = [
-        // Web Technologies
         ".js", ".jsx", ".ts", ".tsx", ".html", ".htm", ".css", ".scss", ".less", ".json", ".jsonc",
         ".yml", ".yaml", ".xml", ".svg", ".vue", ".svelte", ".astro", ".liquid",
-
-        // Programming Languages
         ".py", ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".go", ".php", ".rb", ".swift", ".rs",
         ".dart", ".kt", ".kts", ".sh", ".ps1", ".sql", ".r", ".jl", ".erl", ".pl", ".f", ".for",
         ".cob", ".asm", ".pas", ".lisp", ".clj", ".ex", ".hrl", ".fs", ".fsi", ".fsscript", ".d",
         ".groovy", ".hs", ".lhs", ".m", ".nim", ".rkt", ".scala", ".tcl", ".vb",
-
-        // Markup & Documentation
         ".md", ".markdown", ".txt", ".rtf", ".csv", ".tsv", ".log", ".wiki", ".rst", ".adoc", ".nfo",
-
-        // Configuration & Build Files
         ".env", ".gitignore", ".gitattributes", ".editorconfig", ".npmrc", ".yarnrc", ".bowerrc",
         ".dockerfile", ".make", ".mk", ".pom", ".gradle", ".props", ".targets", ".sln", ".csproj",
         ".vite", ".webpack", ".babelrc", ".eslintrc", ".prettierrc", ".browserslistrc",
-
-        // LaTeX
         ".tex", ".sty", ".cls", ".bib",
-
-        // Other Common Files
         ".lock", ".example", ".test", ".spec", ".map", ".cert", ".pem", ".key", ".crt"
     ];
-    const isEditableFile = fileExtensionsToEdit.some((ext) =>
-        fullPath.endsWith(ext)
-    );
 
+    const isEditableFile = fileExtensionsToEdit.some((ext) => fullPath.toLowerCase().endsWith(ext));
+    const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
     useEffect(() => {
         const fetchData = async () => {
-            const token =
-                typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
-
+            const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
             if (!token) {
                 console.warn("No token found");
                 setLoading(false);
@@ -77,7 +67,6 @@ export default function UserWeb({
 
                 const result = await res.json();
                 setData(result);
-                console.log(result)
                 setContent(result?.data?.content || "");
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -87,7 +76,7 @@ export default function UserWeb({
         };
 
         fetchData();
-    }, [fullPath]);
+    }, [fullPath, router]);
 
     const handleSave = async () => {
         setSaving(true);
@@ -103,7 +92,6 @@ export default function UserWeb({
             });
             if (!res.ok) throw new Error("Failed to save");
 
-            // ✅ แก้ไขตรงนี้: เก็บข้อมูลไว้ใน state ไม่ต้องโหลดใหม่
             setData((prev: any) => ({
                 ...prev,
                 data: {
@@ -124,152 +112,372 @@ export default function UserWeb({
         }
     };
 
+    const getLanguageFromExtension = () => {
+        const ext = fullPath.slice(fullPath.lastIndexOf(".") + 1).toLowerCase();
+        const languageMap: { [key: string]: string } = {
+            js: "javascript",
+            jsx: "javascript",
+            ts: "typescript",
+            tsx: "typescript",
+            html: "html",
+            htm: "html",
+            css: "css",
+            scss: "scss",
+            less: "less",
+            json: "json",
+            jsonc: "json",
+            yml: "yaml",
+            yaml: "yaml",
+            xml: "xml",
+            svg: "xml",
+            vue: "vue",
+            svelte: "svelte",
+            astro: "astro",
+            liquid: "liquid",
+            py: "python",
+            java: "java",
+            c: "c",
+            cpp: "cpp",
+            h: "cpp",
+            hpp: "cpp",
+            cs: "csharp",
+            go: "go",
+            php: "php",
+            rb: "ruby",
+            swift: "swift",
+            rs: "rust",
+            dart: "dart",
+            kt: "kotlin",
+            kts: "kotlin",
+            sh: "shell",
+            ps1: "powershell",
+            sql: "sql",
+            r: "r",
+            jl: "julia",
+            erl: "erlang",
+            pl: "perl",
+            f: "fortran",
+            for: "fortran",
+            cob: "cobol",
+            asm: "assembly",
+            pas: "pascal",
+            lisp: "lisp",
+            clj: "clojure",
+            ex: "elixir",
+            hrl: "erlang",
+            fs: "fsharp",
+            fsi: "fsharp",
+            fsscript: "fsharp",
+            d: "d",
+            groovy: "groovy",
+            hs: "haskell",
+            lhs: "haskell",
+            m: "matlab",
+            nim: "nim",
+            rkt: "racket",
+            scala: "scala",
+            tcl: "tcl",
+            vb: "vb",
+            md: "markdown",
+            markdown: "markdown",
+            txt: "plaintext",
+            rtf: "plaintext",
+            csv: "csv",
+            tsv: "tsv",
+            log: "log",
+            wiki: "plaintext",
+            rst: "restructuredtext",
+            adoc: "asciidoc",
+            nfo: "plaintext",
+            env: "plaintext",
+            gitignore: "gitignore",
+            gitattributes: "plaintext",
+            editorconfig: "ini",
+            npmrc: "ini",
+            yarnrc: "yaml",
+            bowerrc: "json",
+            dockerfile: "dockerfile",
+            make: "makefile",
+            mk: "makefile",
+            pom: "xml",
+            gradle: "groovy",
+            props: "properties",
+            targets: "xml",
+            sln: "solution",
+            csproj: "xml",
+            vite: "javascript",
+            webpack: "javascript",
+            babelrc: "json",
+            eslintrc: "json",
+            prettierrc: "json",
+            browserslistrc: "plaintext",
+            tex: "latex",
+            sty: "latex",
+            cls: "latex",
+            bib: "bibtex",
+            lock: "yaml",
+            example: "plaintext",
+            test: "plaintext",
+            spec: "plaintext",
+            map: "json",
+            cert: "plaintext",
+            pem: "plaintext",
+            key: "plaintext",
+            crt: "plaintext",
+        };
+        return languageMap[ext] || "plaintext";
+    };
+
+    const renderBreadcrumbs = () => {
+        const pathParts = [name, ...domain];
+        return (
+            <nav className="flex items-center text-sm text-gray-400 mb-4">
+                {pathParts.map((part, idx) => {
+                    const href = `/websites/${name}/${pathParts.slice(1, idx + 1).join("/")}`;
+                    return (
+                        <span key={idx} className="flex items-center">
+                            {idx > 0 && <span className="mx-2">/</span>}
+                            {idx === pathParts.length - 1 ? (
+                                <span className="text-gray-200">{part}</span>
+                            ) : (
+                                <Link href={href} className="text-orange-400 hover:underline">
+                                    {part}
+                                </Link>
+                            )}
+                        </span>
+                    );
+                })}
+            </nav>
+        );
+    };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white p-8">
-            <div className="mx-auto bg-[#1e293b] rounded-2xl shadow-md p-6">
-                <h1 className="text-2xl font-bold mb-4 text-orange-400 break-all">
-                    {isEditableFile ? "Editing:" : "Files in:"} {fullPath}
-                </h1>
-                <p className="text-sm text-gray-400 mb-6">Owner : {name}</p>
+        <div className="min-h-screen bg-[#0f172a] text-white font-sans">
+            <div className="max-w-[1280px] mx-auto py-4 px-6">
+                {/* GitHub-like header */}
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        {renderBreadcrumbs()}
+                        <h1 className="text-xl font-semibold text-orange-400">
+                            {isEditableFile ? fullPath.split("/").pop() : fullPath}
+                        </h1>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Link
+                            href="/dashboard"
+                            className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                        >
+                            Back to Dashboard
+                        </Link>
+                    </div>
+                </div>
 
                 {loading ? (
-                    <p className="text-gray-400">Loading data...</p>
+                    <Loading text="Loading file..." />
                 ) : isEditableFile ? (
-                    <div className="space-y-4">
-                        <div className="text-gray-400 text-sm">
-                            Size: {(data?.data?.size / 1024).toFixed(1)} KB | Modified:{" "}
-                            {new Date(data?.data?.modified).toLocaleString()}
+                    <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
+                        {/* File action toolbar */}
+                        <div className="flex items-center justify-between p-3 border-b border-gray-700">
+                            <div className="flex items-center space-x-2 text-sm">
+                                <span className="text-gray-400">
+                                    Size: {(data?.data?.size / 1024).toFixed(1)} KB
+                                </span>
+                                <span className="text-gray-500">•</span>
+                                <span className="text-gray-400">
+                                    Modified: {new Date(data?.data?.modified).toLocaleString()}
+                                </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                {isEditable ? (
+                                    <>
+                                        <button
+                                            onClick={handleSave}
+                                            disabled={saving}
+                                            className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition"
+                                        >
+                                            {saving ? "Saving..." : "Save changes"}
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditable(false)}
+                                            className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={() => setIsEditable(true)}
+                                        className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                                    >
+                                        Edit file
+                                    </button>
+                                )}
+                            </div>
                         </div>
-
-                        {/* ปุ่มเปิด/ปิดแก้ไข */}
-                        <div className="flex justify-end">
-                            <button
-                                onClick={() => setIsEditable(!isEditable)}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition ${isEditable
-                                    ? "bg-green-600 hover:bg-green-700"
-                                    : "bg-blue-600 hover:bg-blue-700"
-                                    }`}
-                            >
-                                {isEditable ? "✅ Done" : "🔧 Edit"}
-                            </button>
-                        </div>
-
-                        <div className="h-[500px] border rounded-md overflow-hidden">
+                        {/* Monaco Editor */}
+                        <div className="h-[600px]">
                             <MonacoEditor
                                 height="100%"
-                                defaultLanguage="javascript"
+                                language={getLanguageFromExtension()}
                                 value={content}
                                 theme="vs-dark"
                                 onChange={(val) => isEditable && setContent(val || "")}
                                 options={{
-                                    readOnly: !isEditable, // ห้ามแก้ไขถ้า isEditable = false
+                                    readOnly: !isEditable,
+                                    minimap: { enabled: true },
+                                    fontSize: 14,
+                                    lineNumbers: "on",
+                                    scrollBeyondLastLine: false,
+                                    automaticLayout: true,
                                 }}
                             />
                         </div>
-
-                        {/* ปุ่ม Save จะขึ้นเฉพาะตอนแก้ไข */}
-                        {isEditable && (
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="bg-green-600 px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 transition"
-                            >
-                                {saving ? "Saving..." : "💾 Save Changes"}
-                            </button>
-                        )}
                     </div>
-                ) : data?.data?.length > 0 ? (
-                    // ... (โค้ดแสดงรายการโฟลเดอร์/ไฟล์เดิม)
-                    <ul className="divide-y divide-gray-700 border border-gray-700 rounded-lg overflow-hidden">
-                        {[...data.data]
-                            .sort((a, b) => {
-                                if (a.type === "folder" && b.type !== "folder") return -1;
-                                if (a.type !== "folder" && b.type === "folder") return 1;
-                                return a.name.localeCompare(b.name);
-                            })
-                            .map((item: any, idx: number) => {
-                                const newPath = [...domain, item.name].join("/");
-                                return (
-                                    <Link
-                                        key={idx}
-                                        href={`/websites/${name}/${newPath}`}
-                                        className="block px-4 py-3 hover:bg-[#2c3a50] transition"
+                ) : (
+                    <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
+                        {/* File list header */}
+                        <div className="flex items-center justify-between p-3 border-b border-gray-700">
+                            <div className="text-sm font-medium text-gray-200">Files</div>
+                            <div className="flex items-center space-x-2">
+                                <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition" onClick={() => setShowNewFile(true)}>
+                                    New file
+                                </button>
+                                {showNewFile && (
+                                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                        <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                            {/* Header */}
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h2 className="text-lg font-semibold">Create New</h2>
+                                                <button
+                                                    className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                                    onClick={() => setShowNewFile(false)}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <NewFileCompo Path={fullPath} NameUser={name} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+
+                                <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition">
+                                    Upload files
+                                </button>
+                                <button onClick={() => setShowDeleteFile(true)} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition flex items-center space-x-1">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-4 h-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
                                     >
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-5 h-5 text-gray-400">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M9 3a1 1 0 0 0-1 1v1H4v2h1v12a2 2 0 0 0 2 2h10a2 
+        2 0 0 0 2-2V7h1V5h-4V4a1 1 0 0 
+        0-1-1H9zm2 5h2v9h-2V8zm-4 0h2v9H7V8zm8 
+        0h2v9h-2V8z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                    <span>Delete</span>
+                                    
+                                </button>
+                                {showDeleteFile && (
+                                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                        <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                            {/* Header */}
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h2 className="text-lg font-semibold">Create New</h2>
+                                                <button
+                                                    className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                                    onClick={() => setShowDeleteFile(false)}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <DeleteFileAndFolder Path={fullPath} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
+                        {/* File list */}
+                        {data?.data?.length > 0 ? (
+                            <div className="divide-y divide-gray-700">
+                                {[...data.data]
+                                    .sort((a, b) => {
+                                        if (a.type === "folder" && b.type !== "folder") return -1;
+                                        if (a.type !== "folder" && b.type === "folder") return 1;
+                                        return a.name.localeCompare(b.name);
+                                    })
+                                    .map((item: any, idx: number) => {
+                                        const newPath = [...domain, item.name].join("/");
+                                        return (
+                                            <Link
+                                                key={idx}
+                                                href={`/websites/${name}/${newPath}`}
+                                                className="flex items-center justify-between p-3 hover:bg-[#2c3a50] transition"
+                                            >
+                                                <div className="flex items-center space-x-3">
                                                     {item.type === "folder" ? (
                                                         <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="w-5 h-5 text-orange-400"
                                                             fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            strokeWidth={1.5}
                                                             stroke="currentColor"
-                                                            className="w-5 h-5"
+                                                            viewBox="0 0 24 24"
                                                         >
                                                             <path
                                                                 strokeLinecap="round"
                                                                 strokeLinejoin="round"
+                                                                strokeWidth="1.5"
                                                                 d="M2.25 12.75V6.75A2.25 2.25 0 014.5 4.5h3.757a2.25 2.25 0 011.59.659l1.157 1.157a2.25 2.25 0 001.59.659H19.5a2.25 2.25 0 012.25 2.25v1.5"
                                                             />
                                                             <path
                                                                 strokeLinecap="round"
                                                                 strokeLinejoin="round"
+                                                                strokeWidth="1.5"
                                                                 d="M2.25 12.75V18a2.25 2.25 0 002.25 2.25h15a2.25 2.25 0 002.25-2.25v-5.25"
                                                             />
                                                         </svg>
                                                     ) : (
                                                         <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="w-5 h-5 text-gray-400"
                                                             fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            strokeWidth={1.5}
                                                             stroke="currentColor"
-                                                            className="w-5 h-5"
+                                                            viewBox="0 0 24 24"
                                                         >
                                                             <path
                                                                 strokeLinecap="round"
                                                                 strokeLinejoin="round"
+                                                                strokeWidth="1.5"
                                                                 d="M17.25 6.75V17.25C17.25 18.4926 16.2426 19.5 15 19.5H6.75C5.50736 19.5 4.5 18.4926 4.5 17.25V6.75C4.5 5.50736 5.50736 4.5 6.75 4.5H15C16.2426 4.5 17.25 5.50736 17.25 6.75Z"
                                                             />
                                                         </svg>
                                                     )}
+                                                    <span className="text-sm text-gray-200">{item.name}</span>
                                                 </div>
-                                                <span className="text-sm text-gray-200">{item.name}</span>
-                                            </div>
-                                            <div className="text-xs text-gray-500 text-right">
-                                                <div>{(item.size / 1024).toFixed(1)} KB</div>
-                                                <div>{new Date(item.modified).toLocaleString()}</div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                    </ul>
-                ) : (
-                    <p className="text-gray-400">No files or folders found.</p>
+                                                <div className="flex flex-row gap-3">
+                                                    <div className="text-xs text-gray-500 text-right">
+                                                        <div>{(item.size / 1024).toFixed(1)} KB</div>
+                                                        <div>{new Date(item.modified).toLocaleString()}</div>
+                                                    </div>
+                                                </div>
+                                            </Link>
+
+                                        );
+                                    })}
+                            </div>
+                        ) : (
+                            <div className="p-3 text-gray-400">No files or folders found.</div>
+                        )}
+                    </div>
                 )}
-
-                <div className="mt-6 flex justify-between">
-                    <Link
-                        href={
-                            domain.length > 1
-                                ? `/websites/${name}/${domain.slice(0, -1).join("/")}`
-                                : "../../../dashboard"
-                        }
-                        className="bg-gradient-to-r from-orange-400 to-orange-500 px-4 py-2 rounded-md text-white font-medium hover:opacity-90 transition"
-                    >
-                        ← Go Back
-                    </Link>
-
-                    <Link
-                        href="../../../dashboard"
-                        className="bg-gradient-to-r from-orange-400 to-orange-500 px-4 py-2 rounded-md text-white font-medium hover:opacity-90 transition"
-                    >
-                        ← Back to Dashboard
-                    </Link>
-                </div>
             </div>
         </div>
     );
