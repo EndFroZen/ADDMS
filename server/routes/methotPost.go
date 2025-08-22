@@ -11,4 +11,8 @@ func methotPost(routes fiber.Router) {
 	routes.Post("/register", controllerPost.Register)
 	routes.Post("/login", controllerPost.Login)
 	routes.Post("/create",middleware.JWTProtected(),controllerPost.CreateNewWebsite) //deploy new website
+	routes.Post("/edit/singlefile",middleware.JWTProtected(),controllerPost.EditFile)
+	routes.Post("/delete/singlefile",middleware.JWTProtected(),controllerPost.DeleteSingleFile)
+	routes.Post("/add/singlefile",middleware.JWTProtected(),controllerPost.Addsinglefile)
+	routes.Post("/startserver",middleware.JWTProtected(),controllerPost.StartServer)
 }

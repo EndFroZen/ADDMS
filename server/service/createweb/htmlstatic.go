@@ -9,8 +9,7 @@ import (
 const nofiFile string = "service/create@htmlstatic"
 
 func HtmlStatic(website *models.SaveStruct, user *models.User) error {
-	// สมมติว่า URL git repository ของ static site ที่จะ clone
-	// คุณต้องเปลี่ยนลิงก์นี้เป็น repo จริงของคุณ
+	
 	gitRepoURL := "https://github.com/EndFroZen/addms_resource_html"
 
 	err := Gitclone(gitRepoURL,website,user)

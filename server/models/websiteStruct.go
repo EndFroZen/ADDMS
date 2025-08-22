@@ -8,14 +8,17 @@ import (
 
 type Website struct {
 	gorm.Model
-	UserID       uint
-	StorageLimit int
-	Status       string
+	UserID              uint
+	StorageLimit        int
+	Status              string
 	ProgrammingLanguage string `json:"programminglanguage"`
 	Framework           string `json:"framework"`
-	User         User `gorm:"foreignKey:UserID"`
-	Domain_id    uint
-	Domain       Domain `gorm:"foreignKey:Domain_id"`
+	User                User   `gorm:"foreignKey:UserID"`
+	Domain_id           uint
+	Domain              Domain `gorm:"foreignKey:Domain_id"`
+	Port                int    `gorm:"uniqueIndex"`
+	// StartServerID      uint
+	// StartServer         StartServer `gorm:"foreignKey:StartServerID"`
 }
 
 type ModelWeb struct {
@@ -76,5 +79,4 @@ type Notifications struct {
 	Massage string
 	Type    string
 	Is_read bool
-	
 }

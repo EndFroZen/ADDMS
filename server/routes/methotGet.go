@@ -15,4 +15,6 @@ func methotGet(routes fiber.Router) {
 	routes.Get("/showapipath",showapiapath.ShowApiPath)
 	routes.Get("/showapipathjson",showapiapath.ShowApiPathJson)
 	routes.Get("/datauser",middleware.JWTProtected(),controllerGet.DataUserByJWT)
+	routes.Get("/allWebCommand",middleware.JWTProtected(),controllerGet.AllWebCommand)
+	routes.Get("/reloadnginx",middleware.JWTProtected(),controllerGet.ReloadNginx)
 } 

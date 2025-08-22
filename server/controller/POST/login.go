@@ -28,6 +28,8 @@ func Login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(service.Statustoken(404, "Not found user!", "nul"))
 	}
+
+	
 	return c.Status(fiber.StatusOK).JSON(service.Statustoken(200, "Login successful", token))
 
 }

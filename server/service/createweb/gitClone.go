@@ -13,7 +13,7 @@ func Gitclone(link string, website *models.SaveStruct, user *models.User) error 
 	targetPath := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, website.Domain_name)
 
 	// สั่ง git clone แบบ depth 1 ให้ดึงล่าสุดอย่างเดียว
-	cmd := exec.Command("git", "clone", "--depth", "1", link, targetPath)
+	cmd := exec.Command("git", "clone", link, targetPath)
 
 	// รันคำสั่งและจับผลลัพธ์
 	output, err := cmd.CombinedOutput()

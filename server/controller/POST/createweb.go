@@ -1,6 +1,7 @@
 package controllerPost
 
 import (
+	"fmt"
 	"server/config"
 	"server/models"
 	"server/service"
@@ -20,7 +21,7 @@ func CreateNewWebsite(c *fiber.Ctx) error {
 	
 	if err := service.MakeWebsite(&jsonReqStuct, &dataUser); err != nil {
 		
-		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "Create website false"))
+		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, fmt.Sprintf("Create website false %s",err)))
 	}
 
 	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, "Create website seccessful"))

@@ -2,11 +2,13 @@ package service
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"server/config"
 	noti "server/log"
 	"server/models"
 	service_create "server/service/createweb"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +16,11 @@ import (
 var notiFileMakeWebsite string = "service@makeWebsite"
 
 func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
+
+	if websiteData.Domain_name == "" {
+		return fmt.Errorf("domain name has requite!!")
+
+	}
 	userData := user
 	domainModel := models.Domain{
 		Is_verified: websiteData.Is_verified,
@@ -29,7 +36,10 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	if err := createFolder(websiteData, userData); err != nil {
 		return err
 	}
-
+	port, err := GenerateUniquePort(config.DB)
+	if err != nil {
+		return err
+	}
 	//3.select programming langue
 	switch websiteData.ProgrammingLanguage {
 	case "htmlstatic":
@@ -37,13 +47,15 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 			err := service_create.HtmlStatic(websiteData, userData)
 			if err != nil {
 				deleteIfErr(websiteData, userData)
+				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
 				return err
 			}
 		}
 	case "nodejs":
 		{
-			err := service_create.CreateNodeJS(websiteData, userData)
+			err := service_create.CreateNodeJS(websiteData, userData, port)
 			if err != nil {
+				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
 				deleteIfErr(websiteData, userData)
 				return err
 			}
@@ -54,15 +66,42 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 			return fmt.Errorf("can't create server")
 		}
 	}
+	//4. genport
 
-	//4.save website and domain
-	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB); err != nil {
+	//5.save website and domain
+	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB, port); err != nil {
 		return err
 	}
 	return nil
 }
+func GenerateUniquePort(db *gorm.DB) (int, error) {
 
-func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB) error {
+	const (
+		minPort = 10000
+		maxPort = 50000
+	)
+	rand.Seed(time.Now().UnixNano())
+	maxAttempts := 100
+
+	for i := 0; i < maxAttempts; i++ {
+		port := rand.Intn(maxPort-minPort+1) + minPort
+
+		var count int64
+		err := db.Model(&models.Website{}).Where("port = ?", port).Count(&count).Error
+		if err != nil {
+			noti.LogNotic(1, notiFileMakeWebsite, "GenerateUniquePort", fmt.Sprintf("%v", err))
+			return 0, err
+		}
+
+		if count == 0 {
+			return port, nil
+		}
+	}
+
+	return 0, fmt.Errorf("sum port  %d ", maxAttempts)
+}
+
+func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB, port int) error {
 	//1.save domain name
 
 	result := db.Create(&domain)
@@ -82,6 +121,7 @@ func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *model
 		Domain_id:           dataDoamin.ID,
 		ProgrammingLanguage: website.ProgrammingLanguage,
 		Framework:           website.Framework,
+		Port:                port,
 	}
 	result = db.Create(&dbSaveWebsite)
 	if result.Error != nil {

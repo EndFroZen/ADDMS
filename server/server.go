@@ -19,6 +19,13 @@ func main() {
 	}))
 	config.ConnectDatabase()
 	service.AutoCreateFolderWeb(config.DB)
+	// serverNginx, err := service.LoadUserServers(config.DB)
+	// if err != nil {
+	// 	panic("Failed to load server configurations: " + err.Error())
+	// }
+	// if err := service.CreateNginxConfigs(serverNginx); err != nil {
+	// 	panic("Failed to create Nginx configurations: " + err.Error())
+	// }
 	routes.SetupRoutes(app)
 	app.Listen("127.0.0.1:5661")
 }

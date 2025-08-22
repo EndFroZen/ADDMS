@@ -1,6 +1,7 @@
 package controllerGet
 
 import (
+	"fmt"
 	"server/config"
 	"server/service"
 
@@ -14,6 +15,7 @@ func Showdashboard(c *fiber.Ctx) error {
 	dataUser := service.LoadUserDataByID(newUserID, config.DB)
 	dataWebsite, err := service.LoadUserWebsiteByID(newUserID, config.DB)
 	if err != nil {
+		fmt.Println(err)
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, "load data website err"))
 	}
 	//check storage folder
@@ -24,13 +26,14 @@ func Showdashboard(c *fiber.Ctx) error {
 	var websites []fiber.Map
 	for _, site := range dataWebsite {
 		websites = append(websites, fiber.Map{
-			"id":            site.ID,
-			"domain":        site.Domain,
-			"status":        site.Status,
-			"storage_limit": site.StorageLimit,
-			"created_at":    site.CreatedAt,
+			"id":               site.ID,
+			"domain":           site.Domain,
+			"status":           site.Status,
+			"storage_limit":    site.StorageLimit,
+			"created_at":       site.CreatedAt,
 			"programinglangue": site.ProgrammingLanguage,
-			"framwork":site.Framework,
+			"framwork":         site.Framework,
+			"port":             site.Port,
 		})
 	}
 	return c.JSON(fiber.Map{
