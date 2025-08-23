@@ -14,7 +14,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="h-screen w-60 bg-[#0f172a] text-white flex flex-col px-4 py-6">
+        <div className="h-screen w-60 bg-white text-gray-900 flex flex-col px-4 py-6">
             <div className="flex justify-center mb-3">
                 <svg className="w-12 h-12" viewBox="0 0 543 527" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M229.239 6.18066C230.965 5.23071 233.081 5.27371 234.776 6.31836L417.794 119.152L418.056 119.325C419.339 120.221 420.185 121.625 420.37 123.189L450.063 374.772C450.306 376.83 449.372 378.85 447.647 379.997L236.554 520.365C234.729 521.579 232.358 521.592 230.518 520.4L8.08838 376.254C6.5239 375.24 5.57959 373.502 5.57959 371.638V154.067C5.57963 152.203 6.52465 150.466 8.08936 149.452L228.899 6.38379L229.239 6.18066Z" fill="#F7931E" stroke="white" strokeWidth="11" strokeLinejoin="round" />
@@ -32,12 +32,12 @@ export default function Sidebar() {
             </div>
 
             <nav className="flex flex-col space-y-2">
-                <Link href="../dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#1e293b] transition">
+                <Link href="../dashboard" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition">
                     <LayoutDashboard className="w-5 h-5" />
                     <span>Dashboard</span>
                 </Link>
 
-                <Link href="../setting" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#1e293b] transition">
+                <Link href="../setting" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition">
                     <Settings className="w-5 h-5" />
                     <span>Settings</span>
                 </Link>

@@ -69,6 +69,7 @@ export default function UserWeb({
 
                 const result = await res.json();
                 setData(result);
+                console.log(result)
                 setContent(result?.data?.content || "");
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -248,7 +249,7 @@ export default function UserWeb({
                         <span key={idx} className="flex items-center">
                             {idx > 0 && <span className="mx-2">/</span>}
                             {idx === pathParts.length - 1 ? (
-                                <span className="text-gray-200">{part}</span>
+                                <span className="text-black">{part}</span>
                             ) : (
                                 <Link href={href} className="text-orange-400 hover:underline">
                                     {part}
@@ -264,8 +265,8 @@ export default function UserWeb({
     return (
         <>
 
-            <div className="min-h-screen bg-[#0f172a] text-white font-sans">
-                <div className="max-w-[100%] mx-auto py-3 px-3">
+            <div className="min-h-screen bg-gray-50 text-black font-sans">
+                <div className="max-w-[100%] mx-auto py-12 px-12">
                     {/* GitHub-like header */}
                     <div className="flex items-center justify-between mb-4">
                         <div>
@@ -277,7 +278,7 @@ export default function UserWeb({
                         <div className="flex items-center space-x-2">
                             <Link
                                 href="/dashboard"
-                                className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                                className="px-3 py-1.5 text-sm bg-gray-100 text-black rounded-md hover:bg-[#3b4a66] transition"
                             >
                                 Back to Dashboard
                             </Link>
@@ -287,7 +288,7 @@ export default function UserWeb({
                     {loading ? (
                         <Loading text="Loading file..." />
                     ) : isEditableFile ? (
-                        <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
+                        <div className="bg-white border border-gray-200 border border-gray-700 rounded-lg shadow-md">
                             {/* File action toolbar */}
                             <div className="flex items-center justify-between p-3 border-b border-gray-700">
                                 <div className="flex items-center space-x-2 text-sm">
@@ -313,7 +314,7 @@ export default function UserWeb({
                                             </button>
                                             <button
                                                 onClick={() => setIsEditable(false)}
-                                                className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                                                className="px-3 py-1.5 text-sm bg-gray-100 text-black rounded-md hover:bg-[#3b4a66] transition"
                                             >
                                                 Cancel
                                             </button>
@@ -347,7 +348,7 @@ export default function UserWeb({
                                             </button>
                                             {showDeleteFile && (
                                                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                                    <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                    <div className="bg-[#0f172a] text-black p-6 rounded-lg shadow-lg  max-w-full relative">
                                                         {/* Header */}
                                                         <div className="flex items-center justify-between mb-4">
                                                             <h2 className="text-lg font-semibold">Create New</h2>
@@ -376,7 +377,7 @@ export default function UserWeb({
                                     height="100%"
                                     language={getLanguageFromExtension()}
                                     value={content}
-                                    theme="vs-dark"
+                                    theme="vs-light"
                                     onChange={(val) => isEditable && setContent(val || "")}
                                     options={{
                                         readOnly: !isEditable,
@@ -390,20 +391,20 @@ export default function UserWeb({
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-row">
-                            <CommandSetting />
-                            <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md min-w-[80%]">
+                        <div className="flex flex-row justify-center">
+                            
+                            <div className="bg-white border border-gray-200 border border-gray-700 rounded-lg shadow-md min-w-[100%]">
                                 {/* File list header */}
                                 
                                 <div className="flex items-center justify-between p-3 border-b border-gray-700">
-                                    <div className="text-sm font-medium text-gray-200">Files</div>
+                                    <div className="text-sm font-medium text-black">Files</div>
                                     <div className="flex items-center space-x-2">
-                                        <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition" onClick={() => setShowNewFile(true)}>
+                                        <button className="px-3 py-1.5 text-sm bg-gray-100 text-black rounded-md hover:bg-[#3b4a66] transition" onClick={() => setShowNewFile(true)}>
                                             New file
                                         </button>
                                         {showNewFile && (
                                             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                                <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                <div className="bg-[#0f172a] text-black p-6 rounded-lg shadow-lg  max-w-full relative">
                                                     {/* Header */}
                                                     <div className="flex items-center justify-between mb-4">
                                                         <h2 className="text-lg font-semibold">Create New</h2>
@@ -422,7 +423,7 @@ export default function UserWeb({
                                         )}
 
 
-                                        <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition">
+                                        <button className="px-3 py-1.5 text-sm bg-gray-100 text-black rounded-md hover:bg-[#3b4a66] transition">
                                             Upload files
                                         </button>
 
@@ -449,7 +450,7 @@ export default function UserWeb({
                                         )}
                                         {showDeleteFile && (
                                             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                                <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                <div className="bg-[#0f172a] text-black p-6 rounded-lg shadow-lg  max-w-full relative">
                                                     {/* Header */}
                                                     <div className="flex items-center justify-between mb-4">
                                                         <h2 className="text-lg font-semibold">Create New</h2>
@@ -523,7 +524,7 @@ export default function UserWeb({
                                                                         />
                                                                     </svg>
                                                                 )}
-                                                                <span className="text-sm text-gray-200">{item.name}</span>
+                                                                <span className="text-sm text-black">{item.name}</span>
                                                             </div>
                                                             <div className="flex flex-row gap-3">
                                                                 <div className="text-xs text-gray-500 text-right">

@@ -2,9 +2,9 @@ import Sidebar from "../components/sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex min-h-screen bg-[#0f172a] text-white">
+        <div className="flex min-h-screen bg-white text-black">
             <Sidebar />
-            <main className="flex-1 p-6">{children}</main>
+            <main className="flex-1 p-6 border-l">{children}</main>
         </div>
     );
 }

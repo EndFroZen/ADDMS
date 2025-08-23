@@ -23,14 +23,14 @@ export default function ADDMSLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-100 overflow-x-hidden">
       <Head>
         <title>ADDMS</title>
         <meta name="description" content="Deploy. Control. Automate. Manage servers, domains, and team deployments effortlessly from a single sci-fi dashboard." />
       </Head>
 
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-blue-900/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white backdrop-blur-md border-b border-blue-900/50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -39,13 +39,6 @@ export default function ADDMSLanding() {
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-orange-400">
               ADDMS
             </span>
-          </div>
-
-          <div className="hidden md:flex space-x-8">
-            <a href="#" className="hover:text-orange-400 transition-colors">Overview</a>
-            <a href="#" className="hover:text-orange-400 transition-colors">Features</a>
-            <a href="#" className="hover:text-orange-400 transition-colors">Docs</a>
-            <a href="#" className="hover:text-orange-400 transition-colors">Support</a>
           </div>
 
           <div className="flex space-x-4">
@@ -117,7 +110,7 @@ export default function ADDMSLanding() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-24 bg-gray-900">
+      <section className="relative py-24 bg-white">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-orange-400">
@@ -150,7 +143,7 @@ export default function ADDMSLanding() {
             ].map((feature, i) => (
               <div
                 key={i}
-                className="bg-gray-800/50 border border-blue-900/30 rounded-xl p-6 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/10 relative overflow-hidden"
+                className="bg-white border border-blue-900/30 rounded-xl p-6 hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/10 relative overflow-hidden"
                 data-card
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-orange-900/10 opacity-0 hover:opacity-100 transition-opacity"></div>
@@ -166,14 +159,14 @@ export default function ADDMSLanding() {
       </section>
 
       {/* Terminal Preview */}
-      <section className="relative py-24 bg-gray-900 border-t border-blue-900/30">
+      <section className="relative py-24 bg-white border-t border-blue-900/30">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
             <div
               ref={terminalRef}
-              className="bg-gray-800 rounded-xl overflow-hidden border border-blue-900/50 shadow-2xl shadow-blue-600/10"
+              className="bg-gray-500 rounded-xl overflow-hidden border border-blue-900/50 shadow-2xl shadow-blue-600/10"
             >
-              <div className="flex items-center px-4 py-3 bg-gray-900 border-b border-blue-900/30">
+              <div className="flex items-center px-4 py-3 bg-gray-600 border-b border-blue-900/30">
                 <div className="flex space-x-2 mr-4">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -190,7 +183,7 @@ export default function ADDMSLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900/80 border-t border-blue-900/30 py-12">
+      <footer className="bg-white border-t border-blue-900/30 py-12">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-6 md:mb-0">
