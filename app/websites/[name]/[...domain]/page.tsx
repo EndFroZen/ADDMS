@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Loading from "@/app/components/loading";
 import NewFileCompo from "@/app/components/์newfile";
 import DeleteFileAndFolder from "@/app/components/deletefile";
+import CommandSetting from "@/app/components/commandsetting";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -26,6 +27,7 @@ export default function UserWeb({
     const router = useRouter();
     const [showNewFile, setShowNewFile] = useState(false);
     const [showDeleteFile, setShowDeleteFile] = useState(false);
+    const [isMainFile, setIsMainFile] = useState(false);
 
     const fileExtensionsToEdit = [
         ".js", ".jsx", ".ts", ".tsx", ".html", ".htm", ".css", ".scss", ".less", ".json", ".jsonc",
@@ -74,41 +76,48 @@ export default function UserWeb({
                 setLoading(false);
             }
         };
-
+        CheckIsMainFile();
         fetchData();
     }, [fullPath, router]);
-
+    const CheckIsMainFile = () => {
+        if (domain.length === 1) {
+            setIsMainFile(true);
+        }
+    }
     const handleSave = async () => {
         setSaving(true);
+        const newPath = (document.getElementById("newPath") as HTMLInputElement).value;
         const token = localStorage.getItem(NToken);
+        const Newdomain = domain.slice(0, -1).concat(newPath);
+        const NewFullPath = Newdomain.join("/");
+        console.log("NewFullPath:", newPath);
         try {
-            const res = await fetch(`${BASE_URL}/api/file/${fullPath}`, {
+            setLoading(true);
+            const res = await fetch(`${BASE_URL}/api/edit/singlefile`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ content }),
+                body: JSON.stringify({
+                    "path": fullPath,
+                    "newpath": `${NewFullPath}`,
+                    "content": content,
+                }),
             });
-            if (!res.ok) throw new Error("Failed to save");
 
-            setData((prev: any) => ({
-                ...prev,
-                data: {
-                    ...prev.data,
-                    content: content,
-                    modified: new Date().toISOString(),
-                    size: new Blob([content]).size,
-                },
-            }));
 
-            alert("✅ File saved successfully!");
-            setIsEditable(false);
+            if (res.ok) {
+                const result = await res.json();
+            }
+
         } catch (err) {
             console.error("Save error:", err);
-            alert("❌ Error saving file.");
         } finally {
+            router.push(`/websites/${name}/${NewFullPath}`);
             setSaving(false);
+            setLoading(false);
+            setIsEditable(false);
         }
     };
 
@@ -231,6 +240,7 @@ export default function UserWeb({
     const renderBreadcrumbs = () => {
         const pathParts = [name, ...domain];
         return (
+
             <nav className="flex items-center text-sm text-gray-400 mb-4">
                 {pathParts.map((part, idx) => {
                     const href = `/websites/${name}/${pathParts.slice(1, idx + 1).join("/")}`;
@@ -252,233 +262,293 @@ export default function UserWeb({
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white font-sans">
-            <div className="max-w-[1280px] mx-auto py-4 px-6">
-                {/* GitHub-like header */}
-                <div className="flex items-center justify-between mb-4">
-                    <div>
-                        {renderBreadcrumbs()}
-                        <h1 className="text-xl font-semibold text-orange-400">
-                            {isEditableFile ? fullPath.split("/").pop() : fullPath}
-                        </h1>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Link
-                            href="/dashboard"
-                            className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
-                        >
-                            Back to Dashboard
-                        </Link>
-                    </div>
-                </div>
+        <>
 
-                {loading ? (
-                    <Loading text="Loading file..." />
-                ) : isEditableFile ? (
-                    <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
-                        {/* File action toolbar */}
-                        <div className="flex items-center justify-between p-3 border-b border-gray-700">
-                            <div className="flex items-center space-x-2 text-sm">
-                                <span className="text-gray-400">
-                                    Size: {(data?.data?.size / 1024).toFixed(1)} KB
-                                </span>
-                                <span className="text-gray-500">•</span>
-                                <span className="text-gray-400">
-                                    Modified: {new Date(data?.data?.modified).toLocaleString()}
-                                </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                {isEditable ? (
-                                    <>
-                                        <button
-                                            onClick={handleSave}
-                                            disabled={saving}
-                                            className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition"
-                                        >
-                                            {saving ? "Saving..." : "Save changes"}
-                                        </button>
-                                        <button
-                                            onClick={() => setIsEditable(false)}
-                                            className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </>
-                                ) : (
-                                    <button
-                                        onClick={() => setIsEditable(true)}
-                                        className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                                    >
-                                        Edit file
-                                    </button>
-                                )}
-                            </div>
+            <div className="min-h-screen bg-[#0f172a] text-white font-sans">
+                <div className="max-w-[100%] mx-auto py-3 px-3">
+                    {/* GitHub-like header */}
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            {renderBreadcrumbs()}
+                            <h1 className="text-xl font-semibold text-orange-400">
+                                {isEditableFile ? fullPath.split("/").pop() : fullPath}
+                            </h1>
                         </div>
-                        {/* Monaco Editor */}
-                        <div className="h-[600px]">
-                            <MonacoEditor
-                                height="100%"
-                                language={getLanguageFromExtension()}
-                                value={content}
-                                theme="vs-dark"
-                                onChange={(val) => isEditable && setContent(val || "")}
-                                options={{
-                                    readOnly: !isEditable,
-                                    minimap: { enabled: true },
-                                    fontSize: 14,
-                                    lineNumbers: "on",
-                                    scrollBeyondLastLine: false,
-                                    automaticLayout: true,
-                                }}
-                            />
+                        <div className="flex items-center space-x-2">
+                            <Link
+                                href="/dashboard"
+                                className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                            >
+                                Back to Dashboard
+                            </Link>
                         </div>
                     </div>
-                ) : (
-                    <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
-                        {/* File list header */}
-                        <div className="flex items-center justify-between p-3 border-b border-gray-700">
-                            <div className="text-sm font-medium text-gray-200">Files</div>
-                            <div className="flex items-center space-x-2">
-                                <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition" onClick={() => setShowNewFile(true)}>
-                                    New file
-                                </button>
-                                {showNewFile && (
-                                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
-                                            {/* Header */}
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h2 className="text-lg font-semibold">Create New</h2>
-                                                <button
-                                                    className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                                                    onClick={() => setShowNewFile(false)}
+
+                    {loading ? (
+                        <Loading text="Loading file..." />
+                    ) : isEditableFile ? (
+                        <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md">
+                            {/* File action toolbar */}
+                            <div className="flex items-center justify-between p-3 border-b border-gray-700">
+                                <div className="flex items-center space-x-2 text-sm">
+                                    <span className="text-gray-400">
+                                        Size: {(data?.data?.size / 1024).toFixed(1)} KB
+                                    </span>
+                                    <span className="text-gray-500">•</span>
+                                    <span className="text-gray-400">
+                                        Modified: {new Date(data?.data?.modified).toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    {isEditable ? (
+                                        <>
+                                            <span className="text-gray-400">Rename to:</span>
+                                            <input type="text" id="newPath" defaultValue={domain[domain.length - 1]} className="text-black px-3 rounded-lg h-8" />
+                                            <button
+                                                onClick={handleSave}
+                                                disabled={saving}
+                                                className="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition"
+                                            >
+                                                {saving ? "Saving..." : "Save changes"}
+                                            </button>
+                                            <button
+                                                onClick={() => setIsEditable(false)}
+                                                className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-row gap-2">
+                                            <button
+                                                onClick={() => setIsEditable(true)}
+                                                className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                                            >
+                                                Edit file
+                                            </button>
+                                            <button onClick={() => setShowDeleteFile(true)} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition flex items-center space-x-1">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-4 h-4"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 24 24"
                                                 >
-                                                    ✕
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <NewFileCompo Path={fullPath} NameUser={name} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-
-                                <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition">
-                                    Upload files
-                                </button>
-                                <button onClick={() => setShowDeleteFile(true)} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition flex items-center space-x-1">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-4 h-4"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M9 3a1 1 0 0 0-1 1v1H4v2h1v12a2 2 0 0 0 2 2h10a2 
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M9 3a1 1 0 0 0-1 1v1H4v2h1v12a2 2 0 0 0 2 2h10a2 
         2 0 0 0 2-2V7h1V5h-4V4a1 1 0 0 
         0-1-1H9zm2 5h2v9h-2V8zm-4 0h2v9H7V8zm8 
         0h2v9h-2V8z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                    <span>Delete</span>
-                                    
-                                </button>
-                                {showDeleteFile && (
-                                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
-                                            {/* Header */}
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h2 className="text-lg font-semibold">Create New</h2>
-                                                <button
-                                                    className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                                                    onClick={() => setShowDeleteFile(false)}
-                                                >
-                                                    ✕
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <DeleteFileAndFolder Path={fullPath} />
-                                            </div>
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                                <span>Delete file</span>
+
+                                            </button>
+                                            {showDeleteFile && (
+                                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                                    <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                        {/* Header */}
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <h2 className="text-lg font-semibold">Create New</h2>
+                                                            <button
+                                                                className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                                                onClick={() => setShowDeleteFile(false)}
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </div>
+                                                        <div>
+                                                            <DeleteFileAndFolder Path={fullPath} NameUser={name} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
+
+
+                                    )}
+                                </div>
+                            </div>
+                            {/* Monaco Editor */}
+                            <div className="h-[600px]">
+                                <MonacoEditor
+                                    height="100%"
+                                    language={getLanguageFromExtension()}
+                                    value={content}
+                                    theme="vs-dark"
+                                    onChange={(val) => isEditable && setContent(val || "")}
+                                    options={{
+                                        readOnly: !isEditable,
+                                        minimap: { enabled: false },
+                                        fontSize: 14,
+                                        lineNumbers: "on",
+                                        scrollBeyondLastLine: false,
+                                        automaticLayout: true,
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-row">
+                            <CommandSetting />
+                            <div className="bg-[#1e293b] border border-gray-700 rounded-lg shadow-md min-w-[80%]">
+                                {/* File list header */}
+                                
+                                <div className="flex items-center justify-between p-3 border-b border-gray-700">
+                                    <div className="text-sm font-medium text-gray-200">Files</div>
+                                    <div className="flex items-center space-x-2">
+                                        <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition" onClick={() => setShowNewFile(true)}>
+                                            New file
+                                        </button>
+                                        {showNewFile && (
+                                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                                <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                    {/* Header */}
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h2 className="text-lg font-semibold">Create New</h2>
+                                                        <button
+                                                            className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                                            onClick={() => setShowNewFile(false)}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                    <div>
+                                                        <NewFileCompo Path={fullPath} NameUser={name} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+
+                                        <button className="px-3 py-1.5 text-sm bg-[#2c3a50] text-gray-200 rounded-md hover:bg-[#3b4a66] transition">
+                                            Upload files
+                                        </button>
+
+                                        {!isMainFile && (
+                                            <button onClick={() => setShowDeleteFile(true)} className="px-3 py-1.5 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition flex items-center space-x-1">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-4 h-4"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M9 3a1 1 0 0 0-1 1v1H4v2h1v12a2 2 0 0 0 2 2h10a2 
+        2 0 0 0 2-2V7h1V5h-4V4a1 1 0 0 
+        0-1-1H9zm2 5h2v9h-2V8zm-4 0h2v9H7V8zm8 
+        0h2v9h-2V8z"
+                                                        clipRule="evenodd"
+                                                    />
+                                                </svg>
+                                                <span>Delete Directory</span>
+
+                                            </button>
+                                        )}
+                                        {showDeleteFile && (
+                                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                                <div className="bg-[#0f172a] text-gray-200 p-6 rounded-lg shadow-lg  max-w-full relative">
+                                                    {/* Header */}
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h2 className="text-lg font-semibold">Create New</h2>
+                                                        <button
+                                                            className="px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                                                            onClick={() => setShowDeleteFile(false)}
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                    <div>
+                                                        <DeleteFileAndFolder Path={fullPath} NameUser={name} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
                                     </div>
+                                </div>
+                                {/* File list */}
+                                {data?.data?.length > 0 ? (
+                                    <>
+                                        <div className="divide-y divide-gray-700">
+                                            {[...data.data]
+                                                .sort((a, b) => {
+                                                    if (a.type === "folder" && b.type !== "folder") return -1;
+                                                    if (a.type !== "folder" && b.type === "folder") return 1;
+                                                    return a.name.localeCompare(b.name);
+                                                })
+                                                .map((item: any, idx: number) => {
+                                                    const newPath = [...domain, item.name].join("/");
+                                                    return (
+                                                        <Link
+                                                            key={idx}
+                                                            href={`/websites/${name}/${newPath}`}
+                                                            className="flex items-center justify-between p-3 hover:bg-[#2c3a50] transition"
+                                                        >
+                                                            <div className="flex items-center space-x-3">
+                                                                {item.type === "folder" ? (
+                                                                    <svg
+                                                                        className="w-5 h-5 text-orange-400"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="1.5"
+                                                                            d="M2.25 12.75V6.75A2.25 2.25 0 014.5 4.5h3.757a2.25 2.25 0 011.59.659l1.157 1.157a2.25 2.25 0 001.59.659H19.5a2.25 2.25 0 012.25 2.25v1.5"
+                                                                        />
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="1.5"
+                                                                            d="M2.25 12.75V18a2.25 2.25 0 002.25 2.25h15a2.25 2.25 0 002.25-2.25v-5.25"
+                                                                        />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <svg
+                                                                        className="w-5 h-5 text-gray-400"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth="1.5"
+                                                                            d="M17.25 6.75V17.25C17.25 18.4926 16.2426 19.5 15 19.5H6.75C5.50736 19.5 4.5 18.4926 4.5 17.25V6.75C4.5 5.50736 5.50736 4.5 6.75 4.5H15C16.2426 4.5 17.25 5.50736 17.25 6.75Z"
+                                                                        />
+                                                                    </svg>
+                                                                )}
+                                                                <span className="text-sm text-gray-200">{item.name}</span>
+                                                            </div>
+                                                            <div className="flex flex-row gap-3">
+                                                                <div className="text-xs text-gray-500 text-right">
+                                                                    <div>{(item.size / 1024).toFixed(1)} KB</div>
+                                                                    <div>{new Date(item.modified).toLocaleString()}</div>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+
+                                                    );
+                                                })}
+
+                                        </div>
+
+                                    </>
+                                ) : (
+                                    <div className="p-3 text-gray-400">No files or folders found.</div>
                                 )}
 
                             </div>
+                            
                         </div>
-                        {/* File list */}
-                        {data?.data?.length > 0 ? (
-                            <div className="divide-y divide-gray-700">
-                                {[...data.data]
-                                    .sort((a, b) => {
-                                        if (a.type === "folder" && b.type !== "folder") return -1;
-                                        if (a.type !== "folder" && b.type === "folder") return 1;
-                                        return a.name.localeCompare(b.name);
-                                    })
-                                    .map((item: any, idx: number) => {
-                                        const newPath = [...domain, item.name].join("/");
-                                        return (
-                                            <Link
-                                                key={idx}
-                                                href={`/websites/${name}/${newPath}`}
-                                                className="flex items-center justify-between p-3 hover:bg-[#2c3a50] transition"
-                                            >
-                                                <div className="flex items-center space-x-3">
-                                                    {item.type === "folder" ? (
-                                                        <svg
-                                                            className="w-5 h-5 text-orange-400"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="1.5"
-                                                                d="M2.25 12.75V6.75A2.25 2.25 0 014.5 4.5h3.757a2.25 2.25 0 011.59.659l1.157 1.157a2.25 2.25 0 001.59.659H19.5a2.25 2.25 0 012.25 2.25v1.5"
-                                                            />
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="1.5"
-                                                                d="M2.25 12.75V18a2.25 2.25 0 002.25 2.25h15a2.25 2.25 0 002.25-2.25v-5.25"
-                                                            />
-                                                        </svg>
-                                                    ) : (
-                                                        <svg
-                                                            className="w-5 h-5 text-gray-400"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            viewBox="0 0 24 24"
-                                                        >
-                                                            <path
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                                strokeWidth="1.5"
-                                                                d="M17.25 6.75V17.25C17.25 18.4926 16.2426 19.5 15 19.5H6.75C5.50736 19.5 4.5 18.4926 4.5 17.25V6.75C4.5 5.50736 5.50736 4.5 6.75 4.5H15C16.2426 4.5 17.25 5.50736 17.25 6.75Z"
-                                                            />
-                                                        </svg>
-                                                    )}
-                                                    <span className="text-sm text-gray-200">{item.name}</span>
-                                                </div>
-                                                <div className="flex flex-row gap-3">
-                                                    <div className="text-xs text-gray-500 text-right">
-                                                        <div>{(item.size / 1024).toFixed(1)} KB</div>
-                                                        <div>{new Date(item.modified).toLocaleString()}</div>
-                                                    </div>
-                                                </div>
-                                            </Link>
-
-                                        );
-                                    })}
-                            </div>
-                        ) : (
-                            <div className="p-3 text-gray-400">No files or folders found.</div>
-                        )}
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
