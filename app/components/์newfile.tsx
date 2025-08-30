@@ -78,7 +78,7 @@ export default function NewFileCompo({ Path, NameUser }: NewFileCompoProps) {
     }
 
     return (
-        <div className="w-full mx-auto mt-8 p-5 bg-[#1e293b] rounded-lg shadow-lg border border-gray-700">
+        <div className="w-full mx-auto mt-8 p-5 bg-white rounded-lg shadow-lg border border-gray-700">
             {errorMessage && (
                 <div className="mb-4 p-3 bg-red-600 text-white rounded-md text-center">
                     {errorMessage}
@@ -90,10 +90,10 @@ export default function NewFileCompo({ Path, NameUser }: NewFileCompoProps) {
                     id="NewFileText"
                     type="text"
                     placeholder={`New ${type}`}
-                    className="flex-1 h-11 px-4 text-base rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400 text-white bg-[#0f172a] shadow-sm transition-all duration-150 placeholder-gray-400"
+                    className="flex-1 h-11 px-4 text-base rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400 text-black bg-white shadow-sm transition-all duration-150 placeholder-gray-400"
                 />
                 <select
-                    className="h-11 px-3 bg-[#0f172a] text-white border border-gray-600 rounded-lg"
+                    className="h-11 px-3 bg-white text-black border border-gray-600 rounded-lg"
                     value={type}
                     onChange={(e) => setType(e.target.value as "file" | "folder")}
                 >
@@ -108,7 +108,9 @@ export default function NewFileCompo({ Path, NameUser }: NewFileCompoProps) {
                     Create
                 </button>
             </div>
-            {loading && <Loading text={`Creating new ${type}...`} />}
+            {loading && 
+            <div className="w-full h-full absolute inset-0 flex items-center justify-center animated-gradient rounded-md"><Loading text={`Creating new ${type}...`} /></div>
+}
         </div>
     );
 }

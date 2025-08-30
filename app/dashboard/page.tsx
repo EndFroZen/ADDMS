@@ -2,9 +2,14 @@
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Globe, Server, Code2 } from "lucide-react";
+import { Globe, Server, Code2, Pause, Play } from "lucide-react";
+import { Dialog } from "@headlessui/react";
 import { s } from "framer-motion/client";
 import Loading from "../components/loading";
+import "../../app/globals.css";
+import Checkmind from "../components/checkmind";
+import { error } from "console";
+import clsx from "clsx";
 
 interface command { }
 
@@ -13,6 +18,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [commnadSave, setCommandSave] = useState<string>("");
   const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  const [hostData, setHostData] = useState<any>(null)
+  const [notifications, setNotifications] = useState([]);
+  const [selectedNoti, setSelectedNoti] = useState<any>(null);
 
   async function reloadNginx() {
     const res = await fetch(`${BASE_URL}/api/reloadnginx`, {
@@ -24,6 +33,30 @@ export default function Dashboard() {
     });
     if (!res.ok) {
       alert("Deploy failed: ");
+    }
+  }
+  async function loadNotification() {
+    const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/getNotification`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${yourToken}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch notifications");
+
+      const result = await res.json();
+      console.log(result);
+
+      // set state เป็น array ของ notifications โดยตรง
+      setNotifications(result.notification || []);
+    } catch (error) {
+      console.error(error);
+      setNotifications([]); // fallback
     }
   }
 
@@ -39,28 +72,73 @@ export default function Dashboard() {
     });
 
     const result = await res.json();
-    console.log(result)
+    // console.log(result)
     setUser({
       ...result,
       website: result.website || [],
     });
+    loadNotification();
   }
+  const [loadingBtnMap, setLoadingBtnMap] = useState<{ [id: string]: boolean }>({});
+  const handleRunServer = async (Command: string, Path: string, siteId: string) => {
+    setLoadingBtnMap(prev => ({ ...prev, [siteId]: true }));
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+      const response = await fetch(`${BASE_URL}/api/startserver`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ command: Command, path: Path }),
+      });
+      if (!response.ok) throw new Error("Failed to run server");
+      const result = await response.json();
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingBtnMap(prev => ({ ...prev, [siteId]: false }));
+      load();
+    }
+  };
+  const handleStopServer = async (pid: number, siteId: string) => {
+    setLoadingBtnMap(prev => ({ ...prev, [siteId]: true }));
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+      const response = await fetch(`${BASE_URL}/api/stopserver`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          "pid": pid
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to run server");
+      const result = await response.json();
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingBtnMap(prev => ({ ...prev, [siteId]: false }));
+      load();
+    }
+  };
 
-  async function runWebsite(path: string, command: string) {
-    const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
-    await fetch(`${BASE_URL}/api/run/website/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${yourToken}`,
-      },
-      body: JSON.stringify({ path, command }),
-    });
-
-    load();
+  const hostLoad = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/hostdata`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        const result = await res.json()
+        console.log(result)
+        setHostData({ ...result, "data": result || [] })
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
-
   async function deleteWebsite(website: string) {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
     setLoading(true);
@@ -78,18 +156,28 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    hostLoad()
     load();
   }, []);
 
-  if (!user) return <Loading />;
+  if (!user) return <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Loading ..." /></div>;
 
   const activeWebsites = user.website.length;
   const runningServers = user.website.filter((site: any) => site.status === "online").length;
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-6 sm:p-10">
-      <h1 className="text-3xl font-bold mb-2 text-orange-600">Welcome : {user.name}</h1>
-      <p className="text-gray-600 mb-6">Email : {user.email}</p>
+    <div className="min-h-screen min-w-screen text-gray-900 relative">
+      <div className="mb-8 bg-gradient-to-r from-orange-400 to-orange-500 rounded-2xl p-6 text-white shadow-xl flex justify-between items-center ">
+        <div className="">
+          <h1 className="text-4xl font-bold mb-2">Welcome : {user.name}! 👋</h1>
+          <p className="text-orange-100 text-lg">{user.email}</p>
+        </div>
+        <div className="bg-white p-4 rounded-xl w-full max-w-[25rem]">
+          <h1 className="text-2xl font-black text-orange-600 mb-3">Host Information</h1>
+          <p className="text-lg text-black flex flex-row gap-2 ">Server: <span className="text-xl font-bold text-orange-500">{hostData.serverhost}</span></p>
+          <p className="text-lg text-black flex flex-row gap-2">IP Address: <span className="text-xl font-bold text-orange-500">{hostData.serverhostip}</span></p>
+        </div>
+      </div>
 
       {/* System Overview */}
       <div className="mb-10">
@@ -116,7 +204,7 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
             <h3 className="text-lg font-medium text-orange-600 mb-4">Resource Usage</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex flex-row items-center justify-between px-[10rem]">
               <div className="text-center">
                 <p className="text-sm text-gray-600">CPU Usage</p>
                 <p className="text-2xl font-bold text-green-600">30%</p>
@@ -125,10 +213,10 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-600">Memory Usage</p>
                 <p className="text-2xl font-bold text-blue-600">1.8 GB</p>
               </div>
-              <div className="text-center">
+              {/* <div className="text-center">
                 <p className="text-sm text-gray-600">Disk Usage</p>
                 <p className="text-2xl font-bold text-purple-600">12 GB</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -140,7 +228,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* Website List */}
-          <div className="md:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow">
+          <div className="md:col-span-2 bg-white p-6 rounded-xl border border-gray-200 shadow min-h-screen">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-orange-600">Your Websites</h3>
               <Link
@@ -156,24 +244,27 @@ export default function Dashboard() {
                 You don't have any websites yet.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
                 {user.website.map((site: any) => (
                   <div
                     key={site.id}
                     className="
-                      bg-gradient-to-b from-white via-gray-50 to-white 
-                      p-6 rounded-xl shadow-lg 
-                      transition-transform transform 
-                      hover:-translate-y-1 hover:shadow-2xl 
-                      border-2 border-transparent hover:border-amber-400
-                    "
+    bg-gradient-to-b from-white via-gray-50 to-white 
+    p-6 rounded-xl shadow-lg 
+    transition-transform transform 
+    hover:-translate-y-1 hover:shadow-2xl
+    border-2 border-gray-200 hover:border-amber-400
+  "
                   >
+
                     <div className="flex justify-between items-center mb-4">
                       <Link
                         href={`../websites/${user.name}/${site.domain.Domain_name}`}
-                        className="text-orange-600 text-lg font-bold hover:underline flex items-center gap-2"
+                        className="text-orange-600 text-lg font-bold hover:underline flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis max-w-[200px]"
+                        title={site.domain.Domain_name}
                       >
-                        <Globe size={18} /> {site.domain.Domain_name}
+                        <Globe size={18} />
+                        <span className="overflow-hidden text-ellipsis">{site.domain.Domain_name}</span>
                       </Link>
                       <span
                         className={`text-xs px-3 py-1 rounded-full font-semibold ${site.status === "offline"
@@ -185,12 +276,13 @@ export default function Dashboard() {
                       </span>
                     </div>
 
+
                     <div className="space-y-3">
                       <div className="flex flex-col gap-2 text-gray-700 text-sm">
                         <div><strong>Created:</strong> {new Date(site.created_at).toLocaleString()}</div>
                         <div><strong>SSL Enabled:</strong> {site.domain.Ssl_enabled ? "Yes" : "No"}</div>
                         <div><strong>Verified:</strong> {site.domain.Is_verified ? "Yes" : "No"}</div>
-                        <div><strong>Storage Limit:</strong> {site.storage_limit} MB</div>
+                        <div><strong>Storage Usage:</strong> {site.storage_limit} MB</div>
                       </div>
 
                       <div className="flex flex-wrap gap-2 mt-2">
@@ -207,18 +299,41 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex justify-between mt-4">
+                      {site.status === "online" ? (<>
+                        <button
+                          onClick={() => handleStopServer(site.pid, site.id)}
+                          disabled={loadingBtnMap[site.id]}
+                          className={`${loadingBtnMap[site.id] ? "bg-yellow-200" : "bg-yellow-400"} ${loadingBtnMap[site.id] ? "hover:bg-yellow-300" : "hover:bg-yellow-500"} text-white px-5 py-2 rounded-full text-sm font-medium transition`}
+                        >
+                          {loadingBtnMap[site.id] ? "please wait ..." : <div className="flex flex-row justify-center items-center gap-1 font-bold"><Pause />Stop server</div>}
+                        </button>
+                      </>) : (<>
+                        <button
+                          onClick={() => handleRunServer(site.start_server.Command, site.start_server.Path, site.id)}
+                          disabled={loadingBtnMap[site.id]}
+                          className={`${loadingBtnMap[site.id] ? "bg-yellow-200" : "bg-green-600"} ${loadingBtnMap[site.id] ? "hover:bg-yellow-300" : "hover:bg-green-700"} text-white px-5 py-2 rounded-full text-sm font-medium transition`}
+                        >
+                          {loadingBtnMap[site.id] ? "please wait ..." : <div className="flex flex-row justify-center items-center gap-1 font-bold"><Play />Start Server</div>}
+                        </button>
+                      </>)}
+
+
                       <button
-                        onClick={() => runWebsite()}
-                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-medium transition"
-                      >
-                        Run Website
-                      </button>
-                      <button
-                        onClick={() => deleteWebsite(site.domain.Domain_name)}
+                        onClick={() => setConfirmingId(site.id)}
                         className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm font-medium transition"
                       >
                         Delete
                       </button>
+                      {confirmingId === site.id && (
+                        <div className=""><Checkmind
+                          message={`You want to delete ${site.domain.Domain_name}`}
+                          onConfirm={() => {
+                            deleteWebsite(site.domain.Domain_name);
+                            setConfirmingId(null); // ปิด popup หลัง confirm
+                          }}
+                          onCancel={() => setConfirmingId(null)}
+                        /></div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -227,27 +342,106 @@ export default function Dashboard() {
           </div>
 
           {/* System Alerts */}
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow">
+          <div className="bg-white p-6 max-h-screen rounded-xl border border-gray-200 shadow">
             <h3 className="text-lg font-medium text-orange-600 mb-4">System Alerts</h3>
-            <ul className="space-y-3 text-sm text-gray-700">
-              <li className="bg-gray-100 p-3 rounded-md border-l-4 border-yellow-400">
-                ⚠️ Backup for <strong>project-x</strong> failed yesterday.
+            <ul className="space-y-3 text-sm overflow-y-auto text-gray-700 max-h-[90vh]">
+              {notifications && notifications.length > 0 ? (
+                notifications.map((noti: any) => {
+                  const borderColor = clsx({
+                    "border-red-400": noti.colorcode === 1,
+                    "border-yellow-400": noti.colorcode === 2,
+                    "border-sky-400": noti.colorcode === 3,
+                    "border-green-400": noti.colorcode === 4,
+                  });
+
+                  const bgColor = clsx({
+                    "bg-red-50": noti.colorcode === 1,
+                    "bg-yellow-50": noti.colorcode === 2,
+                    "bg-sky-50": noti.colorcode === 3,
+                    "bg-green-50": noti.colorcode === 4,
+                  });
+
+                  const iconMap: Record<number, string> = {
+                    1: "🚫",
+                    2: "⚠️",
+                    3: "ℹ️",
+                    4: "✅",
+                  };
+                  const icon = iconMap[noti.colorcode] || "ℹ️";
+
+              return (
+              <li
+                key={noti.id}
+                className={clsx(
+                  "flex items-start p-3 rounded-md border-l-4 cursor-pointer transition-all hover:shadow hover:-translate-y-0.5",
+                  borderColor,
+                  bgColor
+                )}
+                onClick={() => setSelectedNoti(noti)}
+              >
+                {/* Icon */}
+                <div className="text-xl mr-3">{icon}</div>
+
+                {/* Content */}
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <strong className="text-gray-800">{noti.title}</strong>
+                    <span className="text-xs text-gray-400">{noti.time || "just now"}</span>
+                  </div>
+                  <p className="text-gray-600 line-clamp-2">{noti.massage}</p>
+                </div>
               </li>
-              <li className="bg-gray-100 p-3 rounded-md border-l-4 border-red-400">
-                🚫 Website <strong>example.com</strong> is offline.
-              </li>
-              <li className="bg-gray-100 p-3 rounded-md border-l-4 border-green-400">
-                ✅ Deployment <strong>portfolio</strong> succeeded!
-              </li>
-              <li className="bg-gray-100 p-3 rounded-md border-l-4 border-blue-400">
-                ℹ️ Update available for <strong>server-core</strong>.
-              </li>
+              );
+                })
+              ) : (
+              <li className="text-gray-400">No notifications</li>
+              )}
             </ul>
+
+            {/* Modal */}
+            <Dialog
+              open={!!selectedNoti}
+              onClose={() => setSelectedNoti(null)}
+              className="fixed z-50 inset-0 flex items-center justify-center p-4"
+            >
+              {/* Overlay */}
+              <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+              {/* Panel */}
+              <Dialog.Panel className="bg-white rounded-xl shadow-lg max-w-md w-full z-50 p-6 relative">
+                <button
+                  onClick={() => setSelectedNoti(null)}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                >
+                  ✖
+                </button>
+
+                {selectedNoti && (
+                  <>
+                    <Dialog.Title className="text-xl font-bold mb-2">
+                      {selectedNoti.title}
+                    </Dialog.Title>
+                    <p className="text-gray-500 mb-4">
+                      Type: {selectedNoti.type} | ColorCode: {selectedNoti.colorcode}
+                    </p>
+                    <pre className="whitespace-pre-wrap bg-gray-100 p-3 rounded-md">
+                      {selectedNoti.massage}
+                    </pre>
+                  </>
+                )}
+              </Dialog.Panel>
+            </Dialog>
           </div>
         </div>
       </div>
 
-      {loading && <Loading text="Loading..." />}
-    </div>
+      {
+        loading && (
+          <div className="absolute inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Loading ..." /></div>
+
+        )
+      }
+
+    </div >
   );
 }

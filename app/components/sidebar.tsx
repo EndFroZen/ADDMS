@@ -1,22 +1,51 @@
 'use client';
-import { LayoutDashboard, Settings, } from "lucide-react";
+
+import { BASE_URL, NToken } from "@/config/plublicpara";
+import { data } from "framer-motion/client";
+import { LayoutDashboard, Settings,LucideBookUser ,Gauge} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { NToken } from "@/config/plublicpara";
+import { useEffect, useState } from "react";
 
 export default function Sidebar() {
-    
+    const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
     const page = "setting"
+    const [userdata, setUserData] = useState<any>({})
     const route = useRouter()
+    const [useLoadtoken, setUseLoadToken] = useState(true)
+    const loadUser = async () => {
+        try {
+            const res = await fetch(`${BASE_URL}/api/datauser`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+            });
+            if (res.ok) {
+                const result = await res.json()
+                // console.log(result)
+                await setUserData(result)
+                setUseLoadToken(false)
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
     async function logout() {
         localStorage.removeItem(NToken)
         route.push('/')
     }
-
+    useEffect(() => {
+        if (useLoadtoken === true) {
+            loadUser()
+        }
+        // loadUser()
+    })
     return (
-        <div className="h-screen w-60 bg-white text-gray-900 flex flex-col px-4 py-6">
-            <div className="flex justify-center mb-3">
-                <svg className="w-12 h-12" viewBox="0 0 543 527" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div className=" bg-white text-gray-900 flex flex-col px-4 py-6 min-w-[15%] max-w-[25%] border border-r-gray-200">
+            <div className="flex flex-col justify-center items-center mb-3 gap-1">
+                <svg className="w-[85px] h-fit" viewBox="0 0 543 527" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M229.239 6.18066C230.965 5.23071 233.081 5.27371 234.776 6.31836L417.794 119.152L418.056 119.325C419.339 120.221 420.185 121.625 420.37 123.189L450.063 374.772C450.306 376.83 449.372 378.85 447.647 379.997L236.554 520.365C234.729 521.579 232.358 521.592 230.518 520.4L8.08838 376.254C6.5239 375.24 5.57959 373.502 5.57959 371.638V154.067C5.57963 152.203 6.52465 150.466 8.08936 149.452L228.899 6.38379L229.239 6.18066Z" fill="#F7931E" stroke="white" strokeWidth="11" strokeLinejoin="round" />
                     <path d="M414.908 123.834L231.89 11L233.509 515.785L444.601 375.417L414.908 123.834Z" fill="#FF6B35" />
                     <path d="M529.361 172.104C529.743 171.956 530.171 171.971 530.545 172.148C530.973 172.352 531.28 172.745 531.373 173.209L537.851 205.602C537.97 206.198 537.717 206.808 537.21 207.145C536.704 207.481 536.044 207.479 535.54 207.138L519.525 196.304V219.933C519.525 220.483 519.223 220.989 518.74 221.251C518.257 221.513 517.669 221.49 517.208 221.19L497.929 208.659V228.03C497.929 228.511 497.7 228.962 497.311 229.244C496.922 229.526 496.421 229.606 495.964 229.457L472.584 221.832L469.251 232.786C469.117 233.227 468.788 233.581 468.359 233.748C467.93 233.915 467.447 233.874 467.051 233.64L453.95 225.876L447.062 242.113C446.89 242.518 446.549 242.827 446.129 242.959C445.71 243.09 445.254 243.031 444.882 242.797L430.829 233.948L409.838 238.672C409.105 238.837 408.363 238.434 408.102 237.729C407.841 237.023 408.144 236.234 408.808 235.883L529.201 172.177L529.361 172.104Z" fill="white" stroke="white" strokeWidth="3" strokeLinejoin="round" />
@@ -29,6 +58,7 @@ export default function Sidebar() {
                     <path d="M146.589 143.81H116.896V174.043H146.589V143.81Z" fill="#D9D9D9" />
                     <path d="M189.779 118.976H160.086V149.209H189.779V118.976Z" fill="#D9D9D9" />
                 </svg>
+                <div className="font-bold text-4xl text-orange-500">ADDMS</div>
             </div>
 
             <nav className="flex flex-col space-y-2">
@@ -36,7 +66,16 @@ export default function Sidebar() {
                     <LayoutDashboard className="w-5 h-5" />
                     <span>Dashboard</span>
                 </Link>
-
+                {userdata.role === "admin" && (
+                    <Link href="../admin" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition">
+                        <LucideBookUser className="w-5 h-5" />
+                        <span>Admin </span>
+                    </Link>
+                )}
+                <Link href="../monitor" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition">
+                    <Gauge className="w-5 h-5" />
+                    <span>Monitoring resource</span>
+                </Link>
                 <Link href="../setting" className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 transition">
                     <Settings className="w-5 h-5" />
                     <span>Settings</span>

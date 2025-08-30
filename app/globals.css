@@ -24,3 +24,35 @@ body {
     animation: spin 3s linear infinite;
   }
 }
+@layer utilities {
+  .animated-gradient {
+    background: linear-gradient(270deg, #ffecd2, #ffd7c9, #ffecd2);
+    background-size: 600% 600%;
+    animation: gradientMove 12s ease infinite;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* โลโก้หมุนช้า ๆ */
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}

@@ -1,11 +1,15 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BASE_URL } from '../../config/plublicpara';
 import { useRouter } from 'next/navigation';
 import { NToken } from '../../config/plublicpara';
+import Loading from '../components/loading';
+import "../globals.css"
 export default function Login() {
   const router = useRouter();
   const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
+  const [errors, setErrors] = useState(true)
+  const [loading, setLoading] = useState(false)
   async function Nlogin() {
     const userNoun = (document.getElementById("userNoun") as HTMLInputElement).value
     const password = (document.getElementById("password") as HTMLInputElement).value
@@ -23,7 +27,7 @@ export default function Login() {
         localStorage.setItem(NToken, result.token);
         router.push('/dashboard');
       } else {
-        alert(result.message || 'Login failed');
+        setErrors(false)
       }
     } catch (err) {
       router.push('/errorpage/servererror')
@@ -34,18 +38,28 @@ export default function Login() {
     window.location.href = 'https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID';
   }
   useEffect(() => {
+    setLoading(true)
     if (yourToken != null) {
       router.push("/dashboard")
       return
     }
+    setLoading(false)
   }, [])
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0f172a] relative overflow-hidden">
-      <div className="bg-[#1E293B] rounded-xl shadow-xl p-10 w-full max-w-md z-10">
 
-        <div className="flex justify-center mb-3">
-          <svg className="w-12 h-12" viewBox="0 0 543 527" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 relative overflow-hidden">
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Deploying your application..." /></div>
+
+      )}
+      <div className="bg-white rounded-xl shadow-xl p-10 w-full max-w-md z-10 border border-gray-300">
+
+        <div className="flex justify-center mb-3 ">
+          <svg className="w-12 h-12 drop-shadow-[0_0_10px_#F7931E]"
+            viewBox="0 0 543 527"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
             <path d="M229.239 6.18066C230.965 5.23071 233.081 5.27371 234.776 6.31836L417.794 119.152L418.056 119.325C419.339 120.221 420.185 121.625 420.37 123.189L450.063 374.772C450.306 376.83 449.372 378.85 447.647 379.997L236.554 520.365C234.729 521.579 232.358 521.592 230.518 520.4L8.08838 376.254C6.5239 375.24 5.57959 373.502 5.57959 371.638V154.067C5.57963 152.203 6.52465 150.466 8.08936 149.452L228.899 6.38379L229.239 6.18066Z" fill="#F7931E" stroke="white" strokeWidth="11" strokeLinejoin="round" />
             <path d="M414.908 123.834L231.89 11L233.509 515.785L444.601 375.417L414.908 123.834Z" fill="#FF6B35" />
             <path d="M529.361 172.104C529.743 171.956 530.171 171.971 530.545 172.148C530.973 172.352 531.28 172.745 531.373 173.209L537.851 205.602C537.97 206.198 537.717 206.808 537.21 207.145C536.704 207.481 536.044 207.479 535.54 207.138L519.525 196.304V219.933C519.525 220.483 519.223 220.989 518.74 221.251C518.257 221.513 517.669 221.49 517.208 221.19L497.929 208.659V228.03C497.929 228.511 497.7 228.962 497.311 229.244C496.922 229.526 496.421 229.606 495.964 229.457L472.584 221.832L469.251 232.786C469.117 233.227 468.788 233.581 468.359 233.748C467.93 233.915 467.447 233.874 467.051 233.64L453.95 225.876L447.062 242.113C446.89 242.518 446.549 242.827 446.129 242.959C445.71 243.09 445.254 243.031 444.882 242.797L430.829 233.948L409.838 238.672C409.105 238.837 408.363 238.434 408.102 237.729C407.841 237.023 408.144 236.234 408.808 235.883L529.201 172.177L529.361 172.104Z" fill="white" stroke="white" strokeWidth="3" strokeLinejoin="round" />
@@ -59,28 +73,37 @@ export default function Login() {
             <path d="M189.779 118.976H160.086V149.209H189.779V118.976Z" fill="#D9D9D9" />
           </svg>
         </div>
-        <h1 className="text-center text-white text-2xl font-semibold mb-1">ADDMS</h1>
-        <p className="text-center text-gray-400 text-sm mb-8">Autonomous Deployment & Management System</p>
-        <p className="text-center text-white text-xl font-semibold mb-8">Log in</p>
-
+        <h1 className="text-center text-black text-2xl font-semibold mb-1">ADDMS</h1>
+        <p className="text-center text-gray-400 text-sm mb-5">Autonomous Deployment & Management System</p>
+        <p className="text-center text-black text-xl font-semibold mb-8">Log in</p>
+        {errors ? (<></>) : (<p className="text-center text-red-500 text-sm mb-4">Login failed please check again</p>)}
         <form action="" className="space-y-4">
           <div>
-            <label htmlFor="username" className="text-white text-sm">Username or Email</label>
-            <input type="text" id="userNoun" name="username" required className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+            <label htmlFor="username" className="text-black text-sm">Username or Email</label>
+            <input type="text" id="userNoun" name="username" required className={`border ${errors ? "border-gray-300" : "border-red-500"} mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500`} />
           </div>
           <div>
-            <label htmlFor="password" className="text-white text-sm">Password</label>
-            <input type="password" id="password" name="password" required className="mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gary-400 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+            <label htmlFor="password" className="text-black text-sm">Password</label>
+            <input type="password" id="password" name="password" required className={`border ${errors ? "border-gray-300" : "border-red-500"} mt-1 w-full px-4 py-2 text-black rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500`} />
+            <div className="flex justify-end mt-1">
+              <a href="/forgot-password" className="text-sm text-orange-500 hover:underline">
+                Forgot password?
+              </a>
+            </div>
           </div>
           <button type="button" onClick={Nlogin} className="w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-3 rounded-md font-medium hover:opacity-90 transition">Login</button>
         </form>
-
         <div className="flex items-center my-6">
+          <div className="flex-grow h-px bg-gray-600"></div>
+          <div className="flex-grow h-px bg-gray-600"></div>
+        </div>
+
+        {/* <div className="flex items-center my-6">
           <div className="flex-grow h-px bg-gray-600"></div>
           <span className="text-gray-400 mx-4 text-sm">or</span>
           <div className="flex-grow h-px bg-gray-600"></div>
         </div>
-
+        
         <button type="button" onClick={loginWithGithub} className="w-full text-white flex items-center justify-center gap-2 bg-[#334155] hover:bg-[#3b475e] py-2 rounded-md transition duration-200">
           <img
             src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
@@ -88,10 +111,11 @@ export default function Login() {
             className="w-5 h-5 rounded-full"
           />
           Continue with GitHub
-        </button>
+        </button> */}
 
         <div className="mt-8 space-y-2">
           <p className="text-center text-gray-400 text-sm">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
+          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="" className="text-orange-500">Terms of Service</a> and <a href="" className="text-orange-500">Privacy Policy</a></p>
         </div>
 
       </div>
