@@ -14,13 +14,14 @@ type Website struct {
 	ProgrammingLanguage string `json:"programminglanguage"`
 	Framework           string `json:"framework"`
 	User                User   `gorm:"foreignKey:UserID"`
-	Domain_id           uint
 	Domain              Domain `gorm:"foreignKey:Domain_id"`
-	Port                int    `gorm:"uniqueIndex"`
-	// StartServerID      uint
-	// StartServer         StartServer `gorm:"foreignKey:StartServerID"`
-}
+	Domain_id           uint
 
+	Port int `gorm:"uniqueIndex"`
+
+	StartServer StartServer `gorm:"foreignKey:WebsiteID"` // One-to-One ชัดเจน
+	Pid         int
+}
 type ModelWeb struct {
 	Name                string `json:"name"`
 	ProgrammingLanguage string `json:"programminglanguage"`
@@ -60,16 +61,6 @@ type Activity_logs struct {
 	Details    string
 }
 
-type Plugins struct {
-	gorm.Model
-	Name        string
-	Description string
-	Version     string
-	UserID      uint
-	User        User `gorm:"foreignKey:UserID"`
-	Website_id  uint
-	Website     Website `gorm:"foreignKey:Website_id"`
-}
 
 type Notifications struct {
 	gorm.Model
@@ -78,5 +69,12 @@ type Notifications struct {
 	Title   string
 	Massage string
 	Type    string
-	Is_read bool
+	ColorCode int 
+}
+
+type StartServer struct {
+	gorm.Model
+	Command   string
+	Path      string
+	WebsiteID uint // FK ไปหา Website
 }

@@ -67,12 +67,33 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 		}
 	}
 	//4. genport
-
+	var startServer models.StartServer
+	Command, Path := GenCommndAndPath(websiteData.Framework, websiteData.Domain_name)
+	startServer = models.StartServer{
+		Command: Command,
+		Path:    Path,
+	}
 	//5.save website and domain
-	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB, port); err != nil {
+	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB, port, startServer); err != nil {
 		return err
 	}
 	return nil
+}
+func GenCommndAndPath(framework string ,domain_name string) (string, string) {
+	switch framework {
+	case "express":
+		return "node server.js", domain_name
+	case "nextjs":
+		return "node dev.js", domain_name
+	case "fastify":
+		return "node dev.js", domain_name
+	case "koa":
+		return "node dev.js", domain_name
+	case "null":
+		return "null", domain_name
+	default:
+		return "null", "null"
+	}
 }
 func GenerateUniquePort(db *gorm.DB) (int, error) {
 
@@ -101,7 +122,7 @@ func GenerateUniquePort(db *gorm.DB) (int, error) {
 	return 0, fmt.Errorf("sum port  %d ", maxAttempts)
 }
 
-func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB, port int) error {
+func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB, port int, startServer models.StartServer) error {
 	//1.save domain name
 
 	result := db.Create(&domain)
@@ -109,16 +130,17 @@ func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *model
 		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.58", "can't create recod")
 		return result.Error
 	}
-	//2.save website
-	dataDoamin, err := LoadSingleDomain(domain.Domain_name, db)
-	if err != nil {
-		return err
-	}
+
+	//save website
+	// dataDoamin, err := LoadSingleDomain(domain.Domain_name, db)
+	// if err != nil {
+	// 	return err
+	// }
 	dbSaveWebsite := models.Website{
 		UserID:              user.ID,
 		StorageLimit:        5,
 		Status:              "offline",
-		Domain_id:           dataDoamin.ID,
+		Domain_id:           domain.ID,
 		ProgrammingLanguage: website.ProgrammingLanguage,
 		Framework:           website.Framework,
 		Port:                port,
@@ -126,6 +148,17 @@ func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *model
 	result = db.Create(&dbSaveWebsite)
 	if result.Error != nil {
 		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.76", "can't create recod")
+		return result.Error
+	}
+	//save StartServer
+	startServer = models.StartServer{
+		Command:   startServer.Command,
+		Path:      startServer.Path,
+		WebsiteID: dbSaveWebsite.ID, // ได้ ID จากตอน insert website
+	}
+	result = db.Create(&startServer)
+	if result.Error != nil {
+		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.94", "can't create recod")
 		return result.Error
 	}
 	return nil

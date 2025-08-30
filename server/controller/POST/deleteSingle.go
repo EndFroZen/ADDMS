@@ -28,5 +28,6 @@ func DeleteSingleFile(c *fiber.Ctx) error {
 		fmt.Println(err)
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(404, fmt.Sprintf("%s : error for delete file", req.Path)))
 	}
+	
 	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, fmt.Sprintf("%s is Delete successfull", req.Path)))
 }

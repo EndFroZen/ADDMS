@@ -5,7 +5,7 @@ import (
 )
 
 func DeleteFileByPath(path string) error {
-	err := os.Remove(path)
+	err := os.RemoveAll(path)
 	if err != nil {
 		return err
 	}

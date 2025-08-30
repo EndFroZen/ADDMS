@@ -36,32 +36,70 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": 585.3364220861704,
-			"y": 469.73595134897346,
-			"lastActivityTimestamp": 1755772593380,
+			"x": 21.357476602018778,
+			"y": 1516.3385922921193,
+			"lastActivityTimestamp": 1756311391622,
 			"meta": {}
 		},
 		{
-			"x": -309.0591292146524,
-			"y": -214.50321789540317,
-			"z": 1.8532105721699839,
-			"meta": {},
-			"id": "camera:page:page",
-			"typeName": "camera"
-		},
-		{
-			"x": 545.3250919580588,
-			"y": 454.46941619670065,
+			"x": 130.74267300737745,
+			"y": 460.66385776278,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
 			"meta": {},
-			"id": "shape:LoKwKB3FTE3j_vkYgsRHg",
+			"id": "shape:_nqSuXvG78hcjt28yxNw3",
+			"type": "geo",
+			"props": {
+				"w": 229,
+				"h": 61.6875,
+				"geo": "rectangle",
+				"dash": "draw",
+				"growY": 0,
+				"url": "",
+				"scale": 1,
+				"color": "black",
+				"labelColor": "black",
+				"fill": "none",
+				"size": "m",
+				"font": "draw",
+				"align": "middle",
+				"verticalAlign": "middle",
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "WIFI : public ip"
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "a80nV",
+			"typeName": "shape"
+		},
+		{
+			"x": -1995.567184581148,
+			"y": -306.8089453118404,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:jZHQ31QPZkkt51tf_xIyA",
 			"type": "text",
 			"props": {
 				"color": "black",
 				"size": "m",
-				"w": 103.703125,
+				"w": 1003.203125,
 				"font": "draw",
 				"textAlign": "start",
 				"autoSize": true,
@@ -77,7 +115,968 @@
 							"content": [
 								{
 									"type": "text",
-									"text": "cloundfl"
+									"text": "package service"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "import ("
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"bytes\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"fmt\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"os\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"os/exec\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"regexp\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"server/models\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "\"syscall\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": ")"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// StartServerLogic รัน server ของผู้ใช้ผ่าน firejail แบบ background"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "func StartServerLogic(command string, user models.User, path string ) (int, string, error) {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// ตรวจ blacklist"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Println(\"StartServerLogic command:\", command)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if CheckIsBlacklisted(command) {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "return 0, fmt.Sprintf(\"command is blacklisted: %s\", command), fmt.Errorf(\"command is blacklisted: %s\", command)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "    }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// Path จริงในเซิร์ฟเวอร์"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "basePath := os.Getenv(\"USER_Path\")"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "privateBasePath := os.Getenv(\"Private_Base_Path\")"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "newPath := fmt.Sprintf(\"%s/%s/%s\", basePath, user.Folder, path)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "userPath := fmt.Sprintf(\"%s/%s\", user.Folder, path) // path user-friendly สำหรับ log"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// สร้าง command ผ่าน firejail"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Println(\"Executing command in firejail:\", command)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "cmd := exec.Command(\"/usr/bin/firejail\", \"--noprofile\", \"--private=\"+newPath, \"bash\", \"-c\", command)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "cmd.Dir = newPath"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true} // สร้าง session ใหม่ให้เป็น parent process"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// เก็บ stdout/stderr ใน buffer"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "var outBuf, errBuf bytes.Buffer"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "cmd.Stdout = &outBuf"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "cmd.Stderr = &errBuf"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// เริ่ม process (ไม่รอ)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Println(\"Starting process...\")"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if err := cmd.Start(); err != nil {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "return 0, fmt.Sprintf(\"command is blacklisted: %s\", command), fmt.Errorf(\"failed to start server: %w\", err)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "    }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "messageCh := make(chan string)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "pid := cmd.Process.Pid"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Println(\"Server started successfully with PID:\", pid)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// อ่าน stdout/stderr แบบ async เพื่อหลีกเลี่ยง deadlock"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "go func() {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "message := \"\""
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "err := cmd.Wait() // รอ process จริงจบ"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "re := regexp.MustCompile(regexp.QuoteMeta(privateBasePath))"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "safeOut := re.ReplaceAllString(outBuf.String(), userPath)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "safeErr := re.ReplaceAllString(errBuf.String(), userPath)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if err != nil {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if cmd.Process != nil {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "_ = cmd.Process.Kill()"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "            }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Printf(\"[Server PID %d] Error: %v\\n\", pid, err)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "        }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if len(safeOut) > 0 {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "fmt.Printf(\"[Server PID %d] stdout: %s %d\\n\", pid, safeOut, len(safeOut))"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "for _, char := range safeErr {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// fmt.Printf(\"Index: %d, Rune: %c, Value: %d\\n\", i, char, char)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "message = message + fmt.Sprintf(\"%c\", char)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "            }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "        }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "if len(safeErr) > 0 {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// fmt.Printf(\"[Server PID %d] stderr: %s %d\\n\", pid, safeErr, len(safeErr))"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "for _, char := range safeErr {"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "// fmt.Printf(\"Index: %d, Rune: %c, Value: %d\\n\", i, char, char)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "message = message + fmt.Sprintf(\"%c\", char)"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "            }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "        }"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "messageCh <- message"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "    }()"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "message := <-messageCh"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "return pid, message, nil"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "}"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "hardBreak"
 								}
 							]
 						}
@@ -85,17 +1084,64 @@
 				}
 			},
 			"parentId": "page:page",
-			"index": "a360m",
+			"index": "aA8zc",
 			"typeName": "shape"
 		},
 		{
-			"x": 604.2974514088419,
-			"y": 486.5962695822185,
+			"x": 522.1092195042002,
+			"y": -964.5957536056025,
+			"z": 1.0874631403071124,
+			"meta": {},
+			"id": "camera:page:page",
+			"typeName": "camera"
+		},
+		{
+			"x": -197.50051607696616,
+			"y": 1382.4381408723289,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
 			"meta": {},
-			"id": "shape:tVsRVLlB4VSw61csarbTc",
+			"id": "shape:1pmzchDAfderF4ebSYaCK",
+			"type": "text",
+			"props": {
+				"color": "blue",
+				"size": "m",
+				"w": 101.96875,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "3 nomal"
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "aDAM7",
+			"typeName": "shape"
+		},
+		{
+			"x": 811.7426730073774,
+			"y": 490.66385776278,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:-WK17G3l50rmoJwEoUL3d",
 			"type": "arrow",
 			"props": {
 				"kind": "arc",
@@ -107,12 +1153,12 @@
 				"labelColor": "black",
 				"bend": 0,
 				"start": {
-					"x": 0,
-					"y": 0
+					"x": 69.5,
+					"y": -16.336142237219974
 				},
 				"end": {
-					"x": -12.745232708414278,
-					"y": 86.03032078179638
+					"x": -158,
+					"y": -150
 				},
 				"arrowheadStart": "none",
 				"arrowheadEnd": "arrow",
@@ -129,16 +1175,140 @@
 				"scale": 1
 			},
 			"parentId": "page:page",
-			"index": "a49YM",
+			"index": "a5g8e",
 			"typeName": "shape"
 		},
 		{
-			"editingShapeId": null,
+			"x": 373.74267300737745,
+			"y": 497.66385776278,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:wCcrsvwQznNpUc1LaSPtl",
+			"type": "arrow",
+			"props": {
+				"kind": "arc",
+				"elbowMidPoint": 0.5,
+				"dash": "draw",
+				"size": "m",
+				"fill": "none",
+				"color": "black",
+				"labelColor": "black",
+				"bend": 0,
+				"start": {
+					"x": 0,
+					"y": 0
+				},
+				"end": {
+					"x": 44,
+					"y": 7
+				},
+				"arrowheadStart": "none",
+				"arrowheadEnd": "arrow",
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph"
+						}
+					]
+				},
+				"labelPosition": 0.5,
+				"font": "draw",
+				"scale": 1
+			},
+			"parentId": "page:page",
+			"index": "a924R",
+			"typeName": "shape"
+		},
+		{
+			"x": 595.7426730073774,
+			"y": 357.66385776278,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:YEjFLyC-mHhCQmwW4rKuy",
+			"type": "arrow",
+			"props": {
+				"kind": "arc",
+				"elbowMidPoint": 0.5,
+				"dash": "draw",
+				"size": "m",
+				"fill": "none",
+				"color": "black",
+				"labelColor": "black",
+				"bend": 0,
+				"start": {
+					"x": 0,
+					"y": 0
+				},
+				"end": {
+					"x": 3,
+					"y": 46
+				},
+				"arrowheadStart": "none",
+				"arrowheadEnd": "arrow",
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph"
+						}
+					]
+				},
+				"labelPosition": 0.5,
+				"font": "draw",
+				"scale": 1
+			},
+			"parentId": "page:page",
+			"index": "a64c7",
+			"typeName": "shape"
+		},
+		{
+			"meta": {},
+			"id": "binding:aelfWQ5LAGXyzrKEeUfxf",
+			"type": "arrow",
+			"fromId": "shape:-WK17G3l50rmoJwEoUL3d",
+			"toId": "shape:TKILs7n-9W7HgvBCLyZYs",
+			"props": {
+				"isPrecise": true,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.975605815831987,
+					"y": 0.19126869271587071
+				},
+				"snap": "none",
+				"terminal": "start"
+			},
+			"typeName": "binding"
+		},
+		{
+			"meta": {},
+			"id": "binding:5sChVIb8PsgiTfBkL8nOW",
+			"type": "arrow",
+			"fromId": "shape:wCcrsvwQznNpUc1LaSPtl",
+			"toId": "shape:_nqSuXvG78hcjt28yxNw3",
+			"props": {
+				"isPrecise": false,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.5,
+					"y": 0.5
+				},
+				"snap": "center",
+				"terminal": "start"
+			},
+			"typeName": "binding"
+		},
+		{
+			"editingShapeId": "shape:Rkirm0vdVe1uFqmM1J0L7",
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:LoKwKB3FTE3j_vkYgsRHg"
+				"shape:Rkirm0vdVe1uFqmM1J0L7"
 			],
-			"hoveredShapeId": "shape:LoKwKB3FTE3j_vkYgsRHg",
+			"hoveredShapeId": null,
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -146,6 +1316,50 @@
 			"id": "instance_page_state:page:page",
 			"pageId": "page:page",
 			"typeName": "instance_page_state"
+		},
+		{
+			"x": 570.7426730073774,
+			"y": 346.66385776278,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:Ubd0f3nMFjK62MplmxymR",
+			"type": "arrow",
+			"props": {
+				"kind": "arc",
+				"elbowMidPoint": 0.5,
+				"dash": "draw",
+				"size": "m",
+				"fill": "none",
+				"color": "black",
+				"labelColor": "black",
+				"bend": 0,
+				"start": {
+					"x": 0,
+					"y": 0
+				},
+				"end": {
+					"x": -298,
+					"y": 194
+				},
+				"arrowheadStart": "none",
+				"arrowheadEnd": "arrow",
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph"
+						}
+					]
+				},
+				"labelPosition": 0.5,
+				"font": "draw",
+				"scale": 1
+			},
+			"parentId": "page:page",
+			"index": "a8g1b",
+			"typeName": "shape"
 		},
 		{
 			"x": 554,
@@ -187,8 +1401,26 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 537.7036105073774,
-			"y": 570.13240302556,
+			"meta": {},
+			"id": "binding:0hdqHkF90xkZC71lL8ry8",
+			"type": "arrow",
+			"fromId": "shape:YEjFLyC-mHhCQmwW4rKuy",
+			"toId": "shape:TKILs7n-9W7HgvBCLyZYs",
+			"props": {
+				"isPrecise": false,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.5,
+					"y": 0.5
+				},
+				"snap": "center",
+				"terminal": "end"
+			},
+			"typeName": "binding"
+		},
+		{
+			"x": 735.7036105073774,
+			"y": 468.13240302556005,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
@@ -226,65 +1458,145 @@
 			"typeName": "shape"
 		},
 		{
-			"meta": {},
-			"id": "binding:0flp9PfPsbRoIWZ5lZ3RF",
-			"type": "arrow",
-			"fromId": "shape:LGAJCRQiQlOqQOaugjJBC",
-			"toId": "shape:7CVSf4dmGX3r59_FykRlo",
-			"props": {
-				"isPrecise": false,
-				"isExact": false,
-				"normalizedAnchor": {
-					"x": 0.5,
-					"y": 0.5
-				},
-				"snap": "center",
-				"terminal": "start"
-			},
-			"typeName": "binding"
-		},
-		{
-			"x": 600.1552507786073,
-			"y": 353.72721859699965,
+			"x": 418.74267300737745,
+			"y": 475.66385776278,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
 			"meta": {},
-			"id": "shape:LGAJCRQiQlOqQOaugjJBC",
-			"type": "arrow",
+			"id": "shape:jo0fDgiUNPHst24MCi5GS",
+			"type": "geo",
 			"props": {
-				"kind": "arc",
-				"elbowMidPoint": 0.5,
+				"w": 185,
+				"h": 61.6875,
+				"geo": "rectangle",
 				"dash": "draw",
-				"size": "m",
-				"fill": "none",
+				"growY": 0,
+				"url": "",
+				"scale": 1,
 				"color": "black",
 				"labelColor": "black",
-				"bend": 0,
-				"start": {
-					"x": 0,
-					"y": 0
-				},
-				"end": {
-					"x": 2.5490465416828556,
-					"y": 98.45692267250024
-				},
-				"arrowheadStart": "none",
-				"arrowheadEnd": "arrow",
+				"fill": "none",
+				"size": "m",
+				"font": "draw",
+				"align": "middle",
+				"verticalAlign": "middle",
 				"richText": {
 					"type": "doc",
 					"content": [
 						{
-							"type": "paragraph"
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "Server"
+								}
+							]
 						}
 					]
-				},
-				"labelPosition": 0.5,
-				"font": "draw",
-				"scale": 1
+				}
 			},
 			"parentId": "page:page",
-			"index": "a2BLW",
+			"index": "a7B8E",
+			"typeName": "shape"
+		},
+		{
+			"meta": {},
+			"id": "binding:aFvz6Upq2vQsaSRtkXCsl",
+			"type": "arrow",
+			"fromId": "shape:wCcrsvwQznNpUc1LaSPtl",
+			"toId": "shape:jo0fDgiUNPHst24MCi5GS",
+			"props": {
+				"isPrecise": true,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.03783783783783784,
+					"y": 0.4376899696048632
+				},
+				"snap": "none",
+				"terminal": "end"
+			},
+			"typeName": "binding"
+		},
+		{
+			"x": -211.677710103168,
+			"y": 1267.7547781577846,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:BrTkncYVBLgeuGU8mBcoG",
+			"type": "text",
+			"props": {
+				"color": "red",
+				"size": "m",
+				"w": 66.453125,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "1 err "
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "aB1lC",
+			"typeName": "shape"
+		},
+		{
+			"x": -179.10908812074894,
+			"y": 1444.0494245256566,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:Rkirm0vdVe1uFqmM1J0L7",
+			"type": "text",
+			"props": {
+				"color": "light-green",
+				"size": "m",
+				"w": 153.890625,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "4 Successful"
+								}
+							]
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "aE3JZ",
 			"typeName": "shape"
 		},
 		{
@@ -304,7 +1616,9 @@
 		{
 			"followingUserId": null,
 			"opacityForNextShape": 1,
-			"stylesForNextShape": {},
+			"stylesForNextShape": {
+				"tldraw:color": "light-green"
+			},
 			"brush": null,
 			"scribbles": [],
 			"cursor": {
@@ -318,7 +1632,7 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 1545,
+				"w": 960,
 				"h": 934
 			},
 			"insets": [
@@ -348,10 +1662,109 @@
 		},
 		{
 			"meta": {},
-			"id": "binding:Y4DH_v1LXVPkBWk_WtHtk",
+			"id": "binding:aGeCdE2bY0Ss5GGkxZm9A",
 			"type": "arrow",
-			"fromId": "shape:tVsRVLlB4VSw61csarbTc",
-			"toId": "shape:LoKwKB3FTE3j_vkYgsRHg",
+			"fromId": "shape:Ubd0f3nMFjK62MplmxymR",
+			"toId": "shape:_nqSuXvG78hcjt28yxNw3",
+			"props": {
+				"isPrecise": true,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.5283842794759825,
+					"y": 0.6160081053698075
+				},
+				"snap": "none",
+				"terminal": "end"
+			},
+			"typeName": "binding"
+		},
+		{
+			"x": -208.5353728506965,
+			"y": 1318.0681430255686,
+			"rotation": 0,
+			"isLocked": false,
+			"opacity": 1,
+			"meta": {},
+			"id": "shape:6qQuk_iGC63vQl1jEq9lP",
+			"type": "text",
+			"props": {
+				"color": "yellow",
+				"size": "m",
+				"w": 145.078125,
+				"font": "draw",
+				"textAlign": "start",
+				"autoSize": true,
+				"scale": 1,
+				"richText": {
+					"type": "doc",
+					"content": [
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							},
+							"content": [
+								{
+									"type": "text",
+									"text": "2 warnning"
+								}
+							]
+						},
+						{
+							"type": "paragraph",
+							"attrs": {
+								"dir": "auto"
+							}
+						}
+					]
+				}
+			},
+			"parentId": "page:page",
+			"index": "aC56a",
+			"typeName": "shape"
+		},
+		{
+			"meta": {},
+			"id": "binding:IuPMJaAtSlrXUM6As6fqU",
+			"type": "arrow",
+			"fromId": "shape:-WK17G3l50rmoJwEoUL3d",
+			"toId": "shape:7CVSf4dmGX3r59_FykRlo",
+			"props": {
+				"isPrecise": true,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.9667925327346413,
+					"y": 0.39700284458172774
+				},
+				"snap": "none",
+				"terminal": "end"
+			},
+			"typeName": "binding"
+		},
+		{
+			"meta": {},
+			"id": "binding:yNf5vrugY6vJ8aefaSbfW",
+			"type": "arrow",
+			"fromId": "shape:YEjFLyC-mHhCQmwW4rKuy",
+			"toId": "shape:7CVSf4dmGX3r59_FykRlo",
+			"props": {
+				"isPrecise": false,
+				"isExact": false,
+				"normalizedAnchor": {
+					"x": 0.5,
+					"y": 0.5
+				},
+				"snap": "center",
+				"terminal": "start"
+			},
+			"typeName": "binding"
+		},
+		{
+			"meta": {},
+			"id": "binding:jfqJ2iDyzosX6k0IhHLvg",
+			"type": "arrow",
+			"fromId": "shape:Ubd0f3nMFjK62MplmxymR",
+			"toId": "shape:7CVSf4dmGX3r59_FykRlo",
 			"props": {
 				"isPrecise": false,
 				"isExact": false,

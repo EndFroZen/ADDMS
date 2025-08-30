@@ -9,11 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type getbodyfileadd struct {
-	Path string `json:"path"`
-}
-
-func Addsinglefile(c *fiber.Ctx) error {
+func Addsinglefolder(c *fiber.Ctx) error {
 	// 1. Check user
 	userID := c.Locals("user_id").(float64)
 	intUserID := int(userID)
@@ -31,14 +27,13 @@ func Addsinglefile(c *fiber.Ctx) error {
 	if err != nil || haveDomain.Domain_name != firstPart {
 		return c.Status(fiber.StatusNotFound).JSON(service.SimpleStatus(404, "domain not found or incorrect"))
 	}
-	
-	// 4. Create file
+
+	// 4. Create folder
 	newPath := fmt.Sprintf("../corefolder/%s/%s", dataUser.Folder, req.Path)
-	if err := service.AddSingleFileService(newPath); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(service.SimpleStatus(500, "failed to create file"))
+	if err := service.AddsingleFolderService(newPath); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(service.SimpleStatus(500, "failed to create folder"))
 	}
 
 	// 5. Success
-	
-	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, fmt.Sprintf("add file %s successful", req.Path)))
+	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, fmt.Sprintf("add folder %s successful", req.Path)))
 }

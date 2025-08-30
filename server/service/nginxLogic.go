@@ -7,8 +7,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"server/config"
+	noti "server/log"
 	"server/models"
 	"text/template"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 // Domain + port
@@ -27,7 +32,7 @@ type UserServer struct {
 const nginxTemplate = `{{range .Domains}}
 server {
     listen 80;
-    server_name {{.Domain}}.endfrozen.site;
+    server_name {{.Domain}};
 
     location / {
         proxy_pass http://localhost:{{.Port}};
@@ -110,7 +115,7 @@ func CreateUserNginxConfig(websites []models.Website, user *models.User) error {
 	if out, err := cmdReload.CombinedOutput(); err != nil {
 		return fmt.Errorf("nginx reload failed: %s", string(out))
 	}
-
+	ReloadRecodeIsOnline(config.DB)
 	fmt.Println("Nginx reloaded successfully!")
 	return nil
 }
@@ -120,4 +125,43 @@ func DebugPrintServers(websites []models.Website, user *models.User) {
 	servers := convertToUserServer(websites, user)
 	b, _ := json.MarshalIndent(servers, "", "  ")
 	fmt.Println(string(b))
+}
+
+func ReloadRecodeIsOnline(db *gorm.DB) {
+	// ดึง port ทั้งหมดที่ไม่ใช่ NULL
+	var allport []int
+	if err := db.Model(&models.Website{}).Where("port IS NOT NULL").Pluck("port", &allport).Error; err != nil {
+		noti.LogNotic(1, "makeWebsite", "reloadRecodeIsOnline", fmt.Sprintf("%v", err))
+		return
+	}
+
+	for _, port := range allport {
+		if IsPortInUse(port) {
+			// อัปเดต status เป็น "online"
+			if err := db.Model(&models.Website{}).Where("port = ?", port).Update("status", "online").Error; err != nil {
+				noti.LogNotic(1, "makeWebsite", "reloadRecodeIsOnline", fmt.Sprintf("Port %d: %v", port, err))
+			}
+		} else {
+			// อัปเดต status เป็น "offline"
+			if err := db.Model(&models.Website{}).Where("port = ?", port).Update("status", "offline").Update("pid", 0).Error; err != nil {
+				noti.LogNotic(1, "makeWebsite", "reloadRecodeIsOnline", fmt.Sprintf("Port %d: %v", port, err))
+			}
+		}
+		// fmt.Println(port ," : ", IsPortInUse(port))
+	}
+}
+
+func SingleReloadRecodeIsOnline(port int, db *gorm.DB)error {
+	if WaitForPort(port, 5*time.Second) {
+		// อัปเดต status เป็น "online"
+		if err := db.Model(&models.Website{}).Where("port = ?", port).Update("status", "online").Error; err != nil {
+			noti.LogNotic(1, "makeWebsite", "SingleReloadRecodeIsOnline", fmt.Sprintf("Port %d: %v", port, err))
+		}
+	} else {
+		// อัปเดต status เป็น "offline"
+		if err := db.Model(&models.Website{}).Where("port = ?", port).Update("status", "offline").Update("pid", 0).Error; err != nil {
+			noti.LogNotic(1, "makeWebsite", "SingleReloadRecodeIsOnline", fmt.Sprintf("Port %d: %v", port, err))
+		}
+	}
+	return nil
 }

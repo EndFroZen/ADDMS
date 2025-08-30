@@ -13,19 +13,19 @@ func JWTProtected() fiber.Handler {
 		tokenString := c.Get("Authorization")
 		// fmt.Println(tokenString)
 		if tokenString == "" {
-			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401,"Invalid token"))
+			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401, "Invalid token"))
 		}
 		if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
 			tokenString = tokenString[7:]
 		} else {
-			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401,"Invalid token"))
+			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401, "Invalid token"))
 		}
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SEC")), nil
 		})
 
 		if err != nil || !token.Valid {
-			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401,"Invalid token"))
+			return c.Status(fiber.StatusUnauthorized).JSON(service.SimpleStatus(401, "Invalid token"))
 		}
 
 		claims := token.Claims.(jwt.MapClaims)

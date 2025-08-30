@@ -34,8 +34,11 @@ func Showdashboard(c *fiber.Ctx) error {
 			"programinglangue": site.ProgrammingLanguage,
 			"framwork":         site.Framework,
 			"port":             site.Port,
+			"start_server":     site.StartServer,
+			"pid":              site.Pid,
 		})
 	}
+	service.ReloadRecodeIsOnline(config.DB)
 	return c.JSON(fiber.Map{
 		"name":    dataUser.Username,
 		"folder":  dataUser.Folder,

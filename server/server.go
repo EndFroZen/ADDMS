@@ -19,13 +19,24 @@ func main() {
 	}))
 	config.ConnectDatabase()
 	service.AutoCreateFolderWeb(config.DB)
-	// serverNginx, err := service.LoadUserServers(config.DB)
-	// if err != nil {
-	// 	panic("Failed to load server configurations: " + err.Error())
-	// }
-	// if err := service.CreateNginxConfigs(serverNginx); err != nil {
-	// 	panic("Failed to create Nginx configurations: " + err.Error())
-	// }
+	service.ReloadRecodeIsOnline(config.DB)
+
 	routes.SetupRoutes(app)
 	app.Listen("127.0.0.1:5661")
 }
+
+// func gensecretKey(db *gorm.DB) {
+// 	var users []models.User
+// 	result := db.Find(&users)
+// 	if result.Error != nil {
+// 		log.Fatal("failed to find records")
+// 	}
+
+// 	for i := range users {
+// 		key := generateRandomKey(8) // 8 bytes = 16 hex characters
+// 		users[i].SecretKey = key
+// 		if err := db.Save(&users[i]).Error; err != nil {
+// 			log.Printf("failed to update user %d: %v", users[i].ID, err)
+// 		}
+// 	}
+// }
