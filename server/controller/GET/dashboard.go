@@ -29,7 +29,7 @@ func Showdashboard(c *fiber.Ctx) error {
 			"id":               site.ID,
 			"domain":           site.Domain,
 			"status":           site.Status,
-			"storage_limit":    site.StorageLimit,
+			"storage_limit":    site.StorageUsage,
 			"created_at":       site.CreatedAt,
 			"programinglangue": site.ProgrammingLanguage,
 			"framwork":         site.Framework,
@@ -45,5 +45,6 @@ func Showdashboard(c *fiber.Ctx) error {
 		"email":   dataUser.Email,
 		"storage": storage,
 		"website": websites,
+		"storage_limit": dataUser.StorageLimit,
 	})
 }

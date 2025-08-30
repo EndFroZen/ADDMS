@@ -9,7 +9,7 @@ import (
 type Website struct {
 	gorm.Model
 	UserID              uint
-	StorageLimit        int
+	StorageUsage        float64
 	Status              string
 	ProgrammingLanguage string `json:"programminglanguage"`
 	Framework           string `json:"framework"`
@@ -61,15 +61,14 @@ type Activity_logs struct {
 	Details    string
 }
 
-
 type Notifications struct {
 	gorm.Model
-	UserID  uint
-	User    User `gorm:"foreignKey:UserID"`
-	Title   string
-	Massage string
-	Type    string
-	ColorCode int 
+	UserID    uint
+	User      User `gorm:"foreignKey:UserID"`
+	Title     string
+	Massage   string
+	Type      string
+	ColorCode int
 }
 
 type StartServer struct {
@@ -77,4 +76,12 @@ type StartServer struct {
 	Command   string
 	Path      string
 	WebsiteID uint // FK ไปหา Website
+}
+
+type ResourceUsage struct {
+	gorm.Model
+	WebsiteID uint
+	Website   Website `gorm:"foreignKey:WebsiteID"`
+	CpuUsage  float64
+	RamUsage  float64
 }

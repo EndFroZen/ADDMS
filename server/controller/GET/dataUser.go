@@ -17,5 +17,6 @@ func DataUserByJWT(c *fiber.Ctx)error  {
 		"email":dataUser.Email,
 		"folder":dataUser.Folder,
 		"role":dataUser.Role,
+		"storage":dataUser.StorageLimit,
 	})
 }

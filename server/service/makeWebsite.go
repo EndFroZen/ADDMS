@@ -7,6 +7,7 @@ import (
 	"server/config"
 	noti "server/log"
 	"server/models"
+
 	service_create "server/service/createweb"
 	"time"
 
@@ -18,10 +19,11 @@ var notiFileMakeWebsite string = "service@makeWebsite"
 func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 
 	if websiteData.Domain_name == "" {
-		return fmt.Errorf("domain name has requite!!")
-
+		return fmt.Errorf("domain name is required")
 	}
+
 	userData := user
+
 	domainModel := models.Domain{
 		Is_verified: websiteData.Is_verified,
 		Ssl_enabled: websiteData.Ssl_enabled,
@@ -53,10 +55,12 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 		}
 	case "nodejs":
 		{
+			fmt.Println("Creating NodeJS project...")
 			err := service_create.CreateNodeJS(websiteData, userData, port)
 			if err != nil {
 				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
 				deleteIfErr(websiteData, userData)
+				fmt.Println("Error creating NodeJS project:", err)
 				return err
 			}
 		}
@@ -79,7 +83,7 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	}
 	return nil
 }
-func GenCommndAndPath(framework string ,domain_name string) (string, string) {
+func GenCommndAndPath(framework string, domain_name string) (string, string) {
 	switch framework {
 	case "express":
 		return "node server.js", domain_name
@@ -88,7 +92,7 @@ func GenCommndAndPath(framework string ,domain_name string) (string, string) {
 	case "fastify":
 		return "node dev.js", domain_name
 	case "koa":
-		return "node dev.js", domain_name
+		return "node server.js", domain_name
 	case "null":
 		return "null", domain_name
 	default:
@@ -124,7 +128,12 @@ func GenerateUniquePort(db *gorm.DB) (int, error) {
 
 func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *models.User, db *gorm.DB, port int, startServer models.StartServer) error {
 	//1.save domain name
-
+	// fmt.Println("1.Saving domain:", domain.Domain_name)
+	storageUsage, err := CheckStoragefolderSome(user.Folder, domain.Domain_name)
+	// fmt.Println("Storage usage:", storageUsage)
+	if err != nil {
+		return fmt.Errorf("failed to check storage usage: %v", err)
+	}
 	result := db.Create(&domain)
 	if result.Error != nil {
 		noti.LogNotic(2, notiFileMakeWebsite, "saveWebDomain.58", "can't create recod")
@@ -136,9 +145,10 @@ func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *model
 	// if err != nil {
 	// 	return err
 	// }
+	// fmt.Println("2.Saving website for domain:", domain.Domain_name)
 	dbSaveWebsite := models.Website{
 		UserID:              user.ID,
-		StorageLimit:        5,
+		StorageUsage:        storageUsage,
 		Status:              "offline",
 		Domain_id:           domain.ID,
 		ProgrammingLanguage: website.ProgrammingLanguage,
@@ -151,6 +161,7 @@ func saveWebDoamin(website *models.SaveStruct, domain models.Domain, user *model
 		return result.Error
 	}
 	//save StartServer
+	// fmt.Println("3.Saving start server for website ID:", dbSaveWebsite.ID)
 	startServer = models.StartServer{
 		Command:   startServer.Command,
 		Path:      startServer.Path,
@@ -188,6 +199,7 @@ func checkDomainName(name string, db *gorm.DB) error {
 	return nil
 }
 func deleteIfErr(websiteData *models.SaveStruct, userData *models.User) {
+	fmt.Println("deleting folder:", websiteData.Domain_name)
 	pathFolder := fmt.Sprintf("../corefolder/%s/%s", userData.Folder, websiteData.Domain_name)
 	err := os.RemoveAll(pathFolder)
 	if err != nil {

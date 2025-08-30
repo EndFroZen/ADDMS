@@ -22,4 +22,8 @@ func methotGet(routes fiber.Router) {
 	routes.Get("/getnotification",middleware.JWTProtected(),controllerGet.GetNotification)
 	routes.Get("/getplugin",middleware.JWTProtected(),controllerGet.GetPlugin)
 	// routes.Get("/getrunserver",middleware.JWTProtected(),controllerGet.Getrunserver)
+
+	routes.Get("admin/getlistalluser",middleware.JWTProtected(),controllerGet.GetListAllUser)
+	routes.Get("admin/getlistallwebsite",middleware.JWTProtected(),controllerGet.GetListAllWebsite)
+
 } 

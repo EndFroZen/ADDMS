@@ -31,7 +31,7 @@ func CreateWebFile(webSiteData *models.ModelWeb, db *gorm.DB, userData *models.U
 	
 	dataWebsite := models.Website{
 		UserID:       userData.ID,
-		StorageLimit: 10,
+		StorageUsage: 10,
 		Status:       "offline",
 		Domain_id:    domain.ID,
 	}

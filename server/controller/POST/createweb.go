@@ -20,7 +20,6 @@ func CreateNewWebsite(c *fiber.Ctx) error {
 	}
 	
 	if err := service.MakeWebsite(&jsonReqStuct, &dataUser); err != nil {
-		
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, fmt.Sprintf("Create website false %s",err)))
 	}
 	if err := service.SaveNotification(config.DB, dataUser.ID, "New Deploy", fmt.Sprintf("New Deploy New Website : %s",jsonReqStuct.Domain_name), "Create", 3); err != nil {

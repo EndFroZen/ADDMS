@@ -23,6 +23,7 @@ func Register(db *gorm.DB, registerUser *models.User)(string,error) {
 
 	registerUser.Password = string(hashedPassword)
 	registerUser.SecretKey = GenerateRandomKey(8)
+	registerUser.StorageLimit= 2000
 	fmt.Printf(registerUser.SecretKey)
 	// Create new user in DB
 	result := db.Create(registerUser)
