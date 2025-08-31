@@ -1,0 +1,28 @@
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Go build outputs
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Environment files
+.env
+*.env
+.env.*
+server/.env
+
+# Logs
+*.log
+log/
+server/log/*.log
+
+# Corefolder (ไฟล์เว็บ user)
+corefolder/
+
+# IDE / Editor configs
+.vscode/
+.idea/

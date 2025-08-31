@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTful API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: #4A90E2;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 36px;
+        }
+
+        .api-method-box {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .api-method-box:hover {
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .api-path {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F3F4F6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .api-path p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .api-path span {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .api-method-box h3 {
+            font-size: 20px;
+            color: #4A90E2;
+            margin-top: 20px;
+        }
+
+        .api-method-box pre {
+            background-color: #2D2D2D;
+            color: #F5F5F5;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #4A90E2;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>RESTful API Documentation</h1>
+
+        <div id="api-list">
+            <!-- The API paths will be dynamically loaded here -->
+        </div>
+
+    </div>
+
+    <script>
+        let apiData = {};
+
+        // Fetch data from the API URL
+        fetch('http://127.0.0.1:5661/api/showapipathjson')
+            .then(response => response.json())
+            .then(data => {
+                apiData = data;
+                populateApiPaths();
+            })
+            .catch(error => {
+                console.error('Error loading the API data:', error);
+            });
+
+        // Populate the API paths directly on the page
+        function populateApiPaths() {
+            const apiListDiv = document.getElementById('api-list');
+            apiListDiv.innerHTML = ''; // Clear previous data
+
+            for (const path in apiData) {
+                const apiDetails = apiData[path];
+
+                // Extract method from path
+                const method = path.match(/\(([^)]+)\)/) ? path.match(/\(([^)]+)\)/)[1] : "Unknown";
+
+                const apiBox = document.createElement('div');
+                apiBox.classList.add('api-method-box');
+
+                apiBox.innerHTML = `
+                    <div class="api-path">
+                        <p>${path.replace(/\(POST\)/, '')}</p>
+                        <span><strong>Method:</strong> ${method}</span>
+                    </div>
+
+                    <h3>Input JSON:</h3>
+                    <pre>${JSON.stringify(apiDetails.input, null, 2)}</pre>
+
+                    <h3>Output JSON:</h3>
+                    <pre>${JSON.stringify(apiDetails.output, null, 2)}</pre>
+                `;
+
+                apiListDiv.appendChild(apiBox);
+            }
+        }
+    </script>
+
+</body>
+</html>
