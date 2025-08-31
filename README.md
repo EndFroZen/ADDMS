@@ -19,26 +19,6 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [🎯 Overview](#overview)
-- [✨ Features](#features)
-- [🔧 Prerequisites](#prerequisites)
-- [🚀 Quick Start](#quick-start)
-- [📋 Installation](#installation)
-- [⚙️ Configuration](#configuration)
-- [💻 Usage](#usage)
-- [🏗️ Architecture](#architecture)
-- [📚 API Documentation](#api-documentation)
-- [🧪 Testing](#testing)
-- [🚀 Deployment](#deployment)
-- [🤝 Contributing](#contributing)
-- [📄 License](#license)
-- [👥 Support](#support)
-- [🙏 Acknowledgments](#acknowledgments)
-
----
-
 ## 🎯 Overview
 
 ADDMS (Automated Deployment & Domain Management System) is a comprehensive control panel designed to streamline web development workflows. It provides an intuitive interface for managing deployments, domains, and server resources while maintaining the flexibility that developers need.
