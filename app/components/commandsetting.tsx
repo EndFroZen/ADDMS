@@ -510,10 +510,10 @@ export default function CommandSetting({ FullPath, Name }: CommandSettingProps) 
               >
                 History install plugin <Clock /> </div>
               {showHistory && (
-                <div className="bg-gray-500 max-h-[20rem] overflow-y-auto h-full ">
+                <div className=" max-h-[20rem] overflow-y-auto h-full ">
 
                   {getAllPlugin === null || getAllPlugin.length === 0 ? (
-                    <div className="">
+                    <div className="p-4 mb-2 rounded-lg bg-gray-900  text-white flex justify-center border border-gray-700">
                       This website not install plugin
                     </div>) : (
                     <div className="">

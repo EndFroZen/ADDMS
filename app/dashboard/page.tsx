@@ -2,7 +2,7 @@
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Globe, Server, Code2, Pause, Play } from "lucide-react";
+import { Globe, Server, Code2, Pause, Play, RefreshCcw } from "lucide-react";
 import { Dialog } from "@headlessui/react";
 import { s } from "framer-motion/client";
 import Loading from "../components/loading";
@@ -16,12 +16,12 @@ interface command { }
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [commnadSave, setCommandSave] = useState<string>("");
   const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
   const [confirmingId, setConfirmingId] = useState<number | null>(null);
   const [hostData, setHostData] = useState<any>(null)
   const [notifications, setNotifications] = useState([]);
   const [selectedNoti, setSelectedNoti] = useState<any>(null);
+  const [userResource, setUserResource] = useState<any>(null);
 
   async function reloadNginx() {
     const res = await fetch(`${BASE_URL}/api/reloadnginx`, {
@@ -73,11 +73,12 @@ export default function Dashboard() {
 
     const result = await res.json();
     // console.log(result)
-    setUser({
+    await setUser({
       ...result,
       website: result.website || [],
     });
     loadNotification();
+    ResourceLoad();
   }
   const [loadingBtnMap, setLoadingBtnMap] = useState<{ [id: string]: boolean }>({});
   const handleRunServer = async (Command: string, Path: string, siteId: string) => {
@@ -132,13 +133,33 @@ export default function Dashboard() {
       });
       if (res.ok) {
         const result = await res.json()
-        console.log(result)
-        setHostData({ ...result, "data": result || [] })
+        // console.log(result)
+        await setHostData({ ...result, "data": result || [] })
       }
     } catch (err) {
       console.log(err)
     }
   }
+  const ResourceLoad = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+    try {
+      const res = await fetch(`${BASE_URL}/api/userresource`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        const result = await res.json()
+        // console.log(result)
+        await setUserResource(result)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   async function deleteWebsite(website: string) {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
     setLoading(true);
@@ -197,21 +218,39 @@ export default function Dashboard() {
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Storage Used</p>
-                <p className="text-2xl font-bold text-blue-600">{user.storage.toFixed(2)} MB</p>
+                <p className="text-2xl font-bold text-blue-600 hover:cursor-pointer"
+                  title={`Used: ${user.storage} MB\nLimit: ${user.storage_limit} MB\nPercentage: ${(user.storage / user.storage_limit * 100).toFixed(2)}%`}>
+                  {user.storage >= 1000
+                    ? (user.storage / 1000).toFixed(2) + " GB"
+                    : user.storage.toFixed(2) + " MB"}
+                  /
+                  {user.storage_limit >= 1000
+                    ? (user.storage_limit / 1000).toFixed(2) + " GB"
+                    : user.storage_limit.toFixed(2) + " MB"}
+                </p>
+
               </div>
             </div>
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-            <h3 className="text-lg font-medium text-orange-600 mb-4">Resource Usage</h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-medium text-orange-600 mb-4">Resource Usage</h3>
+              <button onClick={ResourceLoad} className="bg-gradient-to-r from-orange-400 to-orange-500 hover:opacity-90 text-white font-medium py-2 px-4 rounded-lg shadow transition text-sm">
+                Refresh
+              </button>
+            </div>
             <div className="flex flex-row items-center justify-between px-[10rem]">
               <div className="text-center">
                 <p className="text-sm text-gray-600">CPU Usage</p>
-                <p className="text-2xl font-bold text-green-600">30%</p>
+                <p className="text-2xl font-bold text-green-600">{userResource?.cpu || 0}%</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Memory Usage</p>
-                <p className="text-2xl font-bold text-blue-600">1.8 GB</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {Number(userResource?.ram || 0).toFixed(2)} MB
+                </p>
+
               </div>
               {/* <div className="text-center">
                 <p className="text-sm text-gray-600">Disk Usage</p>
@@ -369,32 +408,32 @@ export default function Dashboard() {
                   };
                   const icon = iconMap[noti.colorcode] || "ℹ️";
 
-              return (
-              <li
-                key={noti.id}
-                className={clsx(
-                  "flex items-start p-3 rounded-md border-l-4 cursor-pointer transition-all hover:shadow hover:-translate-y-0.5",
-                  borderColor,
-                  bgColor
-                )}
-                onClick={() => setSelectedNoti(noti)}
-              >
-                {/* Icon */}
-                <div className="text-xl mr-3">{icon}</div>
+                  return (
+                    <li
+                      key={noti.id}
+                      className={clsx(
+                        "flex items-start p-3 rounded-md border-l-4 cursor-pointer transition-all hover:shadow hover:-translate-y-0.5",
+                        borderColor,
+                        bgColor
+                      )}
+                      onClick={() => setSelectedNoti(noti)}
+                    >
+                      {/* Icon */}
+                      <div className="text-xl mr-3">{icon}</div>
 
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <strong className="text-gray-800">{noti.title}</strong>
-                    <span className="text-xs text-gray-400">{noti.time || "just now"}</span>
-                  </div>
-                  <p className="text-gray-600 line-clamp-2">{noti.massage}</p>
-                </div>
-              </li>
-              );
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <strong className="text-gray-800">{noti.title}</strong>
+                          <span className="text-xs text-gray-400">{noti.time || "just now"}</span>
+                        </div>
+                        <p className="text-gray-600 line-clamp-2">{noti.massage}</p>
+                      </div>
+                    </li>
+                  );
                 })
               ) : (
-              <li className="text-gray-400">No notifications</li>
+                <li className="text-gray-400">No notifications</li>
               )}
             </ul>
 
