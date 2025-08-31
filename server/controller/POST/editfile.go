@@ -27,5 +27,6 @@ func EditFile(c *fiber.Ctx) error {
 	if err := service.SaveNotification(config.DB, dataUser.ID, "Edit file", "Edit file done!", "done", 3); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(service.SimpleStatus(500, fmt.Sprint(err)))
 	}
+	
 	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, "editing successful"))
 }

@@ -63,6 +63,7 @@ func Installplugin(c *fiber.Ctx) error {
 	if err := service.SaveNotification(config.DB, dataUser.ID, fmt.Sprintf("Intsall : %s", dataInsatll.Command), fmt.Sprintf("Website : %s Install plugin successfull : %s", req.Path, messageOutput), "Install New plugin successfull ", 3); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(service.SimpleStatus(500, fmt.Sprint(err)))
 	}
+	
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": messageOutput,
 		"path":    req.Path,

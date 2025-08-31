@@ -10,7 +10,7 @@ import (
 func CheckStoragefolderSome(mainPath string,path string) (float64, error) {
 	// สร้าง path ไปที่ corefolder
 	fullPath := fmt.Sprintf("../corefolder/%s/%s",mainPath, path)
-
+	// fmt.Println("Check Storage Path : ",fullPath)
 	// ใช้คำสั่ง du -sh
 	cmd := exec.Command("du", "-sh", fullPath)
 

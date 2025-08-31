@@ -80,8 +80,9 @@ type StartServer struct {
 
 type ResourceUsage struct {
 	gorm.Model
-	WebsiteID uint
-	Website   Website `gorm:"foreignKey:WebsiteID"`
+	UserID    uint
+	User      User `gorm:"foreignKey:UserID"`
 	CpuUsage  float64
 	RamUsage  float64
+	Timestamp time.Time
 }

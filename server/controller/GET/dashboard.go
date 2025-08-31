@@ -13,6 +13,8 @@ func Showdashboard(c *fiber.Ctx) error {
 	userID := c.Locals("user_id").(float64)
 	newUserID := int(userID)
 	dataUser := service.LoadUserDataByID(newUserID, config.DB)
+	service.ReCheckAndUpdateStorage(dataUser.ID, config.DB)
+	// fmt.Println(err)
 	dataWebsite, err := service.LoadUserWebsiteByID(newUserID, config.DB)
 	if err != nil {
 		fmt.Println(err)
@@ -39,6 +41,7 @@ func Showdashboard(c *fiber.Ctx) error {
 		})
 	}
 	service.ReloadRecodeIsOnline(config.DB)
+	
 	return c.JSON(fiber.Map{
 		"name":    dataUser.Username,
 		"folder":  dataUser.Folder,

@@ -4,6 +4,7 @@ import (
 	"server/config"
 	"server/routes"
 	"server/service"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -20,7 +21,13 @@ func main() {
 	config.ConnectDatabase()
 	service.AutoCreateFolderWeb(config.DB)
 	service.ReloadRecodeIsOnline(config.DB)
-
+	//to every 5 minute
+	go func() {
+		for {
+			service.CreateResouse(config.DB)
+			time.Sleep(15 * time.Minute)
+		}
+	}()
 	routes.SetupRoutes(app)
 	app.Listen("127.0.0.1:5661")
 }

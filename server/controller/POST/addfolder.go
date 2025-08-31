@@ -35,5 +35,6 @@ func Addsinglefolder(c *fiber.Ctx) error {
 	}
 
 	// 5. Success
+	
 	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, fmt.Sprintf("add folder %s successful", req.Path)))
 }
