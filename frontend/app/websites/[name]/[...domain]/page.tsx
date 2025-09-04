@@ -30,7 +30,8 @@ export default function UserWeb({ params }: PageProps) {
     const [showDeleteFile, setShowDeleteFile] = useState(false);
     const [isMainFile, setIsMainFile] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-
+    const [showUploadFile, setShowUploadFile] = useState(false);
+    const [showDownload, setShowDownload] = useState(false);
 
     // Command management states
     const [showCommandSetting, setShowCommandSetting] = useState(false);
@@ -38,7 +39,21 @@ export default function UserWeb({ params }: PageProps) {
     const [isEditingCommand, setIsEditingCommand] = useState(false);
     const [tempCommand, setTempCommand] = useState("");
     const [serverStatus, setServerStatus] = useState("offline"); // online, offline, starting
+    const [files, setFiles] = useState<File[]>([]);
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setFiles(Array.from(e.target.files));
+        }
+    };
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setFiles(Array.from(e.dataTransfer.files));
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
     const fileExtensionsToEdit = [
         ".js", ".jsx", ".ts", ".tsx", ".html", ".htm", ".css", ".scss", ".less", ".json", ".jsonc",
         ".yml", ".yaml", ".xml", ".svg", ".vue", ".svelte", ".astro", ".liquid",
@@ -336,7 +351,7 @@ export default function UserWeb({ params }: PageProps) {
                     {/* GitHub-like header */}
                     <div className="flex  items-center justify-between mb-4">
                         {renderBreadcrumbs()}
-                       
+
                         <div className="flex items-center space-x-2">
                             <Link
                                 href="/dashboard"
@@ -346,24 +361,24 @@ export default function UserWeb({ params }: PageProps) {
                             </Link>
                         </div>
                     </div>
-                     <div className="flex flex-row mb-2 items-center gap-2">
-                            <div className="">
-                                <Link
-                                    title={`https://${domain[0]}`}
-                                    href={`https://${domain[0]}`}
-                                    className="text-orange-600 text-lg font-bold hover:underline flex items-center gap-2"
-                                    target="_blank"            // เปิดแท็บใหม่
-                                    rel="noopener noreferrer"
-                                >
+                    <div className="flex flex-row mb-2 items-center gap-2">
+                        <div className="">
+                            <Link
+                                title={`https://${domain[0]}`}
+                                href={`https://${domain[0]}`}
+                                className="text-orange-600 text-lg font-bold hover:underline flex items-center gap-2"
+                                target="_blank"            // เปิดแท็บใหม่
+                                rel="noopener noreferrer"
+                            >
 
-                                    <Globe size={18} />
-                                </Link>
-                            </div>
-
-                            <h1 className="text-xl font-semibold text-orange-400">
-                                {isEditableFile ? fullPath.split("/").pop() : fullPath}
-                            </h1>
+                                <Globe size={18} />
+                            </Link>
                         </div>
+
+                        <h1 className="text-xl font-semibold text-orange-400">
+                            {isEditableFile ? fullPath.split("/").pop() : fullPath}
+                        </h1>
+                    </div>
                     {/* Server Command Section - Only show for main directory */}
                     {isMainFile && (
                         <div className="">
@@ -503,13 +518,23 @@ export default function UserWeb({ params }: PageProps) {
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        alert("Upload logic here");
+                                                        setShowUploadFile(true);
                                                         setShowDropdown(false);
                                                     }}
                                                     className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                                                 >
                                                     Upload files
                                                 </button>
+                                                {isMainFile && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowDownload(true);
+                                                        }}
+                                                        className="block w-full text-left px-4 py-2 text-sm text-green-500 hover:bg-red-50"
+                                                    >
+                                                        Download
+                                                    </button>
+                                                )}
                                                 {!isMainFile && (
                                                     <button
                                                         onClick={() => {
@@ -526,6 +551,83 @@ export default function UserWeb({ params }: PageProps) {
                                     </div>
 
                                     {/* Modal - New File */}
+                                    {showUploadFile && (
+                                        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                                            <div className="bg-white rounded-2xl shadow-lg w-[500px] p-6 relative">
+
+                                                {/* ปุ่มปิด */}
+                                                <button
+                                                    onClick={() => setShowUploadFile(false)}
+                                                    className="absolute top-3 right-3 text-orange-500 hover:text-orange-700"
+                                                >
+                                                    <X size={24} />
+                                                </button>
+
+                                                <h2 className="text-xl font-bold text-orange-600 mb-4">
+                                                    อัปโหลดไฟล์
+                                                </h2>
+
+                                                {/* กล่องลากวาง */}
+                                                <div
+                                                    onDrop={handleDrop}
+                                                    onDragOver={handleDragOver}
+                                                    className="border-2 border-dashed border-orange-400 rounded-xl p-6 text-center cursor-pointer hover:bg-orange-50"
+                                                >
+                                                    <input
+                                                        type="file"
+                                                        multiple
+                                                        className="hidden"
+                                                        id="fileUpload"
+                                                        onChange={handleFileChange}
+                                                    />
+                                                    <label
+                                                        htmlFor="fileUpload"
+                                                        className="text-orange-500 font-medium cursor-pointer"
+                                                    >
+                                                        ลากไฟล์มาวางที่นี่ หรือกดเพื่อเลือกไฟล์
+                                                    </label>
+                                                </div>
+
+                                                {/* แสดงรายการไฟล์ที่เลือก */}
+                                                {files.length > 0 && (
+                                                    <div className="mt-4">
+                                                        <h3 className="text-orange-600 font-semibold mb-2">
+                                                            ไฟล์ที่เลือก:
+                                                        </h3>
+                                                        <ul className="list-disc list-inside text-gray-700 space-y-1">
+                                                            {files.map((file, index) => (
+                                                                <li key={index}>{file.name}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {showDownload && (
+                                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                                            <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+                                                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                                                    You got download?
+                                                </h2>
+                                                <div className="flex space-x-4 justify-center">
+                                                    <button
+                                                        onClick={() => setShowDownload(false)}
+                                                        className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                    >
+                                                        Yes
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setShowDownload(false)}
+                                                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                                    >
+                                                        No
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {showNewFile && (
                                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                                             <div className="bg-white text-black p-6 rounded-lg shadow-lg max-w-full relative">

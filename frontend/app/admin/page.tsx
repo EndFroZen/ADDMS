@@ -11,8 +11,8 @@ export default function Admin() {
     const adminCards = [
         {
             id: 1,
-            title: "จัดการผู้ใช้งาน",
-            description: "ดู แก้ไข และจัดการข้อมูลผู้ใช้งานทั้งหมด",
+            title: "Manage Users",
+            description: "View and manage all user accounts",
             icon: Users,
             color: "from-blue-500 to-blue-600",
             path: "/admin/users",

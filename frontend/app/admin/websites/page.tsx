@@ -340,7 +340,7 @@ export default function WebsitePage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full h-full">
                   <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">#</th>
