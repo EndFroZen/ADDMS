@@ -64,6 +64,28 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 				return err
 			}
 		}
+	case "go":
+		{
+			fmt.Println("Creating Go project...")
+			err := service_create.CreateGo(websiteData, userData, port)
+			if err != nil {
+				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+				deleteIfErr(websiteData, userData)
+				fmt.Println("Error creating Go project:", err)
+				return err
+			}
+		}
+	case "php":
+		{
+			fmt.Println("Creating PHP project...")
+			err := service_create.CreatePHP(websiteData, userData, port)
+			if err != nil {
+				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+				deleteIfErr(websiteData, userData)
+				fmt.Println("Error creating Go project:", err)
+				return err
+			}
+		}
 	default:
 		{
 			noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", "can't create server")
@@ -93,6 +115,20 @@ func GenCommndAndPath(framework string, domain_name string) (string, string) {
 		return "node dev.js", domain_name
 	case "koa":
 		return "node server.js", domain_name
+	case "fiber":
+		return "go run server.go", domain_name
+	case "gin":
+		return "go run server.go", domain_name
+	case "revel":
+		return "go run server.go", domain_name
+	case "echo":
+		return "go run server.go", domain_name
+	case "laravel":
+		return "php spark serve", domain_name
+	case "codeigniter":
+		return "php spark serve", domain_name
+	case "slim":
+		return "php spark serve", domain_name
 	case "null":
 		return "null", domain_name
 	default:

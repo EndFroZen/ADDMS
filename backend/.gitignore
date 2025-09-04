@@ -15,14 +15,10 @@ Thumbs.db
 .env.*
 server/.env
 
-# Logs
-*.log
-log/
-server/log/*.log
-
 # Corefolder (ไฟล์เว็บ user)
 corefolder/
 
 # IDE / Editor configs
 .vscode/
 .idea/
+trash_bin/

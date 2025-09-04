@@ -14,6 +14,7 @@ import (
 // StartServerLogic รัน server ของผู้ใช้ผ่าน firejail แบบ background
 func StartServerLogic(command string, user models.User, path string, port int) (int, models.Notifications, error) {
 	// ตรวจ blacklist
+	// fmt.Println(command)
 	if CheckIsBlacklisted(command) {
 		return 0, models.Notifications{
 			Title:     "Run server",
@@ -33,11 +34,11 @@ func StartServerLogic(command string, user models.User, path string, port int) (
 	cmd := exec.Command("/usr/bin/firejail", "--noprofile", "--private="+newPath, "bash", "-c", command)
 	cmd.Dir = newPath
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
-
+	// fmt.Println("Executing command:", cmd.String())
 	var outBuf, errBuf bytes.Buffer
 	cmd.Stdout = &outBuf
 	cmd.Stderr = &errBuf
-
+	// fmt.Println("Command output will be logged.")
 	if err := cmd.Start(); err != nil {
 		return 0, models.Notifications{
 			Title:     "Run server",
@@ -51,8 +52,9 @@ func StartServerLogic(command string, user models.User, path string, port int) (
 	messageCh := make(chan string)
 	colorCode := make(chan int)
 	NType := make(chan string)
+	fmt.Println("Started process with PID:", pid)
 	go func() {
-		if WaitForPort(port, 5*time.Second) {
+		if WaitForPort(port, 30*time.Second) {
 			messageCh <- fmt.Sprintf("running server successful in port : %d", port)
 			colorCode <- 4
 			NType<- "Run server"

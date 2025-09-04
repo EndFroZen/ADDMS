@@ -76,7 +76,7 @@ func CreateUserNginxConfig(websites []models.Website, user *models.User) error {
 	servers := convertToUserServer(websites, user)
 
 	// โฟลเดอร์ config ของ user
-	userHome := os.Getenv("HOME")
+	userHome := os.Getenv("Private_Base_Path")
 	if userHome == "" {
 		return fmt.Errorf("cannot determine user home directory")
 	}

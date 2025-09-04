@@ -27,7 +27,7 @@ func WaitForPort(port int, timeout time.Duration) bool {
 		}
 		time.Sleep(500 * time.Millisecond) // รอแล้วลองใหม่
 		count++
-		// fmt.Println("Waiting for port", port, "to be ready... Attempt:", count)
+		fmt.Println("Waiting for port", port, "to be ready... Attempt:", count)
 	}
 	return false // timeout
 }

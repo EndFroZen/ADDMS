@@ -18,6 +18,7 @@ func main() {
 		AllowOrigins: "*", // หรือกำหนดเฉพาะ domain เช่น "http://localhost:3000"
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
+	
 	config.ConnectDatabase()
 	service.AutoCreateFolderWeb(config.DB)
 	service.ReloadRecodeIsOnline(config.DB)

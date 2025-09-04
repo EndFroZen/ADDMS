@@ -19,8 +19,8 @@ export default function Create() {
 
     const frameworkOptions: { [key: string]: string[] } = {
         nodejs: ['Express', 'Fastify', 'NextJS', 'Koa'],
-        go: ['Gin', 'Fiber', 'Echo', 'Chi'],
-        php: ['Laravel', 'Symfony', 'CodeIgniter', 'Slim'],
+        go: ['Gin', 'Fiber', 'Echo', 'Revel'],
+        php: ['Laravel', 'CodeIgniter', 'Slim'],
     };
 
     async function reloadNginx() {
