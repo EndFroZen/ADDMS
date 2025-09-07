@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { BASE_URL } from '../../config/plublicpara';
 import { UsageState } from 'webpack';
 import { useState } from 'react';
+import Loading from '../components/loading';
 export default function Register() {
   const router = useRouter();
   const [dataRegis, setDataRegis] = useState("null")
@@ -11,7 +12,9 @@ export default function Register() {
   const [confirmError, setConfirmError] = useState(false);
   const [addmsconfirm, setAddmsconfirm] = useState(true);
   const [havedata, setHaveData] = useState("null")
+  const [loading, setLoading] = useState(false)
   async function NRegister() {
+    setLoading(true)
     const username = (document.getElementById("username") as HTMLInputElement)?.value || '';
     const email = (document.getElementById("email") as HTMLInputElement)?.value || '';
     const password = (document.getElementById("password") as HTMLInputElement)?.value || '';
@@ -55,6 +58,9 @@ export default function Register() {
     } catch (error) {
       console.log("Error: ", error);
     }
+    finally{
+      setLoading(false)
+    }
   }
 
   function registerWithGithub() {
@@ -64,6 +70,10 @@ export default function Register() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 relative overflow-hidden">
+      {loading && (
+              <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Deploying your application..." /></div>
+      
+            )}
       <div className="bg-white border border-gray-300 rounded-xl shadow-xl p-10 w-full max-w-md z-10">
 
         <div className="flex justify-center mb-3 ">
@@ -128,8 +138,8 @@ export default function Register() {
         </div>
 
         <div className="mt-8 space-y-2">
-          <p className="text-center text-gray-400 text-sm">Already have an account? <a href="../login" className="text-orange-500">Login here</a></p>
-          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="" className="text-orange-500">Terms of Service</a> and <a href="" className="text-orange-500">Privacy Policy</a></p>
+          <p className="text-center text-gray-400 text-sm">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
+          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="/teamofservice" className="text-orange-500">Terms of Service</a> and <a href="/policy" className="text-orange-500">Privacy Policy</a></p>
         </div>
 
       </div>

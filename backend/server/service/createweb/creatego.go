@@ -34,7 +34,7 @@ func createGin(website *models.SaveStruct, user *models.User, port int) error {
 	}
 	//npm i
 	tarGetDIR := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, website.Domain_name)
-	cmdInit := exec.Command("go", "mod", "tidy")
+	cmdInit := exec.Command("go", "get")
 	cmdInit.Dir = tarGetDIR
 	if err := cmdInit.Run(); err != nil {
 		noti.LogNotic(1, nofiFilenodejs, "create gin 2", "can't init go mod")
@@ -60,7 +60,7 @@ func createFiber(website *models.SaveStruct, user *models.User, port int) error 
 	}
 	//npm i
 	tarGetDIR := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, website.Domain_name)
-	cmdInit := exec.Command("go", "mod", "tidy")
+	cmdInit := exec.Command("go", "get")
 	cmdInit.Dir = tarGetDIR
 	if err := cmdInit.Run(); err != nil {
 		noti.LogNotic(1, nofiFilenodejs, "create fiber 2", "can't init go mod")
@@ -86,7 +86,7 @@ func createEcho(website *models.SaveStruct, user *models.User, port int) error {
 	}
 	//npm i
 	tarGetDIR := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, website.Domain_name)
-	cmdInit := exec.Command("go", "mod", "tidy")
+	cmdInit := exec.Command("go", "get")
 	cmdInit.Dir = tarGetDIR
 	if err := cmdInit.Run(); err != nil {
 		noti.LogNotic(1, nofiFilenodejs, "create echo 2", "can't init go mod")
@@ -111,7 +111,7 @@ func createReval(website *models.SaveStruct, user *models.User, port int) error 
 	}
 	//npm i
 	tarGetDIR := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, website.Domain_name)
-	cmdInit := exec.Command("go", "mod", "tidy")
+	cmdInit := exec.Command("go", "get")
 	cmdInit.Dir = tarGetDIR
 	if err := cmdInit.Run(); err != nil {
 		noti.LogNotic(1, nofiFilenodejs, "create reval 2", "can't init go mod")

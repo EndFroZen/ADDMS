@@ -1,12 +1,12 @@
 "use client"
-import { useState } from "react";
-import Sidebar from "../components/sidebar";
-import { Users, Globe, BarChart3, Settings, Database, Shield, Activity, FileText } from "lucide-react";
+// import { useState } from "react";
+// import Sidebar from "../components/sidebar";
+import { Users, Globe} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Admin() {
-    const [selectedCard, setSelectedCard] = useState(null);
-    const [user,setUser]=useState<any>(null)
+    // const [selectedCard, setSelectedCard] = useState(null);
+    // const [user,setUser]=useState<any>(null)
     const route = useRouter();
     const adminCards = [
         {

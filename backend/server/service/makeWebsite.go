@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"server/config"
 	noti "server/log"
 	"server/models"
@@ -42,56 +43,82 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	if err != nil {
 		return err
 	}
-	//3.select programming langue
-	switch websiteData.ProgrammingLanguage {
-	case "htmlstatic":
-		{
-			err := service_create.HtmlStatic(websiteData, userData)
-			if err != nil {
-				deleteIfErr(websiteData, userData)
-				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
-				return err
-			}
+	// fmt.Println(websiteData.Github_repo)
+	if websiteData.Github_repo != "null" && websiteData.Github_repo != "" {
+		gitRepoURL := websiteData.Github_repo
+		err := service_create.Gitclone(gitRepoURL, websiteData, userData)
+		if err != nil {
+			noti.LogNotic(1, notiFileMakeWebsite, "createExpress.54", fmt.Sprintf("failed to clone git repo: %v", err))
+			return err
 		}
-	case "nodejs":
-		{
-			fmt.Println("Creating NodeJS project...")
-			err := service_create.CreateNodeJS(websiteData, userData, port)
-			if err != nil {
-				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
-				deleteIfErr(websiteData, userData)
-				fmt.Println("Error creating NodeJS project:", err)
-				return err
-			}
+		//npm i
+		tarGetDIR := fmt.Sprintf(".%s/%s/%s", config.Mainfile(), user.Folder, websiteData.Domain_name)
+		// cmdInit := exec.Command("npm", "i")
+		// cmdInit.Dir = tarGetDIR
+		// if err := cmdInit.Run(); err != nil {
+		// 	noti.LogNotic(1, notiFileMakeWebsite, "creategitclone.35", "can't init npm")
+		// 	return err
+		// }
+		err = service_create.CreateConfigPort(filepath.Join(tarGetDIR, "config.json"), port)
+		if err != nil {
+			return err
 		}
-	case "go":
-		{
-			fmt.Println("Creating Go project...")
-			err := service_create.CreateGo(websiteData, userData, port)
-			if err != nil {
-				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
-				deleteIfErr(websiteData, userData)
-				fmt.Println("Error creating Go project:", err)
-				return err
+		// fmt.Printf("Git clone completed for website %s\n", websiteData.Domain_name)
+
+	} else {
+		// fmt.Println("-------------------------------------------------------------------------")
+		// fmt.Println("No Git repository provided, proceeding with project creation...")
+		switch websiteData.ProgrammingLanguage {
+		case "htmlstatic":
+			{
+				err := service_create.HtmlStatic(websiteData, userData)
+				if err != nil {
+					deleteIfErr(websiteData, userData)
+					noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+					return err
+				}
 			}
-		}
-	case "php":
-		{
-			fmt.Println("Creating PHP project...")
-			err := service_create.CreatePHP(websiteData, userData, port)
-			if err != nil {
-				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
-				deleteIfErr(websiteData, userData)
-				fmt.Println("Error creating Go project:", err)
-				return err
+		case "nodejs":
+			{
+				fmt.Println("Creating NodeJS project...")
+				err := service_create.CreateNodeJS(websiteData, userData, port)
+				if err != nil {
+					noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+					deleteIfErr(websiteData, userData)
+					fmt.Println("Error creating NodeJS project:", err)
+					return err
+				}
 			}
-		}
-	default:
-		{
-			noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", "can't create server")
-			return fmt.Errorf("can't create server")
+		case "go":
+			{
+				fmt.Println("Creating Go project...")
+				err := service_create.CreateGo(websiteData, userData, port)
+				if err != nil {
+					noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+					deleteIfErr(websiteData, userData)
+					fmt.Println("Error creating Go project:", err)
+					return err
+				}
+			}
+		case "php":
+			{
+				fmt.Println("Creating PHP project...")
+				err := service_create.CreatePHP(websiteData, userData, port)
+				if err != nil {
+					noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", fmt.Sprintf("%v", err))
+					deleteIfErr(websiteData, userData)
+					fmt.Println("Error creating Go project:", err)
+					return err
+				}
+			}
+		default:
+			{
+				noti.LogNotic(1, notiFileMakeWebsite, "Makewebsite", "can't create server")
+				return fmt.Errorf("can't create server")
+			}
 		}
 	}
+
 	//4. genport
 	var startServer models.StartServer
 	Command, Path := GenCommndAndPath(websiteData.Framework, websiteData.Domain_name)
@@ -103,6 +130,7 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB, port, startServer); err != nil {
 		return err
 	}
+	
 	return nil
 }
 func GenCommndAndPath(framework string, domain_name string) (string, string) {

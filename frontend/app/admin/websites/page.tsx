@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import {
   Globe,
   Search,
-  Filter,
+  // Filter,
   Edit3,
   Trash2,
   Eye,
   MoreVertical,
-  Plus,
+  // Plus,
   RefreshCw,
-  Download,
+  // Download,
   AlertCircle,
   CheckCircle,
   XCircle,
@@ -34,7 +34,7 @@ export default function WebsitePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedWebsite, setSelectedWebsite] = useState<any>(null);
+  // const [selectedWebsite, setSelectedWebsite] = useState<any>(null);
   const [showActions, setShowActions] = useState<number | null>(null);
   const [showEditField, setShowEditField] = useState(false);
   const [folderContent, setFolderContent] = useState<any[]>([]);
@@ -243,7 +243,7 @@ export default function WebsitePage() {
                   <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
                   {loading ? 'Loading...' : 'Refresh'}
                 </button>
-              
+
               </div>
             </div>
 
@@ -467,6 +467,13 @@ export default function WebsitePage() {
                         </td>
                       </tr>
                     ))}
+                    {Array.from({ length: Math.max(0, 5 - filteredWebsites.length) }).map((_, i) => (
+                      <tr key={`empty-${i}`}>
+                        <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-400">
+                          {/* ว่างเปล่า */}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -539,8 +546,8 @@ export default function WebsitePage() {
                       {/* Icon + File/Folder name */}
                       <div className="flex items-center space-x-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.type === "folder"
-                            ? "bg-yellow-100 text-yellow-600"
-                            : "bg-blue-100 text-blue-600"
+                          ? "bg-yellow-100 text-yellow-600"
+                          : "bg-blue-100 text-blue-600"
                           }`}>
                           {item.type === "folder" ? (
                             <Folder className="w-5 h-5" />

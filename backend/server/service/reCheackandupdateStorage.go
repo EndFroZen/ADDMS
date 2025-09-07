@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"server/models"
 
 	"gorm.io/gorm"
@@ -9,7 +8,7 @@ import (
 
 func ReCheckAndUpdateStorage(UserID uint, db *gorm.DB) error {
 	var websites []models.Website
-	result := db.Preload("Domain").Preload("User").Where("user_id = ?", UserID).Find(&websites);
+	result := db.Preload("Domain").Preload("User").Where("user_id = ?", UserID).Find(&websites)
 	if result.Error != nil {
 		// fmt.Println(result.Error)
 		return result.Error
@@ -22,7 +21,7 @@ func ReCheckAndUpdateStorage(UserID uint, db *gorm.DB) error {
 			// fmt.Println(err)
 			return err
 		}
-		fmt.Println(website.Domain.Domain_name," : ",storage)
+		// fmt.Println(website.Domain.Domain_name," : ",storage)
 		// อัพเดต storage usage ของ website
 		if err := db.Model(&website).Update("storage_usage", storage).Error; err != nil {
 			return err

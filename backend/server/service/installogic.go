@@ -25,6 +25,7 @@ var allowedInstallCommands = []string{
     "go mod download",
     "go mod vendor",
     "go install",
+	"go get",
 	
 
     // PHP

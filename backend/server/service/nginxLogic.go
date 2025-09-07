@@ -7,9 +7,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"server/config"
 	noti "server/log"
 	"server/models"
+	"strings"
 	"text/template"
 	"time"
 
@@ -29,7 +29,7 @@ type UserServer struct {
 }
 
 // Template Nginx
-const nginxTemplate = `{{range .Domains}}
+const nginxDomainTemplate = `
 server {
     listen 80;
     server_name {{.Domain}};
@@ -42,7 +42,6 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
-{{end}}
 `
 
 // แปลง websites เป็น []UserServer
@@ -72,10 +71,7 @@ func convertToUserServer(websites []models.Website, user *models.User) []UserSer
 }
 
 // สร้าง Nginx config ใน folder ของ user (ไม่ต้อง root)
-func CreateUserNginxConfig(websites []models.Website, user *models.User) error {
-	servers := convertToUserServer(websites, user)
-
-	// โฟลเดอร์ config ของ user
+func CreateDomainNginxConfig(websites []models.Website) error {
 	userHome := os.Getenv("Private_Base_Path")
 	if userHome == "" {
 		return fmt.Errorf("cannot determine user home directory")
@@ -85,37 +81,69 @@ func CreateUserNginxConfig(websites []models.Website, user *models.User) error {
 		return err
 	}
 
-	tmpl, err := template.New("nginx").Parse(nginxTemplate)
+	tmpl, err := template.New("nginx").Parse(nginxDomainTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse nginx template: %w", err)
 	}
 
-	for _, server := range servers {
-		var buf bytes.Buffer
-		if err := tmpl.Execute(&buf, server); err != nil {
-			return fmt.Errorf("failed to render template for %s: %w", server.UserFolder, err)
+	// เก็บชื่อ domain ที่มีใน websites
+	domainsInData := make(map[string]bool)
+	for _, w := range websites {
+		domainsInData[w.Domain.Domain_name] = true
+
+		fileName := filepath.Join(configPath, w.Domain.Domain_name+".conf")
+
+		// ถ้าไฟล์มีอยู่แล้ว ข้าม
+		if _, err := os.Stat(fileName); err == nil {
+			// fmt.Println("Config exists, skip:", fileName)
+			continue
 		}
 
-		// เขียนไฟล์ config ลงโฟลเดอร์ user
-		fileName := filepath.Join(configPath, server.UserFolder+".conf")
+		// ถ้าไฟล์ยังไม่มี → สร้างใหม่
+		var buf bytes.Buffer
+		if err := tmpl.Execute(&buf, DomainConfig{
+			Domain: w.Domain.Domain_name,
+			Port:   w.Port,
+		}); err != nil {
+			return fmt.Errorf("failed to render template for %s: %w", w.Domain.Domain_name, err)
+		}
+
 		if err := os.WriteFile(fileName, buf.Bytes(), 0644); err != nil {
 			return fmt.Errorf("failed to write config: %w", err)
 		}
-
 		fmt.Println("Created config:", fileName)
 	}
 
-	// Test config + reload Nginx (ต้อง sudo)
+	// ลบไฟล์ที่ไม่อยู่ใน websites
+	files, err := os.ReadDir(configPath)
+	if err != nil {
+		return fmt.Errorf("failed to read config dir: %w", err)
+	}
+	for _, f := range files {
+		if !strings.HasSuffix(f.Name(), ".conf") {
+			continue
+		}
+		domain := strings.TrimSuffix(f.Name(), ".conf")
+		if !domainsInData[domain] {
+			// domain นี้ไม่มีใน websites → ลบไฟล์
+			filePath := filepath.Join(configPath, f.Name())
+			if err := os.Remove(filePath); err != nil {
+				return fmt.Errorf("failed to remove old config %s: %w", filePath, err)
+			}
+			fmt.Println("Removed old config:", filePath)
+		}
+	}
+
+	// Test + reload Nginx
 	cmdTest := exec.Command("sudo", "nginx", "-t")
 	if out, err := cmdTest.CombinedOutput(); err != nil {
 		return fmt.Errorf("nginx test failed: %s", string(out))
 	}
-
 	cmdReload := exec.Command("sudo", "nginx", "-s", "reload")
 	if out, err := cmdReload.CombinedOutput(); err != nil {
 		return fmt.Errorf("nginx reload failed: %s", string(out))
 	}
-	ReloadRecodeIsOnline(config.DB)
+
 	fmt.Println("Nginx reloaded successfully!")
 	return nil
 }
@@ -151,7 +179,7 @@ func ReloadRecodeIsOnline(db *gorm.DB) {
 	}
 }
 
-func SingleReloadRecodeIsOnline(port int, db *gorm.DB)error {
+func SingleReloadRecodeIsOnline(port int, db *gorm.DB) error {
 	if WaitForPort(port, 5*time.Second) {
 		// อัปเดต status เป็น "online"
 		if err := db.Model(&models.Website{}).Where("port = ?", port).Update("status", "online").Error; err != nil {

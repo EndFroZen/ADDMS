@@ -64,7 +64,6 @@ func autoMigrateLoad() error {
 		&models.Domain{},
 		&models.Notifications{},
 		&models.InstallPluginModel{},
-		&models.Server_status{},
 		&models.StartServer{},
 		&models.ResourceUsage{},
 	)

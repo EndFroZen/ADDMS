@@ -5,20 +5,12 @@ import { useEffect, useState } from "react";
 import { 
   Users, 
   Search, 
-  Filter, 
   Edit3, 
   Trash2, 
-  Eye, 
   MoreVertical, 
-  Plus,
   RefreshCw,
-  Download,
   Shield,
   User,
-  Mail,
-  Calendar,
-  HardDrive,
-  Key,
   Save,
   X,
   Crown,
@@ -173,10 +165,7 @@ export default function UsersPage() {
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
                 </button>
-                <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Add New User
-                </button>
+              
               </div>
             </div>
 
@@ -261,10 +250,7 @@ export default function UsersPage() {
                   <option value="moderator">Moderators</option>
                 </select>
                 
-                <button className="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
+            
               </div>
             </div>
           </div>

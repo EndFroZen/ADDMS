@@ -15,6 +15,7 @@ export default function Login() {
     const password = (document.getElementById("password") as HTMLInputElement).value
 
     console.log(userNoun, password)
+    setLoading(true)
     try {
       const res = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
@@ -32,6 +33,7 @@ export default function Login() {
     } catch (err) {
       router.push('/errorpage/servererror')
     }
+    setLoading(false)
   }
   function loginWithGithub() {
     // ตัวอย่าง redirect ไป GitHub OAuth
@@ -115,7 +117,7 @@ export default function Login() {
 
         <div className="mt-8 space-y-2">
           <p className="text-center text-gray-400 text-sm">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
-          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="" className="text-orange-500">Terms of Service</a> and <a href="" className="text-orange-500">Privacy Policy</a></p>
+          <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="/teamofservice" className="text-orange-500">Terms of Service</a> and <a href="/policy" className="text-orange-500">Privacy Policy</a></p>
         </div>
 
       </div>

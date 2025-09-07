@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"server/config"
 	"server/routes"
 	"server/service"
@@ -25,7 +26,10 @@ func main() {
 	//to every 5 minute
 	go func() {
 		for {
-			service.CreateResouse(config.DB)
+			err := service.CreateResouse(config.DB)
+			if err != nil {
+				fmt.Println("Error updating resource usage:", err)
+			}
 			time.Sleep(15 * time.Minute)
 		}
 	}()

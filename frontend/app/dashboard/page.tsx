@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { Globe, Server, Code2, Pause, Play, RefreshCcw } from "lucide-react";
 import { Dialog } from "@headlessui/react";
-import { s } from "framer-motion/client";
+// import { s } from "framer-motion/client";
 import Loading from "../components/loading";
 import "../../app/globals.css";
 import Checkmind from "../components/checkmind";
-import { error } from "console";
+// import { error } from "console";
 import clsx from "clsx";
 
 interface command { }
@@ -59,7 +59,21 @@ export default function Dashboard() {
       setNotifications([]); // fallback
     }
   }
+  const checkSSL = async () =>{
+    const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
+    const res = await fetch(`${BASE_URL}/api/checkssl`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${yourToken}`,
+      },
+    });
+
+    const result = await res.json();
+    console.log(result)
+  
+  }
   async function load() {
     const yourToken = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
@@ -179,6 +193,7 @@ export default function Dashboard() {
   useEffect(() => {
     hostLoad()
     load();
+    checkSSL();
   }, []);
 
   if (!user) return <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Loading ..." /></div>;
@@ -243,7 +258,7 @@ export default function Dashboard() {
             <div className="flex flex-row items-center justify-between px-[10rem]">
               <div className="text-center">
                 <p className="text-sm text-gray-600">CPU Usage</p>
-                <p className="text-2xl font-bold text-green-600">{userResource?.cpu || 0}%</p>
+                <p className="text-2xl font-bold text-green-600">{(userResource?.cpu || 0).toFixed(2)}%</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Memory Usage</p>
@@ -283,7 +298,7 @@ export default function Dashboard() {
                 You don't have any websites yet.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-[95vh]">
                 {user.website.map((site: any) => (
                   <div
                     key={site.id}

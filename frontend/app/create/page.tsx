@@ -13,6 +13,12 @@ export default function Create() {
     const [userHost, setUseHost] = useState(false)
     const yourToken = typeof window !== 'undefined' ? localStorage.getItem(NToken) : null;
     const [hostData, setHostData] = useState<any>("null")
+    const [selected, setSelected] = useState<"git" | "zip" | "manual" | "null" | null>("null");
+    const [repoURL, setRepoURL] = useState("");
+    // const [files, setFiles] = useState<FileList | null>(null);
+
+    const [sslEnabled, setSslEnabled] = useState(false);
+    // const [advancedSettings, setAdvancedSettings] = useState(false);
     function reFramework(e: React.ChangeEvent<HTMLSelectElement>) {
         setLang(e.target.value);
     }
@@ -39,6 +45,12 @@ export default function Create() {
         const Domain = (document.getElementsByName("Domain")[0] as HTMLInputElement).value;
         const ProgramLangue = (document.getElementsByName("ProgramLangue")[0] as HTMLSelectElement).value;
         const Framework = (document.getElementsByName("Framework")[0] as HTMLSelectElement).value;
+        let finalssl = ""
+        if(sslEnabled){
+            finalssl = "true"
+        }else{
+            finalssl = "false"
+        }
         let NewDomain = ""
         if (userHost) {
             NewDomain = Domain
@@ -58,12 +70,13 @@ export default function Create() {
                     programming_language: ProgramLangue,
                     framework: Framework,
                     is_verified: "false",
-                    ssl_enabled: "false"
+                    ssl_enabled: finalssl,
+                    github_repo: repoURL
                 })
             });
 
             const result = await res.json();
-            console.log(result);
+            // console.log(result);
 
             if (res.ok) {
                 reloadNginx()
@@ -88,19 +101,14 @@ export default function Create() {
             });
             if (res.ok) {
                 const result = await res.json()
-                console.log("dawdawd", result)
+                // console.log("dawdawd", result)
                 setHostData({ ...result, "data": result || [] })
             }
         } catch (err) {
             console.log(err)
         }
     }
-    const [selected, setSelected] = useState<"git" | "zip" | "manual" | "null" | null>("null");
-    const [repoURL, setRepoURL] = useState("");
-    const [files, setFiles] = useState<FileList | null>(null);
-
-    const [sslEnabled, setSslEnabled] = useState(true);
-    const [advancedSettings, setAdvancedSettings] = useState(false);
+    
 
     const buttonClass = (type: string) =>
         `flex-1 py-3 text-center cursor-pointer rounded-md border transition ${selected === type
@@ -114,7 +122,7 @@ export default function Create() {
         // อนุญาตตัวอักษร, ตัวเลข, ขีดกลาง (-) และ จุด (.)
         const regex = /^[a-zA-Z0-9.-]+$/;
 
-        console.log(value)
+        // console.log(value)
         if (!value) {
             setError("Domain is required.");
         } else if (!regex.test(value)) {
@@ -138,6 +146,7 @@ export default function Create() {
     useEffect(() => {
         hostLoad()
         reFramework;
+        setSelected("git")
     }, []);
 
     return (

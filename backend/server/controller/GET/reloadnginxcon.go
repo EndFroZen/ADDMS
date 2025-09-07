@@ -26,7 +26,7 @@ func ReloadNginx(c *fiber.Ctx) error {
 	}
 	// สร้าง Nginx config
 
-	err = service.CreateUserNginxConfig(contextServer, &dataUser)
+	err = service.CreateDomainNginxConfig(contextServer)
 	if err != nil {
 		fmt.Println("Error creating Nginx config:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(service.SimpleStatus(500, fmt.Sprintf("Error creating Nginx config: %v", err)))

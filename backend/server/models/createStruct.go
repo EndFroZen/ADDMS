@@ -6,4 +6,5 @@ type SaveStruct struct {
 	ProgrammingLanguage string `json:"programming_language"`
 	Is_verified         string `json:"is_verified"`
 	Ssl_enabled         string `json:"ssl_enabled"`
+	Github_repo         string `json:"github_repo"`
 }

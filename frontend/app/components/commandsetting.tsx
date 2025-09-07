@@ -1,9 +1,9 @@
 'use client';
-import { useCallback, useEffect, useState } from "react";
-import { Terminal, Save, X, Edit3, Play, Settings, AlertCircle, Blocks, FolderOpen, Pause, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Terminal, Save, X, Edit3, Play, Settings, Blocks, FolderOpen, Pause, Clock } from "lucide-react";
 import SelectPath from "./selectPath";
 import { BASE_URL, NToken } from "@/config/plublicpara";
-import { data } from "framer-motion/client";
+// import { data } from "framer-motion/client";
 import Loading from "./loading";
 import "../../app/globals.css"
 
