@@ -16,6 +16,7 @@ import {
   Crown,
   UserCheck
 } from "lucide-react";
+// import { json } from "stream/consumers";
 
 export default function UsersPage() {
   const [listUser, setListUser] = useState<any>([]);
@@ -41,7 +42,7 @@ export default function UsersPage() {
       
       if (res.ok) {
         const result = await res.json();
-        console.log(result.data);
+        // console.log(result.data);
         setListUser(result.data);
       }
     } catch (error) {
@@ -117,16 +118,33 @@ export default function UsersPage() {
   };
 
   const handleSaveEdit = async () => {
-    // Here you would typically make an API call to update the user
-    console.log("Saving user:", editingUser);
-    
-    // Update the local state
-    setListUser(listUser.map((user: any) => 
-      user.ID === editingUser.ID ? editingUser : user
-    ));
-    
-    setShowModal(false);
-    setEditingUser(null);
+   setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/updateuser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body :JSON.stringify({
+          ID : editingUser.ID,
+          role: editingUser.Role,
+          Storage_limit: editingUser.storage_limit,
+        })
+      });
+      
+      if (res.ok) {
+        // const result = await res.json();
+        // console.log(result.data);
+        // setListUser(result.data);
+        loadListUser();
+      }
+    } catch (error) {
+      console.error("Error loading users:", error);
+    } finally {
+      setEditingUser(false)
+      setLoading(false);
+    }
   };
 
   const handleDelete = (user: any) => {
@@ -310,7 +328,7 @@ export default function UsersPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {formatStorage(user.StorageLimit)}
+                          {formatStorage(user.storage_limit)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {formatDate(user.CreatedAt)}
@@ -351,6 +369,13 @@ export default function UsersPage() {
                         </td>
                       </tr>
                     ))}
+                    {Array.from({ length: Math.max(0, 5 - listUser.length) }).map((_, i) => (
+                      <tr key={`empty-${i}`}>
+                        <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-400">
+                          {/* ว่างเปล่า */}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -380,7 +405,8 @@ export default function UsersPage() {
                   type="text"
                   value={editingUser.Username}
                   onChange={(e) => handleInputChange('Username', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                  readOnly
                 />
               </div>
 
@@ -390,7 +416,8 @@ export default function UsersPage() {
                   type="email"
                   value={editingUser.Email}
                   onChange={(e) => handleInputChange('Email', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                  readOnly
                 />
               </div>
 
@@ -411,8 +438,8 @@ export default function UsersPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Storage Limit (MB)</label>
                 <input
                   type="number"
-                  value={editingUser.StorageLimit}
-                  onChange={(e) => handleInputChange('StorageLimit', parseInt(e.target.value) || 0)}
+                  value={editingUser.storage_limit}
+                  onChange={(e) => handleInputChange('storage_limit', parseInt(e.target.value) || 0)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
@@ -423,7 +450,8 @@ export default function UsersPage() {
                   type="text"
                   value={editingUser.Folder}
                   onChange={(e) => handleInputChange('Folder', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                  readOnly
                 />
               </div>
 
@@ -433,7 +461,8 @@ export default function UsersPage() {
                   type="text"
                   value={editingUser.SecretKey}
                   onChange={(e) => handleInputChange('SecretKey', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white cursor-not-allowed focus:ring-0 focus:border-gray-300"
+                  readOnly
                 />
               </div>
             </div>

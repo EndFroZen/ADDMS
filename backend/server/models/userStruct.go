@@ -9,7 +9,7 @@ type User struct {
 	Password         string
 	Folder           string `gorm:"unique"`
 	Role             string
-	StorageLimit     float64
+	StorageLimit     float64 `json:"storage_limit"`
 	SecretKey        string `gorm:"unique"`
 	Website          []Website
 }

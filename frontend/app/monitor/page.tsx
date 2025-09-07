@@ -56,8 +56,8 @@ export default function Monitoring() {
         loadResource();
 
         // โหลดซ้ำทุก 5 วินาที
-        const interval = setInterval(loadResource, 5000);
-        return () => clearInterval(interval);
+        // const interval = setInterval(loadResource, 5000);
+        // return () => clearInterval(interval);
     }, []);
 
     return (

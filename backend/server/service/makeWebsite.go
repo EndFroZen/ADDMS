@@ -118,7 +118,15 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 			}
 		}
 	}
-
+	isMoreUseStrorage, err := CheckStoragefolder(userData.Folder)
+	if err != nil {
+		return err
+	}
+	if isMoreUseStrorage > userData.StorageLimit {
+		deleteIfErr(websiteData, userData)
+		err := fmt.Errorf("Storage is full You can't not Deploy more website")
+		return err
+	}
 	//4. genport
 	var startServer models.StartServer
 	Command, Path := GenCommndAndPath(websiteData.Framework, websiteData.Domain_name)
@@ -130,7 +138,7 @@ func MakeWebsite(websiteData *models.SaveStruct, user *models.User) error {
 	if err := saveWebDoamin(websiteData, domainModel, userData, config.DB, port, startServer); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 func GenCommndAndPath(framework string, domain_name string) (string, string) {

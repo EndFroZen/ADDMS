@@ -1,18 +1,14 @@
-"use client"
+"use client";
 import { BASE_URL, NToken } from "@/config/plublicpara";
 import { useEffect, useState } from "react";
-
 import {
   Globe,
   Search,
-  // Filter,
   Edit3,
   Trash2,
   Eye,
   MoreVertical,
-  // Plus,
   RefreshCw,
-  // Download,
   AlertCircle,
   CheckCircle,
   XCircle,
@@ -26,97 +22,170 @@ import {
   Cpu,
   HardDrive,
   Activity,
-  User
+  User,
 } from "lucide-react";
 
+// Define TypeScript interfaces for type safety
+interface User {
+  ID: string;
+  Username: string;
+}
+
+interface Domain {
+  Domain_name: string;
+}
+
+interface Website {
+  ID: string;
+  User: User;
+  Domain: Domain;
+  Status: string;
+  StorageUsage: number;
+  CreatedAt: string;
+  resource: {
+    cpu: number;
+    ram: number;
+  };
+}
+
+interface FileItem {
+  name: string;
+  path: string;
+  type: "file" | "folder";
+  size: number;
+  modified: string;
+  content?: string;
+}
+
 export default function WebsitePage() {
-  const [listWebsite, setListWebsite] = useState<any>([]);
+  const [listWebsite, setListWebsite] = useState<Website[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  // const [selectedWebsite, setSelectedWebsite] = useState<any>(null);
+  const [filterStatus, setFilterStatus] = useState<"all" | "online" | "offline">("all");
   const [showActions, setShowActions] = useState<number | null>(null);
   const [showEditField, setShowEditField] = useState(false);
-  const [folderContent, setFolderContent] = useState<any[]>([]);
-  const [userUsername, setUserUsername] = useState<string>("");
+  const [folderContent, setFolderContent] = useState<FileItem[]>([]);
+  const [userUsername, setUserUsername] = useState("");
   const [editText, setEditText] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<any>(null);
-  const [fileContent, setFileContent] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+  const [fileContent, setFileContent] = useState("");
   const [pathHistory, setPathHistory] = useState<string[]>([]);
-
+  const [dataUser, setDataUser] = useState<User | null>(null);
+  const [currentPath, setCurrentPath] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
 
   const formatSize = (size: number) => {
-    if (size < 1024) return size + " B";
-    if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
-    return (size / (1024 * 1024)).toFixed(1) + " MB";
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleSave = async () => {
+    if (!selectedFile || !dataUser) return;
+    setErrorMessage("");
+    try {
+      const res = await fetch(`${BASE_URL}/api/edit/singlefile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: dataUser.ID,
+          path: `${currentPath}/${selectedFile.name}`,
+          newpath: `${currentPath}/${selectedFile.name}`,
+          content: fileContent,
+        }),
+      });
+
+      if (!res.ok) {
+        // throw new Error("Failed to save file");
+        console.log(res.status)
+      }
+      // alert("File saved successfully!");
+    } catch (err) {
+      console.error("Save error:", err);
+      setErrorMessage("Failed to save file. Please try again.");
+      
+    }finally{
+      setShowEditField(false)
+    }
   };
 
   const loadListWebsite = async () => {
     setLoading(true);
+    setErrorMessage("");
     try {
       const res = await fetch(`${BASE_URL}/api/admin/getlistallwebsite`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        console.log(result.data);
-        setListWebsite(result.data);
+      if (!res.ok) {
+        throw new Error("Failed to fetch websites");
       }
+      const result = await res.json();
+      setListWebsite(result.data || []);
     } catch (error) {
       console.error("Error loading websites:", error);
+      setErrorMessage("Failed to load websites. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const loadFile = async (username: string, filepath: string) => {
+    setErrorMessage("");
     try {
       const res = await fetch(`${BASE_URL}/api/admin/file/${username}/${filepath}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        setSelectedFile(result.data);
-        setFileContent(result.data.content);
-        setEditText(true);
+      if (!res.ok) {
+        throw new Error("Failed to load file");
       }
+      const result = await res.json();
+      setSelectedFile(result.data);
+      setFileContent(result.data.content || "");
+      setEditText(true);
     } catch (error) {
       console.error("Error loading file:", error);
+      setErrorMessage("Failed to load file. Please try again.");
     }
   };
 
-  const loadfolderUser = async (username: string, fullpath: string, isBack: boolean = false) => {
+  const loadFolderUser = async (username: string, fullpath: string, isBack: boolean = false) => {
     setShowEditField(true);
+    setErrorMessage("");
     try {
       const res = await fetch(`${BASE_URL}/api/admin/file/${username}/${fullpath}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        console.log(result.data);
-        setFolderContent(result.data);
-        if (!isBack) {
-          setPathHistory(prev => [...prev, fullpath]);
-        }
+      if (!res.ok) {
+        throw new Error("Failed to load folder");
       }
+      const result = await res.json();
+      setFolderContent(result.data || []);
+      if (!isBack) {
+        setPathHistory((prev) => [...prev, fullpath]);
+      }
+      setCurrentPath(fullpath);
     } catch (error) {
       console.error("Error loading folder:", error);
+      setErrorMessage("Failed to load folder. Please try again.");
     }
   };
 
@@ -124,33 +193,32 @@ export default function WebsitePage() {
     loadListWebsite();
   }, []);
 
-  // Filter websites based on search term and status
-  const filteredWebsites = listWebsite.filter((website: any) => {
-    const matchesSearch = website.Domain?.Domain_name?.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredWebsites = listWebsite.filter((website) => {
+    const matchesSearch = website.Domain?.Domain_name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
     const matchesStatus = filterStatus === "all" || website.Status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'online':
-        return 'text-green-700 bg-green-100 border-green-200';
-      case 'offline':
-        return 'text-red-700 bg-red-100 border-red-200';
-      case 'pending':
-        return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+      case "online":
+        return "text-green-700 bg-green-100 border-green-200";
+      case "offline":
+        return "text-red-700 bg-red-100 border-red-200";
+      case "pending":
+        return "text-yellow-700 bg-yellow-100 border-yellow-200";
       default:
-        return 'text-gray-700 bg-gray-100 border-gray-200';
+        return "text-gray-700 bg-gray-100 border-gray-200";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'online':
+      case "online":
         return <CheckCircle className="w-4 h-4" />;
-      case 'offline':
+      case "offline":
         return <XCircle className="w-4 h-4" />;
-      case 'pending':
+      case "pending":
         return <Clock className="w-4 h-4" />;
       default:
         return <AlertCircle className="w-4 h-4" />;
@@ -158,49 +226,50 @@ export default function WebsitePage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const formatStorage = (mb: number) => {
-    if (!mb) return '0 MB';
+    if (!mb) return "0 MB";
     const k = 1024;
-    const sizes = ['MB', 'GB', 'TB', 'PB'];
+    const sizes = ["MB", "GB", "TB", "PB"];
     const i = Math.floor(Math.log(mb) / Math.log(k));
-    return parseFloat((mb / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((mb / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
-  const handleEdit = (website: any) => {
+  const handleEdit = (website: Website) => {
     setShowEditField(true);
-    loadfolderUser(website.User?.Username, website.Domain?.Domain_name);
-    setUserUsername(website.User?.Username);
+    setDataUser(website.User);
+    setUserUsername(website.User?.Username ?? "");
+    loadFolderUser(website.User?.Username ?? "", website.Domain?.Domain_name ?? "");
     setShowActions(null);
   };
 
-  const handleDelete = (website: any) => {
-    if (confirm(`Are you sure you want to delete website ${website.Domain?.Domain_name}?`)) {
+  const handleDelete = (website: Website) => {
+    if (confirm(`Are you sure you want to delete website ${website.Domain?.Domain_name ?? "unknown"}?`)) {
+      // Implement actual delete logic here
       console.log("Deleting website:", website);
     }
     setShowActions(null);
   };
 
-  const handleView = (website: any) => {
-    window.open(`https://${website.Domain?.Domain_name}`, '_blank');
+  const handleView = (website: Website) => {
+    const domain = website.Domain?.Domain_name;
+    if (domain) {
+      window.open(`https://${domain}`, "_blank");
+    }
     setShowActions(null);
   };
 
-  const handleNotify = (website: any) => {
+  const handleNotify = (website: Website) => {
     console.log("Notifying user about:", website);
     setShowActions(null);
-  };
-
-  const getCurrentPath = () => {
-    return pathHistory[pathHistory.length - 1] || '';
   };
 
   const goBack = () => {
@@ -209,19 +278,21 @@ export default function WebsitePage() {
       newHistory.pop();
       const prevPath = newHistory[newHistory.length - 1];
       setPathHistory(newHistory);
-      loadfolderUser(userUsername, prevPath, true);
+      loadFolderUser(userUsername, prevPath, true);
     }
-  };
-
-  const saveFile = () => {
-    // Add your save file logic here
-    console.log("Saving file:", selectedFile, fileContent);
   };
 
   return (
     <div className="bg-gradient-to-br from-orange-50 via-white to-orange-100 flex min-h-screen">
       <div className="flex-1 p-6">
         <div className="max-w-full mx-auto">
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-xl border border-red-200">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
@@ -240,14 +311,13 @@ export default function WebsitePage() {
                   disabled={loading}
                   className="bg-white border-2 border-orange-200 text-orange-600 px-6 py-3 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 flex items-center gap-2 font-medium shadow-sm"
                 >
-                  <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-                  {loading ? 'Loading...' : 'Refresh'}
+                  <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
+                  {loading ? "Loading..." : "Refresh"}
                 </button>
-
               </div>
             </div>
 
-            {/* Enhanced Stats */}
+            {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="bg-white rounded-xl p-6 border border-orange-100 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between">
@@ -256,33 +326,31 @@ export default function WebsitePage() {
                     <p className="text-3xl font-bold text-gray-900 mt-1">{listWebsite.length}</p>
                     <p className="text-sm text-gray-500 mt-1">All registered sites</p>
                   </div>
-                  <div className="w-16 h-16  rounded-2xl flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center">
                     <Globe className="w-8 h-8 text-orange-500" />
                   </div>
                 </div>
               </div>
-
               <div className="bg-white rounded-xl p-6 border border-green-100 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Online</p>
                     <p className="text-3xl font-bold text-green-600 mt-1">
-                      {listWebsite.filter((w: any) => w.Status === 'online').length}
+                      {listWebsite.filter((w) => w.Status === "online").length}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">Active & running</p>
                   </div>
-                  <div className="w-16 h-16  rounded-2xl flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center">
                     <CheckCircle className="w-8 h-8 text-green-400" />
                   </div>
                 </div>
               </div>
-
               <div className="bg-white rounded-xl p-6 border border-red-100 shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Offline</p>
                     <p className="text-3xl font-bold text-red-600 mt-1">
-                      {listWebsite.filter((w: any) => w.Status === 'offline').length}
+                      {listWebsite.filter((w) => w.Status === "offline").length}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">Need attention</p>
                   </div>
@@ -294,7 +362,7 @@ export default function WebsitePage() {
             </div>
           </div>
 
-          {/* Enhanced Search and Filters */}
+          {/* Search and Filters */}
           <div className="bg-white rounded-xl border border-orange-100 shadow-lg p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
@@ -307,23 +375,21 @@ export default function WebsitePage() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 text-gray-900 placeholder-gray-400"
                 />
               </div>
-
               <div className="flex gap-3">
                 <select
                   value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
+                  onChange={(e) => setFilterStatus(e.target.value as "all" | "online" | "offline")}
                   className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 text-gray-900 font-medium"
                 >
                   <option value="all">All Status</option>
                   <option value="online">Online</option>
                   <option value="offline">Offline</option>
                 </select>
-
               </div>
             </div>
           </div>
 
-          {/* Enhanced Website List */}
+          {/* Website List */}
           <div className="bg-white rounded-xl border border-orange-100 shadow-lg overflow-hidden">
             {loading ? (
               <div className="flex items-center justify-center py-16">
@@ -354,20 +420,16 @@ export default function WebsitePage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredWebsites.map((website: any, index: number) => (
+                    {filteredWebsites.map((website, index) => (
                       <tr key={website.ID} className="hover:bg-orange-50 transition-all duration-200 group">
-                        <td className="px-6 py-5 whitespace-nowrap text-sm font-bold text-gray-900">
-                          #{index + 1}
-                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm font-bold text-gray-900">#{index + 1}</td>
                         <td className="px-6 py-5 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
                               <User className="w-4 h-4 text-orange-600" />
                             </div>
                             <div>
-                              <div className="text-sm font-semibold text-gray-900">
-                                {website.User?.Username}
-                              </div>
+                              <div className="text-sm font-semibold text-gray-900">{website.User?.Username ?? "N/A"}</div>
                             </div>
                           </div>
                         </td>
@@ -377,12 +439,8 @@ export default function WebsitePage() {
                               <Globe className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                              <div className="text-sm font-semibold text-gray-900">
-                                {website.Domain?.Domain_name}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                https://{website.Domain?.Domain_name}
-                              </div>
+                              <div className="text-sm font-semibold text-gray-900">{website.Domain?.Domain_name ?? "N/A"}</div>
+                              <div className="text-sm text-gray-500">https://{website.Domain?.Domain_name ?? "N/A"}</div>
                             </div>
                           </div>
                         </td>
@@ -395,27 +453,19 @@ export default function WebsitePage() {
                         <td className="px-6 py-5 whitespace-nowrap">
                           <div className="flex items-center">
                             <HardDrive className="w-4 h-4 text-gray-400 mr-2" />
-                            <span className="text-sm font-medium text-gray-900">
-                              {formatStorage(website.StorageUsage)}
-                            </span>
+                            <span className="text-sm font-medium text-gray-900">{formatStorage(website.StorageUsage)}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-600 font-medium">
-                          {formatDate(website.CreatedAt)}
-                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-600 font-medium">{formatDate(website.CreatedAt)}</td>
                         <td className="px-6 py-5 whitespace-nowrap">
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center">
                               <Cpu className="w-4 h-4 text-blue-500 mr-1" />
-                              <span className="text-sm font-medium text-gray-900">
-                                {website.resource?.cpu?.toFixed(1) || '0'}%
-                              </span>
+                              <span className="text-sm font-medium text-gray-900">{website.resource?.cpu?.toFixed(1) ?? "0"}%</span>
                             </div>
                             <div className="flex items-center">
                               <Activity className="w-4 h-4 text-green-500 mr-1" />
-                              <span className="text-sm font-medium text-gray-900">
-                                {website.resource?.ram?.toFixed(0) || '0'}MB
-                              </span>
+                              <span className="text-sm font-medium text-gray-900">{website.resource?.ram?.toFixed(0) ?? "0"}MB</span>
                             </div>
                           </div>
                         </td>
@@ -427,7 +477,6 @@ export default function WebsitePage() {
                             >
                               <MoreVertical className="w-5 h-5" />
                             </button>
-
                             {showActions === index && (
                               <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-2xl z-20 border border-gray-200 overflow-hidden">
                                 <div className="py-2">
@@ -469,9 +518,7 @@ export default function WebsitePage() {
                     ))}
                     {Array.from({ length: Math.max(0, 5 - filteredWebsites.length) }).map((_, i) => (
                       <tr key={`empty-${i}`}>
-                        <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-400">
-                          {/* ว่างเปล่า */}
-                        </td>
+                        <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-400"></td>
                       </tr>
                     ))}
                   </tbody>
@@ -482,11 +529,10 @@ export default function WebsitePage() {
         </div>
       </div>
 
-      {/* Enhanced File Manager Modal */}
+      {/* File Manager Modal */}
       {showEditField && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
           <div className="bg-white text-black rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
-            {/* Header */}
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -495,7 +541,7 @@ export default function WebsitePage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold">File Manager</h2>
-                    <p className="text-orange-100">Managing files for: {userUsername}</p>
+                    <p className="text-orange-100">Managing files for: {userUsername || "N/A"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -515,55 +561,46 @@ export default function WebsitePage() {
                   </button>
                 </div>
               </div>
-
-              {/* Path breadcrumb */}
               <div className="mt-4 text-orange-100">
-                <span className="text-sm">Current path: /{getCurrentPath()}</span>
+                <span className="text-sm">Current path: /{currentPath || "root"}</span>
               </div>
             </div>
 
             <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {/* File/Folder List */}
+              {errorMessage && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-xl border border-red-200">
+                  {errorMessage}
+                </div>
+              )}
               <div className="space-y-2">
                 {folderContent
-                  ?.slice()
-                  .sort((a: any, b: any) => {
-                    if (a.type === b.type) return 0;
-                    return a.type === "folder" ? -1 : 1;
-                  })
-                  .map((item: any, idx: number) => (
+                  .slice()
+                  .sort((a, b) => (a.type === b.type ? 0 : a.type === "folder" ? -1 : 1))
+                  .map((item, idx) => (
                     <div
                       key={idx}
                       className="flex items-center justify-between bg-gray-50 hover:bg-orange-50 p-4 rounded-xl cursor-pointer transition-all duration-200 border border-gray-100 hover:border-orange-200"
                       onClick={() => {
                         if (item.type === "folder") {
-                          loadfolderUser(userUsername, item.path);
+                          loadFolderUser(userUsername, item.path);
                         } else {
                           loadFile(userUsername, item.path);
                         }
                       }}
                     >
-                      {/* Icon + File/Folder name */}
                       <div className="flex items-center space-x-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.type === "folder"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : "bg-blue-100 text-blue-600"
-                          }`}>
-                          {item.type === "folder" ? (
-                            <Folder className="w-5 h-5" />
-                          ) : (
-                            <File className="w-5 h-5" />
-                          )}
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            item.type === "folder" ? "bg-yellow-100 text-yellow-600" : "bg-blue-100 text-blue-600"
+                          }`}
+                        >
+                          {item.type === "folder" ? <Folder className="w-5 h-5" /> : <File className="w-5 h-5" />}
                         </div>
                         <div>
                           <span className="font-semibold text-gray-900">{item.name}</span>
-                          <div className="text-sm text-gray-500">
-                            {item.type === "folder" ? "Folder" : "File"}
-                          </div>
+                          <div className="text-sm text-gray-500">{item.type === "folder" ? "Folder" : "File"}</div>
                         </div>
                       </div>
-
-                      {/* Size + Modified Date */}
                       <div className="text-sm text-gray-500 text-right">
                         <div className="font-medium">{formatSize(item.size)}</div>
                         <div>{new Date(item.modified).toLocaleDateString()}</div>
@@ -572,7 +609,6 @@ export default function WebsitePage() {
                   ))}
               </div>
 
-              {/* File Editor */}
               {editText && selectedFile && (
                 <div className="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-4">
@@ -581,17 +617,15 @@ export default function WebsitePage() {
                       <h3 className="text-xl font-bold text-gray-900">{selectedFile.name}</h3>
                     </div>
                   </div>
-
                   <textarea
                     value={fileContent}
                     onChange={(e) => setFileContent(e.target.value)}
                     className="w-full h-96 p-4 border-2 border-gray-200 rounded-xl font-mono text-sm text-gray-900 bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300"
                     placeholder="File content will appear here..."
                   />
-
                   <div className="mt-6 flex gap-3">
                     <button
-                      onClick={saveFile}
+                      onClick={handleSave}
                       className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center gap-2 font-medium shadow-lg"
                     >
                       <Save className="w-4 h-4" />

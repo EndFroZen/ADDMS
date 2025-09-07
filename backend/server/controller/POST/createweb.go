@@ -20,6 +20,9 @@ func CreateNewWebsite(c *fiber.Ctx) error {
 	}
 	// fmt.Println("------------------------------>  "+jsonReqStuct.Github_repo)
 	if err := service.MakeWebsite(&jsonReqStuct, &dataUser); err != nil {
+		if err := service.SaveNotification(config.DB, dataUser.ID, "New Deploy ERROR", "Storage is full You can't not Deploy more website", "Create", 1); err != nil {
+			return c.Status(fiber.ErrInternalServerError.Code).JSON(service.SimpleStatus(500, fmt.Sprint(err)))
+	}
 		return c.Status(fiber.ErrBadRequest.Code).JSON(service.SimpleStatus(400, fmt.Sprintf("Create website false %s",err)))
 	}
 

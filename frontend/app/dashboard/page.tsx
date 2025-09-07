@@ -47,7 +47,9 @@ export default function Dashboard() {
         },
       });
 
-      if (!res.ok) throw new Error("Failed to fetch notifications");
+      if (!res.ok){
+        console.log(res.status)
+      }
 
       const result = await res.json();
       console.log(result);
@@ -69,9 +71,6 @@ export default function Dashboard() {
         Authorization: `Bearer ${yourToken}`,
       },
     });
-
-    const result = await res.json();
-    console.log(result)
   
   }
   async function load() {
@@ -104,7 +103,9 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ command: Command, path: Path }),
       });
-      if (!response.ok) throw new Error("Failed to run server");
+      if (!response.ok){
+        console.log(response.status)
+      }
       const result = await response.json();
       console.log(result);
     } catch (err) {
@@ -125,7 +126,9 @@ export default function Dashboard() {
           "pid": pid
         }),
       });
-      if (!response.ok) throw new Error("Failed to run server");
+      if (!response.ok) {
+        response.status
+      }
       const result = await response.json();
       console.log(result);
     } catch (err) {
@@ -149,6 +152,8 @@ export default function Dashboard() {
         const result = await res.json()
         // console.log(result)
         await setHostData({ ...result, "data": result || [] })
+      }else{
+        hostLoad()
       }
     } catch (err) {
       console.log(err)

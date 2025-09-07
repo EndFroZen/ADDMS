@@ -10,7 +10,7 @@ import (
 )
 
 func EditFile(c *fiber.Ctx) error {
-	
+
 	// Parse the request body into the EditFileRequest struct
 	req := new(models.EditFileRequest)
 	if err := c.BodyParser(&req); err != nil {
@@ -20,6 +20,14 @@ func EditFile(c *fiber.Ctx) error {
 	userID := c.Locals("user_id").(float64)
 	intUserID := int(userID)
 	dataUser := service.LoadUserDataByID(intUserID, config.DB)
+	if dataUser.Role == "admin" {
+		newDataUser := service.LoadUserDataByID(int(req.ID), config.DB)
+		fmt.Println(newDataUser.Username)
+		if err := service.EditFile(req.Path, req.Content, req.NewPath, &newDataUser); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(service.SimpleStatus(500, err.Error()))
+		}
+		return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, "editing successful"))
+	}
 	//do the edit file logic
 	if err := service.EditFile(req.Path, req.Content, req.NewPath, &dataUser); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(service.SimpleStatus(500, err.Error()))
@@ -27,6 +35,6 @@ func EditFile(c *fiber.Ctx) error {
 	if err := service.SaveNotification(config.DB, dataUser.ID, "Edit file", "Edit file done!", "done", 3); err != nil {
 		return c.Status(fiber.ErrInternalServerError.Code).JSON(service.SimpleStatus(500, fmt.Sprint(err)))
 	}
-	
+
 	return c.Status(fiber.StatusOK).JSON(service.SimpleStatus(200, "editing successful"))
 }

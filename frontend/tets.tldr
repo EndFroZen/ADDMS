@@ -491,9 +491,9 @@
 		{
 			"id": "pointer:pointer",
 			"typeName": "pointer",
-			"x": 1007.0516921890695,
-			"y": 1374.9201885426405,
-			"lastActivityTimestamp": 1756190120560,
+			"x": -618.4940435063322,
+			"y": 531.2268968756089,
+			"lastActivityTimestamp": 1757228636252,
 			"meta": {}
 		},
 		{
@@ -891,9 +891,9 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 4.689477238946893,
-			"y": -691.6484124768705,
-			"z": 0.7215284126598331,
+			"x": 2985.7732897220867,
+			"y": 1255.596876855928,
+			"z": 0.2859823153868422,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -987,7 +987,7 @@
 			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [],
-			"hoveredShapeId": null,
+			"hoveredShapeId": "shape:Z6ibP35fzUs5h3ThAub-H",
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -2765,13 +2765,11 @@
 		{
 			"followingUserId": null,
 			"opacityForNextShape": 1,
-			"stylesForNextShape": {
-				"tldraw:geo": "rectangle"
-			},
+			"stylesForNextShape": {},
 			"brush": null,
 			"scribbles": [],
 			"cursor": {
-				"type": "cross",
+				"type": "default",
 				"rotation": 0
 			},
 			"isFocusMode": false,
