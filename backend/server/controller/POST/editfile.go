@@ -20,7 +20,8 @@ func EditFile(c *fiber.Ctx) error {
 	userID := c.Locals("user_id").(float64)
 	intUserID := int(userID)
 	dataUser := service.LoadUserDataByID(intUserID, config.DB)
-	if dataUser.Role == "admin" {
+	
+	if dataUser.Role == "admin"&& req.ID != 0{
 		newDataUser := service.LoadUserDataByID(int(req.ID), config.DB)
 		fmt.Println(newDataUser.Username)
 		if err := service.EditFile(req.Path, req.Content, req.NewPath, &newDataUser); err != nil {

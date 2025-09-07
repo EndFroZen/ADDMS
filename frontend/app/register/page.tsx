@@ -25,17 +25,21 @@ export default function Register() {
     // ตรวจสอบความยาว password
     if (password.length < 8) {
       setPasswordError(true);
+      setLoading(false)
       hasError = true;
     } else {
       setPasswordError(false);
+      // setLoading(false)
     }
 
     // ตรวจสอบ password กับ confirm password
     if (password !== confirm) {
       setConfirmError(true);
+      setLoading(false)
       hasError = true;
     } else {
       setConfirmError(false);
+      // setLoading(false)
     }
 
     if (hasError) return;
@@ -71,7 +75,7 @@ export default function Register() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 relative overflow-hidden">
       {loading && (
-              <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Deploying your application..." /></div>
+              <div className="fixed inset-0 flex items-center justify-center z-50 animated-gradient"><Loading text="Loading. . ." /></div>
       
             )}
       <div className="bg-white border border-gray-300 rounded-xl shadow-xl p-10 w-full max-w-md z-10">
@@ -138,7 +142,7 @@ export default function Register() {
         </div>
 
         <div className="mt-8 space-y-2">
-          <p className="text-center text-gray-400 text-sm">Don't have an account? <a href="../register" className="text-orange-500">Register</a></p>
+          <p className="text-center text-gray-400 text-sm">You have accout? <a href="../login" className="text-orange-500">login</a></p>
           <p className="text-center text-gray-400 text-xs">By creating an account, you agree to our <br /><a href="/teamofservice" className="text-orange-500">Terms of Service</a> and <a href="/policy" className="text-orange-500">Privacy Policy</a></p>
         </div>
 

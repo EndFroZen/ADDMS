@@ -16,8 +16,8 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*", // หรือกำหนดเฉพาะ domain เช่น "http://localhost:3000"
-		// AllowOrigins: "https://www.addms.site", // หรือกำหนดเฉพาะ domain เช่น "http://localhost:3000"
+		// AllowOrigins: "*", // หรือกำหนดเฉพาะ domain เช่น "http://localhost:3000"
+		AllowOrigins: "https://www.addms.site", // หรือกำหนดเฉพาะ domain เช่น "http://localhost:3000"
 
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))

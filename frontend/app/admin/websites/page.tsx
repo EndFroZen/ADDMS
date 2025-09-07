@@ -502,13 +502,13 @@ export default function WebsitePage() {
                                     Notify Owner
                                   </button>
                                   <div className="border-t border-gray-100 my-1"></div>
-                                  <button
+                                  {/* <button
                                     onClick={() => handleDelete(website)}
                                     className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 w-full text-left transition-colors duration-200"
                                   >
                                     <Trash2 className="w-4 h-4 mr-3" />
                                     Delete Website
-                                  </button>
+                                  </button> */}
                                 </div>
                               </div>
                             )}
