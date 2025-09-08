@@ -32,7 +32,7 @@ export default function UserWeb({ params }: PageProps) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showUploadFile, setShowUploadFile] = useState(false);
     const [showDownload, setShowDownload] = useState(false);
-
+    const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
     // Command management states
     const [showCommandSetting, setShowCommandSetting] = useState(false);
     const [currentCommand, setCurrentCommand] = useState("npm start");
@@ -40,6 +40,69 @@ export default function UserWeb({ params }: PageProps) {
     const [tempCommand, setTempCommand] = useState("");
     const [serverStatus, setServerStatus] = useState("offline"); // online, offline, starting
     const [files, setFiles] = useState<File[]>([]);
+    const getDownload = async () => {
+        try {
+            const res = await fetch(`${BASE_URL}/api/dowload?Path=${fullPath}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                console.log("Error status:", res.status);
+                return;
+            }
+
+            // แปลงเป็น blob
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            // สร้างลิงก์ดาวน์โหลดชั่วคราว
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fullPath.split('/').pop()}.zip`; // ตั้งชื่อไฟล์
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+            setShowDownload(false);
+        } catch (error) {
+            alert(error);
+            setShowDownload(false);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (files.length === 0) return;
+
+        const formData = new FormData();
+        files.forEach((file) => formData.append("files", file)); // ส่งไฟล์
+        formData.append("fullpath", fullPath); // ส่ง path เป็น string
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/uploadmorefile`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Authorization: `Bearer ${token}`, // ไม่ต้อง set Content-Type
+                },
+            });
+
+            if (!response.ok) throw new Error("Upload failed");
+
+            const data = await response.json();
+            console.log("อัปโหลดสำเร็จ:", data);
+
+            setFiles([]);
+            window.location.reload()
+            setShowUploadFile(false);
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการอัปโหลด:", error);
+        }
+    };
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -71,7 +134,7 @@ export default function UserWeb({ params }: PageProps) {
 
     const isEditableFile = data?.data?.type === 'file' &&
         fileExtensionsToEdit.some((ext) => fullPath.toLowerCase().endsWith(ext));
-    const token = typeof window !== "undefined" ? localStorage.getItem(NToken) : null;
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -594,16 +657,25 @@ export default function UserWeb({ params }: PageProps) {
                                                         <h3 className="text-orange-600 font-semibold mb-2">
                                                             ไฟล์ที่เลือก:
                                                         </h3>
-                                                        <ul className="list-disc list-inside text-gray-700 space-y-1">
+                                                        <ul className="list-disc list-inside text-gray-700 space-y-1 mb-4">
                                                             {files.map((file, index) => (
                                                                 <li key={index}>{file.name}</li>
                                                             ))}
                                                         </ul>
+
+                                                        {/* ปุ่มยืนยันอัปโหลด */}
+                                                        <button
+                                                            onClick={handleUpload}
+                                                            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition duration-200"
+                                                        >
+                                                            ✅ ยืนยันการอัปโหลด
+                                                        </button>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
                                     )}
+
                                     {showDownload && (
                                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                                             <div className="bg-white p-6 rounded-xl shadow-lg text-center">
@@ -612,7 +684,7 @@ export default function UserWeb({ params }: PageProps) {
                                                 </h2>
                                                 <div className="flex space-x-4 justify-center">
                                                     <button
-                                                        onClick={() => setShowDownload(false)}
+                                                        onClick={() => getDownload()}
                                                         className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                                                     >
                                                         Yes

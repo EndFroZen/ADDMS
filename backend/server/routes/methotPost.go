@@ -20,4 +20,5 @@ func methotPost(routes fiber.Router) {
 	routes.Post("/installplugin", middleware.JWTProtected(), controllerPost.Installplugin)
 	routes.Post("/reset-password", controllerPost.RenewPassword)
 	routes.Post("/updateuser", middleware.JWTProtected(), controllerPost.UpdateUser)
+	routes.Post("/uploadmorefile",middleware.JWTProtected(),controllerPost.UploadMoreFile)
 }
